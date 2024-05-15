@@ -15,7 +15,7 @@ export default function Parsing() {
 	  </ul>
 		</nav>
     <h1 className="text-4xl font-semibold text-center py-7">Pose des questions à ton Fichier</h1>
-    <p className="text-center mx-32 px-32">Superia simplifie la gestion documentaire grâce à son outil de parsing intelligent, capable de traiter et d'organiser efficacement tous types de documents, vous permettant de gagner du temps et d'améliorer votre efficacité opérationnelle.</p>
+    <p className="text-center mx-32 px-32">"Superia simplifie la gestion documentaire grâce à son outil de parsing intelligent, capable de traiter et d'organiser efficacement tous types de documents, vous permettant de gagner du temps et d'améliorer votre efficacité opérationnelle."</p>
       <div className="items-center mx-auto py-14">
        
         <ParsingForm/>
