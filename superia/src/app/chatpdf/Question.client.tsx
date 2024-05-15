@@ -82,7 +82,7 @@ if (loading) {
         <div id="someId" className="special-class">
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <h2 className="text-1xl">Pose tes Questions</h2>
-            <input type="text" name="question" value={question} onChange={handleQuestionChange} placeholder="Write your question"/>
+            <input type="text" name="question" value={question} onChange={handleQuestionChange} placeholder="Ecrivez votre question"/>
             <button type="submit">Post</button>
         </form>
         {responseMessage && <div>{responseMessage}</div>}  {/* Display the response message */}</div>

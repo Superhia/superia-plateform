@@ -58,11 +58,10 @@ const FormComponent = () => {
     return (
         <div>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            <h1 className="text-2xl">Pose des questions à ton Fichier</h1>
-            <input type="text" name="question" value={question} onChange={handleQuestionChange} placeholder="Write your question"/>
-            <label>Fichier:</label>
+            <input className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-2xl 2xl:leading-6" type="text" name="question" value={question} onChange={handleQuestionChange} placeholder="Ecrivez votre question"/>
+            <label className='text-2xl'>Fichier:</label>
             <input type="file" name="file" onChange={handleFileChange}/>
-            <button type="submit">Envoyer</button>
+            <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0  text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">Envoyer</button>
         </form>
         {response && <div className="response"><p>Response:</p><div dangerouslySetInnerHTML={{ __html: response }} /></div>}
         </div>

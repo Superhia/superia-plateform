@@ -38,9 +38,9 @@ export default function ScrappingForm() {
 
     return (
         <form onSubmit={handleSubmit}>
-            <label htmlFor="question">Url:</label>
-            <input id="question" name="question" type="text" required />
-            <button type="submit" className="p-5">Submit</button>
+            <label htmlFor="question">Veuillez saisir l’url exacte du site carrières que vous souhaitez analyser.</label>
+            <input className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-2xl 2xl:leading-6" placeholder="Entrez votre url ici" id="question" name="question" type="text" required />
+            <button type="submit" className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0  text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8">Lancer l’analyse !</button>
             {response && <div>{response}</div>}
         </form>
     );

@@ -59,9 +59,8 @@ const FileUploadComponent = () => {
     return (
         <div>
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-                <h1 className="text-2xl">Upload Your File</h1>
                 <input type="file" name="file" onChange={handleFileChange}/>
-                <button type="submit">Upload File</button>
+                <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0  text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">Upload File</button>
             </form>
             {uploadStatus && <p>{uploadStatus}</p>}
             {sourceId && <p>Source ID: {sourceId}</p>}
