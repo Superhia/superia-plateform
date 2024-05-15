@@ -28,15 +28,13 @@ const FileUploadComponent = forwardRef<FileUploadComponentRef>((props, ref) => {
   };
 
   const handleSubmit = async () => {
-    if (!file) {
-      const fetchedFile = await fetchPDFAndSetFile();
-      if (!fetchedFile) {
-        return;
-      }
+    const fetchedFile = file || await fetchPDFAndSetFile();
+    if (!fetchedFile) {
+      return;
     }
-    setLoading(true);
-    const formData = new FormData();
-    formData.append('file', file);
+  setLoading(true);
+  const formData = new FormData();
+  formData.append('file', fetchedFile);
 
     try {
       const response = await fetch('https://superia.northeurope.cloudapp.azure.com/upload', {
