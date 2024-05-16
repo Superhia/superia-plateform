@@ -17,7 +17,7 @@ export default function AXAForm() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ domain: "https://recrutement.axa.fr/" }) // Send the correct key as expected by the backend
+        body: JSON.stringify({ domain: "https://audencia.teamtailor.com/" }) // Send the correct key as expected by the backend
       });
       const data = await res.json();
       setResponse(JSON.stringify(data)); // Update the response state with the server response
@@ -36,7 +36,7 @@ export default function AXAForm() {
     return (
         <div className='rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 m-5'>
       <button className="p-5 px-36 m-5" onClick={handleSubmit}>
-      <img src="Logo AXA.svg" alt="logo axa" className="h-8 w-8 mx-auto"/>https://recrutement.axa.fr/
+      <img src="Audencia.png" alt="logo audencia" className="h-8 w-8 mx-auto"/>https://audencia.teamtailor.com/
       </button>
       
       <div className="response-container bg-gray-100 rounded-md">
