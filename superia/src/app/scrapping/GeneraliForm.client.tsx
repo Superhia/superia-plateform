@@ -19,8 +19,8 @@ export default function GeneraliForm() {
         },
         body: JSON.stringify({ domain: "https://carrieres.generali.fr/" }) // Send the correct key as expected by the backend
       });
-      const data = await res.json();
-      setResponse(JSON.stringify(data)); // Update the response state with the server response
+      const data = await res.text();
+      setResponse(data); // Update the response state with the server response
       console.log(data); // Log the data to the console for debugging
     } catch (error) {
       console.error('Failed to submit:', error);
@@ -45,7 +45,7 @@ export default function GeneraliForm() {
             <ClipLoader color="#0000ff" loading={loading} size={150} />
           </div>
         ) : (
-          response && <pre className='mt-5 p-5' style={{ whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>{response}</pre>
+          response && <div dangerouslySetInnerHTML={{ __html: response }} />
         )}
       </div>
     </div>
