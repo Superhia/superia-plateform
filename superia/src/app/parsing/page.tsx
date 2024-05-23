@@ -1,7 +1,20 @@
+'use client'
 import Link from "next/link";
-import ParsingForm  from "./ParsingForm.client";
+import ParsingFormTest  from "./ParsingFormTest.client";
+import ParsingForm from "./ParsingForm.client";
+import Ebook from "./EbookForm.client";
+import LBAmbassadeur from "./LBAmbassadeurForm.client";
+import LBMarketing from "./LBMarketingForm.client";
+import LSiteCarriere from "./LSiteCarriereForm.client";
+import { useState } from 'react';
 
 export default function Parsing() {
+  const [response, setResponse] = useState<string>('');
+  const sessionId = 'your_session_id'; // Replace with actual session ID management
+
+  const handleResponse = (res: string) => {
+    setResponse(res);
+  };
   return (
     <main className="flex min-h-screen flex-col items-left p-14 bg-white">
       <Link href={"/"}>
@@ -20,6 +33,10 @@ export default function Parsing() {
        
         <ParsingForm/>
       </div>
+      <h4>Testez notre outil avec un des PDF déjà chargé</h4>
+      <div className="mx-auto text-sm grid grid-cols-4 gap-4">
+        <div><Ebook/></div> <div><LBAmbassadeur/></div> <div><LBMarketing/></div> <div><LSiteCarriere/></div>
+   </div>
     </main>
   );
 }
