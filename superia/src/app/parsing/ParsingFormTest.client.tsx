@@ -26,7 +26,7 @@ const TestFormComponent = () => {
         formData.append('file', file);
     
         try {
-            const response = await fetch('http://127.0.0.1:8000/chatpdf', {
+            const response = await fetch('https://superia.northeurope.cloudapp.azure.com/chatpdf', {
                 method: 'POST',
                 body: formData,
                 credentials: 'include',
