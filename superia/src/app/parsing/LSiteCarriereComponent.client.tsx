@@ -80,7 +80,7 @@ const FileUploadComponent = forwardRef<FileUploadComponentRef>((props, ref) => {
   );
 });
 
-
+FileUploadComponent.displayName = 'FileUploadComponent';
 
 const AskQuestionComponent = ({ assistantId }: { assistantId: string }) => {
   const [question, setQuestion] = useState<string>('');
