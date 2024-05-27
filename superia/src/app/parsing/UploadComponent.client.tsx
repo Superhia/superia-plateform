@@ -16,6 +16,7 @@ const FileUploadComponent = () => {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [showPdf, setShowPdf] = useState<boolean>(false);
+  const [numPages, setNumPages] = useState<number | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -81,6 +82,10 @@ const handleClick = () => {
       setLoading(false);
     }
   };
+  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    setNumPages(numPages);
+  };
+
   if (loading) {
     return <ClipLoader color="#0000ff" loading={loading} size={150} />;
 }
@@ -115,25 +120,29 @@ return (
       </button>
     </form>
     {uploadStatus && <p>{uploadStatus}</p>}
-    {showPdf && assistantId && (
-      <div className="grid grid-cols-2 gap-4">
-        <div
-          style={{
-            border: '1px solid rgba(0, 0, 0, 0.3)',
-            height: '750px',
-            width: '100%',
-            overflow: 'auto',
-          }}
-        >
-          <Document file={pdfUrl} onLoadSuccess={({ numPages }) => console.log(`Loaded a file with ${numPages} pages.`)}>
-            <Page pageNumber={1} />
-          </Document>
+    {showPdf && assistantId && pdfUrl && (
+        <div className="grid grid-cols-2 gap-4 h-screen">
+          <div
+            style={{
+              border: '1px solid rgba(0, 0, 0, 0.3)',
+              height: '100%',
+              overflow: 'auto',
+            }}
+          >
+            <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
+              {Array.from(
+                new Array(numPages),
+                (el, index) => (
+                  <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+                ),
+              )}
+            </Document>
+          </div>
+          <div className="flex flex-col justify-between p-5">
+            <AskQuestionComponent assistantId={assistantId} />
+          </div>
         </div>
-        <div>
-          <AskQuestionComponent assistantId={assistantId} />
-        </div>
-      </div>
-    )}
+      )}
   </div>
 );
 };
@@ -194,7 +203,7 @@ return (
         onChange={(e) => setQuestion(e.target.value)}
         placeholder="Ask your question"
       />
-      <button className="p-3 m-1 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">Ask Question</button>
+      <button className="p-3 m-1 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">Ask</button>
     </form>
   </div>
 );
