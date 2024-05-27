@@ -34,9 +34,12 @@ export default function Parsing() {
         <FileUploadComponent />
       </div>
       <h4>Testez notre outil avec un des PDF déjà chargé</h4>
-      <div className="mx-auto text-sm grid grid-cols-4 gap-4">
-        <div><Ebook/></div> <div><LBAmbassadeur/></div> <div><LBMarketing/></div> <div><LSiteCarriere/></div>
-   </div>
+      <div className="flex justify-center space-x-8 py-14">
+        <Ebook />
+        <LBAmbassadeur />
+        <LBMarketing />
+        <LSiteCarriere />
+      </div>
     </main>
   );
 }

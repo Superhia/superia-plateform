@@ -92,15 +92,9 @@ const FileUploadComponent = forwardRef<FileUploadComponentRef>((props, ref) => {
       </button>
       {uploadStatus && <p>{uploadStatus}</p>}
       {showPdf && assistantId && pdfUrl && (
-        <div className="grid grid-cols-2 gap-4 h-screen">
-          <div
-            style={{
-              border: '1px solid rgba(0, 0, 0, 0.3)',
-              height: '100%',
-              overflow: 'auto',
-            }}
-          >
-            <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
+        <div className="place-content-center h-screen">
+          <div className="border-black h-full overflow-auto">
+          <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
               {Array.from(
                 new Array(numPages),
                 (el, index) => (
@@ -109,7 +103,7 @@ const FileUploadComponent = forwardRef<FileUploadComponentRef>((props, ref) => {
               )}
             </Document>
           </div>
-          <div className="flex flex-col justify-between p-5">
+          <div className="flex flex-col justify-between p-5 mx-7">
             <AskQuestionComponent assistantId={assistantId} />
           </div>
         </div>
