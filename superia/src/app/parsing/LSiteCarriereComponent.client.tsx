@@ -13,7 +13,7 @@ export interface FileUploadComponentRef {
   handleSubmit: (question: string) => void;
 }
 
-const FileUploadComponent = forwardRef<FileUploadComponentRef>((props, ref) => {
+const LSiteCarriere = forwardRef<FileUploadComponentRef>((props, ref) => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [assistantId, setAssistantId] = useState('');
@@ -92,9 +92,9 @@ const FileUploadComponent = forwardRef<FileUploadComponentRef>((props, ref) => {
       </button>
       {uploadStatus && <p>{uploadStatus}</p>}
       {showPdf && assistantId && pdfUrl && (
-        <div className="place-content-center h-screen">
-          <div className="border-black h-full overflow-auto">
-          <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
+        <div className="grid grid-cols-2 gap-4 h-screen">
+          <div className='height-full overflow-auto border-black'>
+            <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
               {Array.from(
                 new Array(numPages),
                 (el, index) => (
@@ -103,7 +103,7 @@ const FileUploadComponent = forwardRef<FileUploadComponentRef>((props, ref) => {
               )}
             </Document>
           </div>
-          <div className="flex flex-col justify-between p-5 mx-7">
+          <div className="flex flex-col justify-between p-5">
             <AskQuestionComponent assistantId={assistantId} />
           </div>
         </div>
@@ -113,7 +113,7 @@ const FileUploadComponent = forwardRef<FileUploadComponentRef>((props, ref) => {
 });
 
 
-FileUploadComponent.displayName = 'FileUploadComponent';
+LSiteCarriere.displayName = 'LSiteCarriere';
 
 const AskQuestionComponent = ({ assistantId }: { assistantId: string }) => {
   const [question, setQuestion] = useState<string>('');
@@ -176,5 +176,5 @@ return (
 );
 };
 
-export default FileUploadComponent;
+export default LSiteCarriere;
 

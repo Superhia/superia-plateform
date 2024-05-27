@@ -13,7 +13,7 @@ export interface FileUploadComponentRef {
   handleSubmit: (question: string) => void;
 }
 
-const FileUploadComponent = forwardRef<FileUploadComponentRef>((props, ref) => {
+const Ebook = forwardRef<FileUploadComponentRef>((props, ref) => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [assistantId, setAssistantId] = useState('');
@@ -92,9 +92,9 @@ const FileUploadComponent = forwardRef<FileUploadComponentRef>((props, ref) => {
       </button>
       {uploadStatus && <p>{uploadStatus}</p>}
       {showPdf && assistantId && pdfUrl && (
-        <div className="place-content-center h-screen">
-          <div className="border-black h-full overflow-auto">
-          <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
+        <div className="grid grid-cols-2 gap-4 h-screen">
+          <div className='height-full overflow-auto border-black'>
+            <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
               {Array.from(
                 new Array(numPages),
                 (el, index) => (
@@ -103,7 +103,7 @@ const FileUploadComponent = forwardRef<FileUploadComponentRef>((props, ref) => {
               )}
             </Document>
           </div>
-          <div className="flex flex-col justify-between p-5 mx-7">
+          <div className="flex flex-col justify-between p-5">
             <AskQuestionComponent assistantId={assistantId} />
           </div>
         </div>
@@ -111,9 +111,6 @@ const FileUploadComponent = forwardRef<FileUploadComponentRef>((props, ref) => {
     </div>
   );
 });
-
-
-FileUploadComponent.displayName = 'FileUploadComponent';
 
 const AskQuestionComponent = ({ assistantId }: { assistantId: string }) => {
   const [question, setQuestion] = useState<string>('');
@@ -153,7 +150,7 @@ const AskQuestionComponent = ({ assistantId }: { assistantId: string }) => {
 }
 return (
   <div className="flex flex-col h-full">
-    <div className="flex-grow overflow-y-auto">
+    <div className="flex-grow overflow-y-auto p-5">
       {qaList.map((qa, index) => (
         <div key={index} className="mb-4">
           <p className="font-bold">Question: {qa.question}</p>
@@ -176,4 +173,5 @@ return (
 );
 };
 
-export default FileUploadComponent;
+Ebook.displayName = 'Ebook';
+export default Ebook;

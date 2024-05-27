@@ -1,45 +1,77 @@
-'use client'
-import Link from "next/link";
-import ParsingFormTest  from "./ParsingFormTest.client";
-import ParsingForm from "./ParsingForm.client";
-import Ebook from "./EbookComponent.client";
-import LBAmbassadeur from "./LBAmbassadeurComponent.client";
-import LBMarketing from "./LBMarketingComponent.client";
-import LSiteCarriere from "./LSiteCarriereComponent.client";
-import FileUploadComponent from "./UploadComponent.client";
+'use client';
+import Link from 'next/link';
 import { useState } from 'react';
+import Ebook from './EbookComponent.client';
+import LBAmbassadeur from './LBAmbassadeurComponent.client';
+import LBMarketing from './LBMarketingComponent.client';
+import LSiteCarriere from './LSiteCarriereComponent.client';
+import FileUploadComponent from './UploadComponent.client';
 
 export default function Parsing() {
   const [response, setResponse] = useState<string>('');
-  const sessionId = 'your_session_id'; // Replace with actual session ID management
+  const [activeButton, setActiveButton] = useState<string | null>(null);
 
   const handleResponse = (res: string) => {
     setResponse(res);
   };
+
+  const renderComponent = () => {
+    switch (activeButton) {
+      case 'Ebook':
+        return <Ebook />;
+      case 'LBAmbassadeur':
+        return <LBAmbassadeur />;
+      case 'LBMarketing':
+        return <LBMarketing />;
+      case 'LSiteCarriere':
+        return <LSiteCarriere />;
+      default:
+        return null;
+    }
+  };
+
+  const handleButtonClick = (buttonName: string) => {
+    setActiveButton(buttonName);
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-left p-14 bg-white">
-      <Link href={"/"}>
-      <img src="LaSuperAgence.png" alt="icon" className="h-8" />
+    <main className="flex min-h-screen flex-col p-14 bg-white">
+      <Link href="/">
+        <img src="LaSuperAgence.png" alt="icon" className="h-8" />
       </Link>
-      <nav className="flex">
-		<ul className="flex space-x-5 mx-auto -mt-5" id="menu">
-			<li><Link href={"scrapping"}>ScanRH</Link></li>
-			<li><Link href={"parsing"}>DocuParse</Link></li>
-			<li><Link href={"chatpdf"}>ChatDoc</Link></li>
-	  </ul>
-		</nav>
-    <h1 className="text-4xl font-semibold text-center py-7">Pose des questions à ton Fichier</h1>
-    <p className="text-center mx-32 px-32">Superia simplifie la gestion documentaire grâce à son outil de parsing intelligent, capable de traiter et dorganiser efficacement tous types de documents, vous permettant de gagner du temps et daméliorer votre efficacité opérationnelle.</p>
-    <div className="items-center mx-auto py-14">
+      <nav className="flex w-full justify-center">
+        <ul className="flex space-x-5 -mt-5" id="menu">
+          <li><Link href="scrapping">ScanRH</Link></li>
+          <li><Link href="parsing">DocuParse</Link></li>
+          <li><Link href="chatpdf">ChatDoc</Link></li>
+        </ul>
+      </nav>
+      <h1 className="text-4xl font-semibold text-center py-7">Pose des questions à ton Fichier</h1>
+      <p className="text-center mx-32 px-32">Superia simplifie la gestion documentaire grâce à son outil de parsing intelligent, capable de traiter et d’organiser efficacement tous types de documents, vous permettant de gagner du temps et d’améliorer votre efficacité opérationnelle.</p>
+      <div className="items-center mx-auto py-14">
         <FileUploadComponent />
       </div>
-      <h4>Testez notre outil avec un des PDF déjà chargé</h4>
+      <h4 className="text-center">Testez notre outil avec un des PDF déjà chargé</h4>
       <div className="flex justify-center space-x-8 py-14">
-        <Ebook />
-        <LBAmbassadeur />
-        <LBMarketing />
-        <LSiteCarriere />
+        {activeButton === null && (
+          <>
+            <div onClick={() => handleButtonClick('Ebook')} className="cursor-pointer">
+              <Ebook />
+            </div>
+            <div onClick={() => handleButtonClick('LBAmbassadeur')} className="cursor-pointer">
+              <LBAmbassadeur />
+            </div>
+            <div onClick={() => handleButtonClick('LBMarketing')} className="cursor-pointer">
+              <LBMarketing />
+            </div>
+            <div onClick={() => handleButtonClick('LSiteCarriere')} className="cursor-pointer">
+              <LSiteCarriere />
+            </div>
+          </>
+        )}
+        {renderComponent()}
       </div>
     </main>
   );
 }
+
