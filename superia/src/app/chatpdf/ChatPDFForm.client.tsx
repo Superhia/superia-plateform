@@ -16,7 +16,7 @@ const YoutubeDataForm = () => {
     setResponse(null);
 
     try {
-      const res = await fetch(`http://127.0.0.1:5000/youtube_data?url=${encodeURIComponent(url)}`);
+      const res = await fetch(`https://superia.northeurope.cloudapp.azure.com/youtube_data?url=${encodeURIComponent(url)}`);
       if (!res.ok) {
         throw new Error(`An error occurred: ${res.statusText}`);
       }
