@@ -22,7 +22,7 @@ export default function Home() {
     <div className="mx-auto text-2xl">
     <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0  text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8"><Link href={"scrapping"}>ScanRH</Link></button>
     <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0  text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8"><Link href={"parsing"}>DocuParse</Link></button>
-    <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0  text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8"><Link href={"chatpdf"}>ChatDoc</Link></button>
+    <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0  text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8"><Link href={"chatpdf"}>YoutubeScan</Link></button>
     </div>
     </main>
     

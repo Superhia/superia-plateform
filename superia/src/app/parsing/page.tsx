@@ -43,7 +43,7 @@ export default function Parsing() {
         <ul className="flex space-x-5 -mt-5" id="menu">
           <li><Link href="scrapping">ScanRH</Link></li>
           <li><Link href="parsing">DocuParse</Link></li>
-          <li><Link href="chatpdf">ChatDoc</Link></li>
+          <li><Link href="chatpdf">YoutubeScan</Link></li>
         </ul>
       </nav>
       <h1 className="text-4xl font-semibold text-center py-7">Pose des questions à ton Fichier</h1>
