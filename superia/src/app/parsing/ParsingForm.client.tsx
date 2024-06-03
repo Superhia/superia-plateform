@@ -51,25 +51,49 @@ const FormComponent = () => {
             alert('Please select a file.');
             return;
         }
+        if (!question) {
+            alert('Please enter a question.');
+            return;
+        }
         setLoading(true);
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('question', question);
 
         try {
-            const response = await fetch('https://superia.northeurope.cloudapp.azure.com/chatpdf', {
+            // Step 1: Upload the file and get the assistant ID
+            const fileUploadResponse = await fetch('http://127.0.0.1:8000/chatdoc', {
                 method: 'POST',
                 body: formData,
             });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Failed to submit form with status:', response.status, 'and body:', errorText);
-                throw new Error(`Network response was not ok: ${errorText}`);
+            if (!fileUploadResponse.ok) {
+                const errorText = await fileUploadResponse.text();
+                console.error('Failed to upload file with status:', fileUploadResponse.status, 'and body:', errorText);
+                throw new Error(`File upload failed: ${errorText}`);
             }
 
-            const result = await response.json();
-            setResponse(result.response);
+            const fileUploadResult = await fileUploadResponse.json();
+            const assistantId = fileUploadResult.assistant_id;
+
+            // Step 2: Use the assistant ID to submit the question
+            const questionFormData = new FormData();
+            questionFormData.append('question', question);
+            questionFormData.append('assistant_id', assistantId);
+
+            const questionResponse = await fetch('http://127.0.0.1:8000/ask', {
+                method: 'POST',
+                body: questionFormData,
+            });
+
+            if (!questionResponse.ok) {
+                const errorText = await questionResponse.text();
+                console.error('Failed to submit question with status:', questionResponse.status, 'and body:', errorText);
+                throw new Error(`Question submission failed: ${errorText}`);
+            }
+
+            const questionResult = await questionResponse.text(); // Fetch response as text
+            setResponse(questionResult);
+
         } catch (error) {
             console.error('Error submitting form:', error);
             alert('Failed to submit the form.');
@@ -131,6 +155,5 @@ const FormComponent = () => {
 };
 
 export default FormComponent;
-
 
 

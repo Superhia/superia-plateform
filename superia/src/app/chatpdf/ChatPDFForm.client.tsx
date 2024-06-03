@@ -6,7 +6,7 @@ const YoutubeDataForm = () => {
   const [url, setUrl] = useState<string>('');
   const [question, setQuestion] = useState<string>('');
   const [assistantId, setAssistantId] = useState<string>('');
-  const [responses, setResponses] = useState<string[]>([]);  // Define the type as an array of strings
+  const [responses, setResponses] = useState<{ question: string; response: string }[]>([]);
   const [youtubeData, setYoutubeData] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,15 +17,17 @@ const YoutubeDataForm = () => {
     setError(null);
 
     try {
-      // First, get the YouTube data
       const res = await fetch(`https://superia.northeurope.cloudapp.azure.com/youtube_data?url=${encodeURIComponent(url)}`);
+      console.log('YouTube data response:', res);
       if (!res.ok) {
         throw new Error(`An error occurred: ${res.statusText}`);
       }
       const data = await res.json();
+      console.log('YouTube data:', data);
       setYoutubeData(data.response);
       setAssistantId(data.assistant_id); // Assuming the response contains the assistant_id
     } catch (error) {
+      console.error('Error fetching YouTube data:', error);
       setError((error as Error).message);
     } finally {
       setLoading(false);
@@ -38,7 +40,6 @@ const YoutubeDataForm = () => {
     setError(null);
 
     try {
-      // Then, use the assistant ID to ask a question
       const askRes = await fetch('https://superia.northeurope.cloudapp.azure.com/query', {
         method: 'POST',
         headers: {
@@ -49,15 +50,20 @@ const YoutubeDataForm = () => {
           assistant_id: assistantId,
         }),
       });
+      console.log('Query response:', askRes);
       if (!askRes.ok) {
         throw new Error(`An error occurred: ${askRes.statusText}`);
       }
       const askData = await askRes.json();
-      setResponses(prevResponses => [...prevResponses, askData.response]);  // Append new response
+      console.log('Query data:', askData);
+      // Clean the response to remove leading/trailing whitespace and newlines
+      setResponses(prevResponses => [...prevResponses, { question: question, response: askData.response }]);  // Append new response
     } catch (error) {
+      console.error('Error querying assistant:', error);
       setError((error as Error).message);
     } finally {
       setLoading(false);
+      setQuestion(''); // Clear the question input after submission
     }
   };
 
@@ -92,10 +98,10 @@ const YoutubeDataForm = () => {
       {responses.length > 0 && (
         <div>
           <h2 className='font-bold text-2xl my-5'>Réponses:</h2>
-          {responses.map((response, index) => (
+          {responses.map((item, index) => (
             <div key={index}>
-              <h3 className='font-bold'>Question {question}:</h3>
-              <div dangerouslySetInnerHTML={{ __html: response }} />
+              <h3 className='font-bold'>Question: {item.question}</h3>
+              <div dangerouslySetInnerHTML={{ __html: item.response }} />
             </div>
           ))}
         </div>
@@ -117,7 +123,14 @@ const YoutubeDataForm = () => {
           </button>
         </form>
       )}
-        </div>
-      )}
+    </div>
+  );
+};
 
 export default YoutubeDataForm;
+
+
+
+
+
+

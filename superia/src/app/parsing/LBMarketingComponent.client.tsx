@@ -129,13 +129,16 @@ const AskQuestionComponent = ({ assistantId }: { assistantId: string }) => {
       const response = await fetch('https://superia.northeurope.cloudapp.azure.com/ask', {
         method: 'POST',
         body: formData,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded', // Ensuring correct content type
+        },
       });
 
-      const result = await response.json();
+      const result = await response.text();
       if (response.ok) {
-        setQaList([...qaList, { question, response: result.response || 'No response received.' }]);
+        setQaList([...qaList, { question, response: result || 'No response received.' }]);
       } else {
-        setQaList([...qaList, { question, response: result.error || 'Failed to get a response.' }]);
+        setQaList([...qaList, { question, response: result || 'Failed to get a response.' }]);
       }
     } catch (error) {
       console.error('Error submitting question:', error);
@@ -154,7 +157,7 @@ return (
       {qaList.map((qa, index) => (
         <div key={index} className="mb-4">
           <p className="font-bold">Question: {qa.question}</p>
-          <p>Response: {qa.response}</p>
+          <div dangerouslySetInnerHTML={{ __html: qa.response }} />
         </div>
       ))}
     </div>
