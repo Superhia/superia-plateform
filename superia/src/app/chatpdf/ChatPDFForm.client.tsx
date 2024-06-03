@@ -74,7 +74,7 @@ const YoutubeDataForm = () => {
           required
         />
         <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading}>
-          {loading ? 'Processing...' : 'Submit'}
+          {loading ? 'Processing...' : 'Envoyer'}
         </button>
       </form>
 
@@ -84,18 +84,17 @@ const YoutubeDataForm = () => {
 
       {youtubeData && (
         <div>
-          <h2>YouTube Data:</h2>
+          <h2 className='font-bold text-2xl my-5'>YouTube Résumé:</h2>
           <div dangerouslySetInnerHTML={{ __html: youtubeData }} />
-          <h3>Assistant ID: {assistantId}</h3>
         </div>
       )}
 
       {responses.length > 0 && (
         <div>
-          <h2>Responses:</h2>
+          <h2 className='font-bold text-2xl my-5'>Réponses:</h2>
           {responses.map((response, index) => (
             <div key={index}>
-              <h3>Response {index + 1}:</h3>
+              <h3 className='font-bold'>Question {question}:</h3>
               <div dangerouslySetInnerHTML={{ __html: response }} />
             </div>
           ))}
@@ -114,7 +113,7 @@ const YoutubeDataForm = () => {
             required
           />
           <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading}>
-            {loading ? 'Processing...' : 'Ask'}
+            {loading ? 'Processing...' : 'Pose ta question'}
           </button>
         </form>
       )}
