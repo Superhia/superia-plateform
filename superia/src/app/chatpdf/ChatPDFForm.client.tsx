@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 
 const YoutubeDataForm = () => {
@@ -15,17 +15,39 @@ const YoutubeDataForm = () => {
     event.preventDefault();
     setLoading(true);
     setError(null);
+    setYoutubeData(null);
 
     try {
-      const res = await fetch(`https://superia.northeurope.cloudapp.azure.com/youtube_data?url=${encodeURIComponent(url)}`);
-      console.log('YouTube data response:', res);
-      if (!res.ok) {
-        throw new Error(`An error occurred: ${res.statusText}`);
+      const response = await fetch(`https://superia.northeurope.cloudapp.azure.com/youtube_data?url=${encodeURIComponent(url)}`);
+      if (!response.ok) {
+        throw new Error(`An error occurred: ${response.statusText}`);
       }
-      const data = await res.json();
-      console.log('YouTube data:', data);
-      setYoutubeData(data.response);
-      setAssistantId(data.assistant_id); // Assuming the response contains the assistant_id
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('ReadableStream not supported or body is null.');
+      }
+      const decoder = new TextDecoder('utf-8');
+      let done = false;
+      let buffer = '';
+
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true });
+          buffer += chunk;
+
+          // Process buffer to update state incrementally
+          setYoutubeData((prev) => (prev ? prev + chunk : chunk));
+
+          // Extract assistant ID from the buffer if it's provided
+          const assistantIdMatch = buffer.match(/assistant_id:\s*(\w+)/);
+          if (assistantIdMatch) {
+            setAssistantId(assistantIdMatch[1]);
+          }
+        }
+      }
     } catch (error) {
       console.error('Error fetching YouTube data:', error);
       setError((error as Error).message);
@@ -50,17 +72,41 @@ const YoutubeDataForm = () => {
           assistant_id: assistantId,
         }),
       });
-      console.log('Query response:', askRes);
+
       if (!askRes.ok) {
         throw new Error(`An error occurred: ${askRes.statusText}`);
       }
-      const askData = await askRes.json();
-      console.log('Query data:', askData);
-      // Clean the response to remove leading/trailing whitespace and newlines
-      setResponses(prevResponses => [...prevResponses, { question: question, response: askData.response }]);  // Append new response
+
+      const reader = askRes.body?.getReader();
+      if (!reader) {
+        throw new Error('Reader not available');
+      }
+
+      const decoder = new TextDecoder('utf-8');
+      let done = false;
+      let responseContent = '';
+
+      const newResponses = [...responses, { question, response: '' }];
+      const lastIndex = newResponses.length - 1;
+      setResponses(newResponses);
+
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true });
+          responseContent += chunk;
+
+          // Update the response state incrementally
+          newResponses[lastIndex].response = responseContent;
+          setResponses([...newResponses]);
+        }
+      }
+
+      console.log('Final response content:', responseContent);
     } catch (error) {
       console.error('Error querying assistant:', error);
-      setError((error as Error).message);
+      setError('Failed to get a response from the assistant.');
     } finally {
       setLoading(false);
       setQuestion(''); // Clear the question input after submission
@@ -91,19 +137,7 @@ const YoutubeDataForm = () => {
       {youtubeData && (
         <div>
           <h2 className='font-bold text-2xl my-5'>YouTube Résumé:</h2>
-          <div dangerouslySetInnerHTML={{ __html: youtubeData }} />
-        </div>
-      )}
-
-      {responses.length > 0 && (
-        <div>
-          <h2 className='font-bold text-2xl my-5'>Réponses:</h2>
-          {responses.map((item, index) => (
-            <div key={index}>
-              <h3 className='font-bold'>Question: {item.question}</h3>
-              <div dangerouslySetInnerHTML={{ __html: item.response }} />
-            </div>
-          ))}
+          <div dangerouslySetInnerHTML={{ __html: youtubeData.replace(/\n/g, '<br />') }} />
         </div>
       )}
 
@@ -123,11 +157,26 @@ const YoutubeDataForm = () => {
           </button>
         </form>
       )}
+
+      {responses.length > 0 && (
+        <div>
+          <h2 className='font-bold text-2xl my-5'>Réponses:</h2>
+          {responses.map((item, index) => (
+            <div key={index}>
+              <h3 className='font-bold'>Question: {item.question}</h3>
+              <div dangerouslySetInnerHTML={{ __html: item.response.replace(/\n/g, '<br />') }} />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
 export default YoutubeDataForm;
+
+
+
 
 
 
