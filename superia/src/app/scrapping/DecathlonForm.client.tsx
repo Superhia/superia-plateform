@@ -18,7 +18,7 @@ export default function OrangeForm() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ domain: "https://recrutement.decatlon.fr/" }) // Send the correct key as expected by the backend
+                body: JSON.stringify({ domain: "https://recrutement.decathlon.fr" }) // Send the correct key as expected by the backend
             });
 
             if (!res.body) {
