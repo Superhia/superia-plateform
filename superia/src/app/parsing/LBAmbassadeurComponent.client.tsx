@@ -1,7 +1,7 @@
 // components/EbookComponent.client.js
 'use client';
 
-import React, { useState, useImperativeHandle, forwardRef } from 'react';
+import React, { useState,FC,useRef, useImperativeHandle, forwardRef } from 'react';
 import { ClipLoader } from 'react-spinners';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
@@ -113,68 +113,105 @@ const LBAmbassadeur = forwardRef<FileUploadComponentRef>((props, ref) => {
   );
 });
 
-const AskQuestionComponent = ({ assistantId }: { assistantId: string }) => {
-  const [question, setQuestion] = useState<string>('');
+interface AskQuestionComponentProps {
+  assistantId: string;
+}
+interface QAResponse {
+  question: string;
+  response: string;
+}
+const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) => {
+  const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
-  const [qaList, setQaList] = useState<{ question: string; response: string }[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [responses, setResponses] = useState<QAResponse[]>([]);
+
+  const currentResponseRef = useRef('');
 
   const handleQuestionSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
+    setError(null);
 
-    const formData = new URLSearchParams();
-    formData.append('question', question);
-    formData.append('assistant_id', assistantId);
+    const newResponses = [...responses, { question, response: '' }];
+    const lastIndex = newResponses.length - 1;
+    setResponses(newResponses);
 
     try {
-      const response = await fetch('https://superia.northeurope.cloudapp.azure.com/ask', {
+      const askRes = await fetch('https://superia.northeurope.cloudapp.azure.com/ask', {
         method: 'POST',
-        body: formData,
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded', // Ensuring correct content type
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          question: question,
+          assistant_id: assistantId,
+        }),
       });
 
-      const result = await response.text();
-      if (response.ok) {
-        setQaList([...qaList, { question, response: result || 'No response received.' }]);
-      } else {
-        setQaList([...qaList, { question, response: result || 'Failed to get a response.' }]);
+      if (!askRes.ok) {
+        throw new Error(`An error occurred: ${askRes.statusText}`);
       }
+
+      const reader = askRes.body?.getReader();
+      if (!reader) {
+        throw new Error('Reader not available');
+      }
+
+      const decoder = new TextDecoder('utf-8');
+      let done = false;
+
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true });
+          currentResponseRef.current += chunk;
+
+          // Update the response state incrementally
+          newResponses[lastIndex].response = currentResponseRef.current;
+          setResponses([...newResponses]);
+        }
+      }
+
+      console.log('Final response content:', currentResponseRef.current);
     } catch (error) {
-      console.error('Error submitting question:', error);
-      setQaList([...qaList, { question, response: 'Failed to submit the question.' }]);
+      console.error('Error querying assistant:', error);
+      setError('Failed to get a response from the assistant.');
     } finally {
       setLoading(false);
+      setQuestion(''); // Clear the question input after submission
+      currentResponseRef.current = ''; // Reset the ref for the next question
     }
-    setQuestion('');
   };
-  if (loading) {
-    return <ClipLoader color="#0000ff" loading={loading} size={150} />;
-}
-return (
-  <div className="flex flex-col h-full">
-    <div className="flex-grow overflow-y-auto">
-      {qaList.map((qa, index) => (
-        <div key={index} className="mb-4">
-          <p className="font-bold">Question: {qa.question}</p>
-          <div dangerouslySetInnerHTML={{ __html: qa.response }} />
-        </div>
-      ))}
+  
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex-grow overflow-y-auto">
+        {responses.map((qa, index) => (
+          <div key={index} className="mb-4">
+            <p className="font-bold">Question: {qa.question}</p>
+            <div dangerouslySetInnerHTML={{ __html: qa.response.replace(/\n/g, '<br />') }} />
+          </div>
+        ))}
+      </div>
+      <form onSubmit={handleQuestionSubmit} className="flex-none flex">
+        <input
+          className="flex-grow rounded-md border-0 py-2.5 pl-7 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-2xl 2xl:leading-6"
+          type="text"
+          name="question"
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          placeholder="Ask your question"
+        />
+        <button className="p-3 m-1 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">
+          Ask
+        </button>
+      </form>
+      {loading && <ClipLoader color="#0000ff" loading={loading} size={150} />}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
-    <form onSubmit={handleQuestionSubmit} className="flex-none flex">
-      <input
-        className="flex-grow rounded-md border-0 py-2.5 pl-7 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-2xl 2xl:leading-6"
-        type="text"
-        name="question"
-        value={question}
-        onChange={(e) => setQuestion(e.target.value)}
-        placeholder="Ask your question"
-      />
-      <button className="p-3 m-1 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">Ask</button>
-    </form>
-  </div>
-);
+  );
 };
 
 LBAmbassadeur.displayName = 'LBAmbassadeur';
