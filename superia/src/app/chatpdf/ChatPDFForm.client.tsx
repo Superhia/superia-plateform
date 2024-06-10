@@ -140,7 +140,17 @@ const YoutubeDataForm = () => {
           <div dangerouslySetInnerHTML={{ __html: youtubeData.replace(/\n/g, '<br />') }} />
         </div>
       )}
-
+{responses.length > 0 && (
+        <div>
+          <h2 className='font-bold text-2xl my-5'>Réponses:</h2>
+          {responses.map((item, index) => (
+            <div key={index}>
+              <h3 className='font-bold'>Question: {item.question}</h3>
+              <div dangerouslySetInnerHTML={{ __html: item.response.replace(/\n/g, '<br />') }} />
+            </div>
+          ))}
+        </div>
+      )}
       {assistantId && (
         <form onSubmit={handleAsk} className="ask-form">
           <label htmlFor="question">Question:</label>
@@ -156,18 +166,6 @@ const YoutubeDataForm = () => {
             {loading ? 'Processing...' : 'Pose ta question'}
           </button>
         </form>
-      )}
-
-      {responses.length > 0 && (
-        <div>
-          <h2 className='font-bold text-2xl my-5'>Réponses:</h2>
-          {responses.map((item, index) => (
-            <div key={index}>
-              <h3 className='font-bold'>Question: {item.question}</h3>
-              <div dangerouslySetInnerHTML={{ __html: item.response.replace(/\n/g, '<br />') }} />
-            </div>
-          ))}
-        </div>
       )}
     </div>
   );
