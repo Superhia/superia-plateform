@@ -10,7 +10,7 @@ import GeneraliForm  from './GeneraliForm.client';
 
 export default function Scrapping() {
   return (
-    <main className="flex min-h-screen flex-col items-left p-14 bg-white">
+    <main className="flex text-black min-h-screen flex-col items-left p-14 bg-white">
       <Link href={"/"}>
       <img src="LaSuperAgence.png" alt="icon" className="h-8" />
       </Link>

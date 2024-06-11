@@ -5,7 +5,7 @@ import ThreeTextBackground from '../app/components/ThreeTextBackground';
 export default function Home() {
   return (
     
-    <main className="flex min-h-screen flex-col h-screen items-left p-14 bg-white">
+    <main className="flex text-black min-h-screen flex-col h-screen items-left p-14 bg-white">
       <Link href={"/"}>
       <img src="LaSuperAgence.png" alt="icon" className="h-8" />
       </Link>
