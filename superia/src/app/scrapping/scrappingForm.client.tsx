@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
 
-const socket = io('https://superia.northeurope.cloudapp.azure.com', {
-    transports: ['websocket', 'polling'] });
+const socket = io('http://superia.northeurope.cloudapp.azure.com:8000', {
+    transports: ['websocket','polling'] });
 
 interface ProgressData {
     progress: number;
@@ -21,6 +21,9 @@ const ScrappingForm: React.FC = () => {
     const [currentUrl, setCurrentUrl] = useState('');
 
     useEffect(() => {
+        socket.on('connect', () => {
+            console.log('Connected to Socket.IO server');
+        });
         socket.on('update_progress', (data: ProgressData) => {
             setProgress(data.progress);
             setStatus(data.status);
@@ -36,6 +39,9 @@ const ScrappingForm: React.FC = () => {
         socket.on('crawling_complete', (data: string) => {
             setResponse(data);
             setLoading(false);
+        });
+        socket.on('disconnect', () => {
+            console.log('Disconnected from Socket.IO server');
         });
 
         return () => {
@@ -132,7 +138,7 @@ const ScrappingForm: React.FC = () => {
                     <ClipLoader color="#0000ff" loading={loading} size={50} />
                 </div>
             )}
-            {!response && (
+            {loading && !response && (
                 <>
                     <div className="mb-4">
                         <div>Status: {status}</div>
