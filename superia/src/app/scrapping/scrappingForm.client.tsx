@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
 
-const socket = io('http://superia.northeurope.cloudapp.azure.com:8000', {
+const socket = io('wss://superia.northeurope.cloudapp.azure.com:8000', {
     transports: ['websocket','polling'] });
 
 interface ProgressData {
