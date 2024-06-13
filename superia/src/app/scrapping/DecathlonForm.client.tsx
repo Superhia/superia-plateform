@@ -21,14 +21,13 @@ const OrangeForm: React.FC = () => {
     const [status, setStatus] = useState('');
     const [log, setLog] = useState<string[]>([]);
     const [currentUrl, setCurrentUrl] = useState('');
-    const [isStreaming, setIsStreaming] = useState(false);
 
     useEffect(() => {
         socket.on('connect', () => {
             console.log('Connected to Socket.IO server');
         });
+
         socket.on('update_progress', (data: ProgressData) => {
-            if (isStreaming) return; // Ignore progress updates when streaming response starts
             console.log('Received progress update:', data);
             setProgress(data.progress);
             setStatus(data.status);
@@ -54,7 +53,7 @@ const OrangeForm: React.FC = () => {
             socket.off('update_progress');
             socket.off('crawling_complete');
         };
-    }, [isStreaming]);
+    }, []);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -63,7 +62,7 @@ const OrangeForm: React.FC = () => {
         setProgress(0);
         setStatus('');
         setLog([]);
-        setIsStreaming(false); // Reset streaming state
+        const form = event.currentTarget;
 
         try {
             const res = await fetch("https://superia.northeurope.cloudapp.azure.com/process_msg", {
@@ -78,7 +77,6 @@ const OrangeForm: React.FC = () => {
                 throw new Error('ReadableStream not yet supported in this browser.');
             }
 
-            setIsStreaming(true); // Start streaming response
             const reader = res.body.getReader();
             const decoder = new TextDecoder();
             let done = false;
@@ -126,11 +124,13 @@ const OrangeForm: React.FC = () => {
                     <img src="Decathlon_Logo.png" alt="logo orange" className="h-8 w-24 mx-auto" />https://recrutement.decathlon.fr
                 </button>
             </form>
-            {loading && !isStreaming && (
+            {loading && (
+                <div className="flex flex-col items-center">
+                    <ClipLoader color="#0000ff" loading={loading} size={50} />
+                </div>
+            )}
+            {loading && !response && (
                 <>
-                    <div className="flex flex-col items-center">
-                        <ClipLoader color="#0000ff" loading={loading} size={50} />
-                    </div>
                     <div className="mb-4">
                         <div>Status: {status}</div>
                         <div>Currently Crawling: {currentUrl}</div>
@@ -155,4 +155,5 @@ const OrangeForm: React.FC = () => {
 };
 
 export default OrangeForm;
+
 
