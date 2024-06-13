@@ -120,9 +120,11 @@ const OrangeForm: React.FC = () => {
     return (
         <div className='rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 m-5'>
             <form onSubmit={handleSubmit}>
+            <div className="flex justify-center">
                 <button className="p-5 px-28 m-5">
                     <img src="Decathlon_Logo.png" alt="logo orange" className="h-8 w-24 mx-auto" />https://recrutement.decathlon.fr
                 </button>
+                </div>
             </form>
             {loading && (
                 <div className="flex flex-col items-center">

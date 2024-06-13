@@ -68,9 +68,11 @@ export default function OrangeForm() {
     return (
         <div className='rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 m-5'>
             <form onSubmit={handleSubmit}>
+            <div className="flex justify-center">
                 <button className="p-5 px-28 m-5">
                     <img src="generali-logo.svg" alt="logo orange" className="h-8 w-14 mx-auto" />https://carrieres.generali.fr/
                 </button>
+                </div>
             </form>
             {loading && <ClipLoader color="#0000ff" loading={loading} size={150} />}
             {renderResponse(response)}

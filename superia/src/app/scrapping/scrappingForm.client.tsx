@@ -127,12 +127,14 @@ const ScrappingForm: React.FC = () => {
                 type="text"
                 required
             />
+            <div className="flex justify-center">
             <button
                 type="submit"
-                className="p-3 m-1 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
+                className="p-3 mx-auto rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
             >
                 Lancer l’analyse !
             </button>
+            </div>
             {loading && (
                 <div className="flex flex-col items-center">
                     <ClipLoader color="#0000ff" loading={loading} size={50} />
