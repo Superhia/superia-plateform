@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
 
 const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
-    transports: ['websocket','polling']
+    transports: ['websocket', 'polling']
 });
 
 interface ProgressData {
@@ -21,15 +21,18 @@ const OrangeForm: React.FC = () => {
     const [status, setStatus] = useState('');
     const [log, setLog] = useState<string[]>([]);
     const [currentUrl, setCurrentUrl] = useState('');
+    const [isStreaming, setIsStreaming] = useState(false);
 
     useEffect(() => {
         socket.on('connect', () => {
             console.log('Connected to Socket.IO server');
         });
         socket.on('update_progress', (data: ProgressData) => {
+            if (isStreaming) return; // Ignore progress updates when streaming response starts
+            console.log('Received progress update:', data);
             setProgress(data.progress);
             setStatus(data.status);
-            if (data.log) {
+            if (data.log !== undefined) {
                 setLog((prevLog) => [...prevLog, data.log!]);
                 setCurrentUrl(data.log); // Update the current URL being crawled
             }
@@ -42,6 +45,7 @@ const OrangeForm: React.FC = () => {
             setResponse(data);
             setLoading(false);
         });
+
         socket.on('disconnect', () => {
             console.log('Disconnected from Socket.IO server');
         });
@@ -50,7 +54,7 @@ const OrangeForm: React.FC = () => {
             socket.off('update_progress');
             socket.off('crawling_complete');
         };
-    }, []);
+    }, [isStreaming]);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -59,7 +63,7 @@ const OrangeForm: React.FC = () => {
         setProgress(0);
         setStatus('');
         setLog([]);
-        const form = event.currentTarget;
+        setIsStreaming(false); // Reset streaming state
 
         try {
             const res = await fetch("https://superia.northeurope.cloudapp.azure.com/process_msg", {
@@ -74,6 +78,7 @@ const OrangeForm: React.FC = () => {
                 throw new Error('ReadableStream not yet supported in this browser.');
             }
 
+            setIsStreaming(true); // Start streaming response
             const reader = res.body.getReader();
             const decoder = new TextDecoder();
             let done = false;
@@ -83,13 +88,13 @@ const OrangeForm: React.FC = () => {
                 done = readerDone;
                 const chunk = decoder.decode(value, { stream: true });
                 setResponse((prev) => (prev ? prev + chunk : chunk));
-                setLoading(false);
             }
 
         } catch (error) {
             console.error('Failed to submit:', error);
-            setLoading(false);
             setStatus('Failed to submit');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -121,7 +126,7 @@ const OrangeForm: React.FC = () => {
                     <img src="Decathlon_Logo.png" alt="logo orange" className="h-8 w-24 mx-auto" />https://recrutement.decathlon.fr
                 </button>
             </form>
-            {loading && (
+            {loading && !isStreaming && (
                 <>
                     <div className="flex flex-col items-center">
                         <ClipLoader color="#0000ff" loading={loading} size={50} />
@@ -150,3 +155,4 @@ const OrangeForm: React.FC = () => {
 };
 
 export default OrangeForm;
+
