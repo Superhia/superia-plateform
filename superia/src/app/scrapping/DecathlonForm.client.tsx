@@ -86,6 +86,7 @@ const OrangeForm: React.FC = () => {
                 done = readerDone;
                 const chunk = decoder.decode(value, { stream: true });
                 setResponse((prev) => (prev ? prev + chunk : chunk));
+                setLoading(false);
             }
 
         } catch (error) {
