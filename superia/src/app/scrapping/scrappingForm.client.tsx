@@ -62,7 +62,7 @@ const ScrappingForm: React.FC = () => {
         const domain = formData.get('question');
 
         try {
-            const res = await fetch("http://127.0.0.1:8000/process_msg", {
+            const res = await fetch("https://superia.northeurope.cloudapp.azure.com/process_msg", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
