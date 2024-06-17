@@ -131,6 +131,7 @@ const ScrappingForm: React.FC = () => {
             <button
                 type="submit"
                 className="p-3 mx-auto rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
+                disabled={loading}
             >
                 Lancer l’analyse !
             </button>

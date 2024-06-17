@@ -7,6 +7,7 @@ import OrangeForm  from './OrangeForm.client';
 import LaPosteForm  from './LaPosteForm.client';
 import DecathlonForm  from './DecathlonForm.client';
 import GeneraliForm  from './GeneraliForm.client';
+import Chatbot from '../chatbot/ChatbotForm.client';
 
 export default function Scrapping() {
   return (
@@ -29,9 +30,10 @@ export default function Scrapping() {
       <h4>Testez notre outil avec un des sites déjà analysé</h4>
       <div className="mx-auto text-sm grid grid-cols-6 gap-4">
         <div className="col-start-1 col-end-3"><BPIFranceForm/> <LaPosteForm/></div> <div className="col-start-3 col-end-5"><AXAForm/> <DecathlonForm/></div> <div className="col-start-5 col-end-7"><OrangeForm/> <GeneraliForm/></div>
-         
-  
     </div>
+   <div className="mx-auto text-2xl">
+   <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0  text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8"><Link href={"chatbot"}>Pose tes questions à ton site web</Link></button>
+   </div>
     </main>
   );
 }

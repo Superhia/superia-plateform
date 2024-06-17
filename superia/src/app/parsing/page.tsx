@@ -10,6 +10,7 @@ import FileUploadComponent from './UploadComponent.client';
 export default function Parsing() {
   const [response, setResponse] = useState<string>('');
   const [activeButton, setActiveButton] = useState<string | null>(null);
+  const [fileUploadClicked, setFileUploadClicked] = useState<boolean>(false);
 
   const handleResponse = (res: string) => {
     setResponse(res);
@@ -34,8 +35,12 @@ export default function Parsing() {
     setActiveButton(buttonName);
   };
 
+  const handleFileUploadClick = () => {
+    setFileUploadClicked(true);
+  };
+
   return (
-    <main className="flex text-black min-h-screen flex-col p-14 bg-white">
+    <main className="flex flex-col text-black min-h-screen p-14 bg-white">
       <Link href="/">
         <img src="LaSuperAgence.png" alt="icon" className="h-8" />
       </Link>
@@ -48,30 +53,37 @@ export default function Parsing() {
       </nav>
       <h1 className="text-4xl font-semibold text-center py-7">Pose des questions à ton Fichier</h1>
       <p className="text-center mx-32 px-32">Superia simplifie la gestion documentaire grâce à son outil de parsing intelligent, capable de traiter et d’organiser efficacement tous types de documents, vous permettant de gagner du temps et d’améliorer votre efficacité opérationnelle.</p>
-      <div className="items-center mx-auto py-14">
+      <div className="flex justify-center py-14" onClick={handleFileUploadClick}>
         <FileUploadComponent />
       </div>
-      <h4 className="text-center">Testez notre outil avec un des PDF déjà chargé</h4>
-      <div className="flex justify-center space-x-8 py-14">
-        {activeButton === null && (
-          <>
-            <div onClick={() => handleButtonClick('Ebook')} className="cursor-pointer">
-              <Ebook />
-            </div>
-            <div onClick={() => handleButtonClick('LBAmbassadeur')} className="cursor-pointer">
-              <LBAmbassadeur />
-            </div>
-            <div onClick={() => handleButtonClick('LBMarketing')} className="cursor-pointer">
-              <LBMarketing />
-            </div>
-            <div onClick={() => handleButtonClick('LSiteCarriere')} className="cursor-pointer">
-              <LSiteCarriere />
-            </div>
-          </>
-        )}
-        {renderComponent()}
-      </div>
+      {!fileUploadClicked && (
+        <>
+          <h4 className="text-center">Testez notre outil avec un des PDF déjà chargé</h4>
+          <div className="flex justify-center space-x-8 py-14">
+            {activeButton === null ? (
+              <>
+                <div onClick={() => handleButtonClick('Ebook')} className="cursor-pointer">
+                  <Ebook />
+                </div>
+                <div onClick={() => handleButtonClick('LBAmbassadeur')} className="cursor-pointer">
+                  <LBAmbassadeur />
+                </div>
+                <div onClick={() => handleButtonClick('LBMarketing')} className="cursor-pointer">
+                  <LBMarketing />
+                </div>
+                <div onClick={() => handleButtonClick('LSiteCarriere')} className="cursor-pointer">
+                  <LSiteCarriere />
+                </div>
+              </>
+            ) : (
+              renderComponent()
+            )}
+          </div>
+        </>
+      )}
     </main>
   );
 }
+
+
 

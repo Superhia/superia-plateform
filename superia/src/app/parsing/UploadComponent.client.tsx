@@ -97,7 +97,7 @@ const FileUploadComponent = () => {
   }
 
   return (
-    <div>
+    <div className='bg-white'>
       <form onSubmit={handleSubmit}>
         <div
           className={`border-2 border-dashed rounded-md p-6 text-center ${dragActive ? 'border-blue-500' : 'border-gray-300'}`}
@@ -218,7 +218,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) =>
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="bg-white flex flex-col h-full">
       <div className="flex-grow overflow-y-auto">
         {responses.map((qa, index) => (
           <div key={index} className="mb-4">
@@ -227,6 +227,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) =>
           </div>
         ))}
       </div>
+      {loading && <ClipLoader color="#0000ff" loading={loading} size={150} />}
       <form onSubmit={handleQuestionSubmit} className="flex-none flex">
         <input
           className="flex-grow rounded-md border-0 py-2.5 pl-7 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-2xl 2xl:leading-6"
@@ -240,7 +241,6 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) =>
           Ask
         </button>
       </form>
-      {loading && <ClipLoader color="#0000ff" loading={loading} size={150} />}
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
