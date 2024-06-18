@@ -1,33 +1,52 @@
 // components/EbookComponent.client.js
 'use client';
 
-import React, { useState,FC, useRef, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, FC, useRef, useImperativeHandle, forwardRef } from 'react';
 import { ClipLoader } from 'react-spinners';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import { Document, Page, StyleSheet, PDFDownloadLink } from '@react-pdf/renderer';
+import { Text, View } from '@react-pdf/renderer';
 
-// Set up PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Define your PDF document structure
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: 'row',
+    backgroundColor: '#E4E4E4',
+    padding: 20,
+  },
+  section: {
+    margin: 10,
+    padding: 10,
+    flexGrow: 1,
+  },
+});
+
+const MyDocument = ({ fileUrl }: { fileUrl: string }) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <View style={styles.section}>
+        <Text>Here is your PDF document</Text>
+      </View>
+    </Page>
+  </Document>
+);
 
 export interface FileUploadComponentRef {
   handleSubmit: (question: string) => void;
 }
 
-const LBMarketing = forwardRef<FileUploadComponentRef>((props, ref) => {
+const Ebook = forwardRef<FileUploadComponentRef>((props, ref) => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [assistantId, setAssistantId] = useState('');
   const [uploadStatus, setUploadStatus] = useState<string>('');
-  const [responseMessage, setResponseMessage] = useState<string>('');
   const [showPdf, setShowPdf] = useState<boolean>(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [numPages, setNumPages] = useState<number | null>(null);
 
   const fetchPDFAndSetFile = async () => {
     try {
-      const response = await fetch('/livre_blanc_inbound_marketing_recruteurs_campagne_1.compressed.pdf');
+      const response = await fetch('/ebookExperienceCandidat_nosummary.pdf');
       const blob = await response.blob();
-      const file = new File([blob], 'livre_blanc_inbound_marketing_recruteurs_campagne_1.compressed.pdf', { type: 'application/pdf' });
+      const file = new File([blob], 'ebookExperienceCandidat_nosummary.pdf', { type: 'application/pdf' });
       setFile(file);
       setPdfUrl(URL.createObjectURL(file));
       return file;
@@ -73,9 +92,6 @@ const LBMarketing = forwardRef<FileUploadComponentRef>((props, ref) => {
   useImperativeHandle(ref, () => ({
     handleSubmit,
   }));
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
-  };
 
   if (loading) {
     return <ClipLoader color="#0000ff" loading={loading} size={150} />;
@@ -87,21 +103,16 @@ const LBMarketing = forwardRef<FileUploadComponentRef>((props, ref) => {
         className="p-5 pl-20 pr-20 m-5 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
         onClick={handleSubmit}
       >
-        <img src="LBMarketing.png" alt="Livre Blanc Marketing" className="h-32 w-24 mx-auto" />
-        Livre Blanc Marketing
+        <img src="Ebook.png" alt="Ebook Experience Candidat" className="h-32 w-24 mx-auto" />
+        Ebook Experience Candidat
       </button>
       {uploadStatus && <p>{uploadStatus}</p>}
       {showPdf && assistantId && pdfUrl && (
         <div className="grid grid-cols-2 gap-4 h-screen">
-          <div className='height-full overflow-auto border-black'>
-            <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
-              {Array.from(
-                new Array(numPages),
-                (el, index) => (
-                  <Page key={`page_${index + 1}`} pageNumber={index + 1} />
-                ),
-              )}
-            </Document>
+          <div className="height-full overflow-auto border-black">
+            <PDFDownloadLink document={<MyDocument fileUrl={pdfUrl} />} fileName="ebook.pdf">
+              {({ loading }) => (loading ? 'Loading document...' : 'Download PDF')}
+            </PDFDownloadLink>
           </div>
           <div className="flex flex-col justify-between p-5">
             <AskQuestionComponent assistantId={assistantId} />
@@ -183,7 +194,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) =>
       currentResponseRef.current = ''; // Reset the ref for the next question
     }
   };
-  
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex-grow overflow-y-auto">
@@ -212,6 +223,5 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) =>
     </div>
   );
 };
-LBMarketing.displayName = 'LBMarketing';
-export default LBMarketing;
-
+Ebook.displayName = 'Ebook';
+export default Ebook;

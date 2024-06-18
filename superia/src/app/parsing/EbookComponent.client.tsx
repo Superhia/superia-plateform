@@ -1,12 +1,34 @@
 'use client';
 
-import React, { useState,FC,useRef, useImperativeHandle, forwardRef } from 'react';
+import React, { useState, FC, useRef, useImperativeHandle, forwardRef } from 'react';
 import { ClipLoader } from 'react-spinners';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import { Page, Text, View, Document, StyleSheet, PDFViewer } from '@react-pdf/renderer';
 
-// Set up PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: 'column',
+    backgroundColor: '#E4E4E4',
+    padding: 20,
+  },
+  section: {
+    margin: 10,
+    padding: 10,
+    flexGrow: 1,
+  },
+});
+
+const MyDocument = () => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <View style={styles.section}>
+        <Text>Section #1</Text>
+      </View>
+      <View style={styles.section}>
+        <Text>Section #2</Text>
+      </View>
+    </Page>
+  </Document>
+);
 
 export interface FileUploadComponentRef {
   handleSubmit: (question: string) => void;
@@ -17,19 +39,15 @@ const Ebook = forwardRef<FileUploadComponentRef>((props, ref) => {
   const [loading, setLoading] = useState(false);
   const [assistantId, setAssistantId] = useState('');
   const [uploadStatus, setUploadStatus] = useState<string>('');
-  const [responseMessage, setResponseMessage] = useState<string>('');
   const [showPdf, setShowPdf] = useState<boolean>(false);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [numPages, setNumPages] = useState<number | null>(null);
+  const [fileBlob, setFileBlob] = useState<Blob | null>(null);
 
   const fetchPDFAndSetFile = async () => {
     try {
       const response = await fetch('/ebookExperienceCandidat_nosummary.pdf');
       const blob = await response.blob();
-      const file = new File([blob], 'ebookExperienceCandidat_nosummary.pdf', { type: 'application/pdf' });
-      setFile(file);
-      setPdfUrl(URL.createObjectURL(file));
-      return file;
+      setFileBlob(blob);
+      return blob;
     } catch (error) {
       console.error('Error fetching the file:', error);
       alert('Failed to fetch the file.');
@@ -38,14 +56,14 @@ const Ebook = forwardRef<FileUploadComponentRef>((props, ref) => {
 
   const handleSubmit = async () => {
     setLoading(true);
-    const file = await fetchPDFAndSetFile();
-    if (!file) {
+    const fileBlob = await fetchPDFAndSetFile();
+    if (!fileBlob) {
       setLoading(false);
       return;
     }
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', new File([fileBlob], 'ebookExperienceCandidat_nosummary.pdf', { type: 'application/pdf' }));
 
     try {
       const response = await fetch('https://superia.northeurope.cloudapp.azure.com/chatdoc', {
@@ -72,9 +90,6 @@ const Ebook = forwardRef<FileUploadComponentRef>((props, ref) => {
   useImperativeHandle(ref, () => ({
     handleSubmit,
   }));
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
-  };
 
   if (loading) {
     return <ClipLoader color="#0000ff" loading={loading} size={150} />;
@@ -90,17 +105,12 @@ const Ebook = forwardRef<FileUploadComponentRef>((props, ref) => {
         Ebook Experience Candidat
       </button>
       {uploadStatus && <p>{uploadStatus}</p>}
-      {showPdf && assistantId && pdfUrl && (
+      {showPdf && assistantId && fileBlob && (
         <div className="grid grid-cols-2 gap-4 h-screen">
-          <div className='height-full overflow-auto border-black'>
-            <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
-              {Array.from(
-                new Array(numPages),
-                (el, index) => (
-                  <Page key={`page_${index + 1}`} pageNumber={index + 1} />
-                ),
-              )}
-            </Document>
+          <div className="height-full overflow-auto border-black">
+            <PDFViewer style={{ width: '100%', height: '100%' }}>
+              <MyDocument />
+            </PDFViewer>
           </div>
           <div className="flex flex-col justify-between p-5">
             <AskQuestionComponent assistantId={assistantId} />
@@ -182,7 +192,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) =>
       currentResponseRef.current = ''; // Reset the ref for the next question
     }
   };
-  
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex-grow overflow-y-auto">
@@ -213,4 +223,3 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) =>
 };
 Ebook.displayName = 'Ebook';
 export default Ebook;
-

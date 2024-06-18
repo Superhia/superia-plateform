@@ -1,11 +1,8 @@
 'use client';
-import React, { useState,FC, useRef } from 'react';
+import React, { useState, FC, useRef } from 'react';
 import { ClipLoader } from 'react-spinners';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-
-// Set up PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import MyDocument from './MyDocument.client';
 
 interface QAResponse {
   question: string;
@@ -21,7 +18,6 @@ const FileUploadComponent = () => {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [showPdf, setShowPdf] = useState<boolean>(false);
-  const [numPages, setNumPages] = useState<number | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -88,10 +84,6 @@ const FileUploadComponent = () => {
     }
   };
 
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
-  };
-
   if (loading) {
     return <ClipLoader color="#0000ff" loading={loading} size={150} />;
   }
@@ -126,7 +118,7 @@ const FileUploadComponent = () => {
         </button>
       </form>
       {uploadStatus && <p>{uploadStatus}</p>}
-      {showPdf && assistantId && pdfUrl && (
+      {showPdf && assistantId && (
         <div className="grid grid-cols-2 gap-4 h-screen">
           <div
             style={{
@@ -135,11 +127,11 @@ const FileUploadComponent = () => {
               overflow: 'auto',
             }}
           >
-            <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
-              {Array.from(new Array(numPages), (el, index) => (
-                <Page key={`page_${index + 1}`} pageNumber={index + 1} />
-              ))}
-            </Document>
+            <PDFDownloadLink document={<MyDocument />} fileName="example.pdf">
+              {({ blob, url, loading, error }) =>
+                loading ? 'Loading document...' : 'Download PDF'
+              }
+            </PDFDownloadLink>
           </div>
           <div className="flex flex-col justify-between p-5">
             <AskQuestionComponent assistantId={assistantId} />
