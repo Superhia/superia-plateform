@@ -19,7 +19,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
 
     const fetchPDFAndSetFile = async () => {
         try {
-            const response = await fetch('/ebookExperienceCandidat_nosummary.pdf');
+            const response = await fetch('/livre_blanc_inbound_marketing_recruteurs_campagne_1.compressed.pdf');
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
             setFileUrl(url);
@@ -39,7 +39,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
         }
 
         const formData = new FormData();
-        formData.append('file', new File([fileUrl], 'ebookExperienceCandidat_nosummary.pdf', { type: 'application/pdf' }));
+        formData.append('file', new File([fileUrl], 'livre_blanc_inbound_marketing_recruteurs_campagne_1.compressed.pdf', { type: 'application/pdf' }));
 
         try {
             const response = await fetch('https://superia.northeurope.cloudapp.azure.com/chatdoc', {
@@ -77,8 +77,8 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
                 className="p-5 pl-20 pr-20 m-5 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
                 onClick={handleSubmit}
             >
-                <img src="Ebook.png" alt="Ebook Experience Candidat" className="h-32 w-24 mx-auto" />
-                Ebook Experience Candidat
+                <img src="LBMarketing.png" alt="Livre Blanc Marketing" className="h-32 w-24 mx-auto" />
+                Livre Blanc Marketing
             </button>
             {uploadStatus && <p>{uploadStatus}</p>}
             {showPdf && assistantId && fileUrl && (
