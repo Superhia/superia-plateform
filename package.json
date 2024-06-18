@@ -1,9 +1,31 @@
 {
+  "name": "superia",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
     "@react-three/drei": "^9.105.6",
     "@react-three/fiber": "^8.16.6",
     "three": "^0.164.1",
     "socket.io-client": "^4.0.0",
-    "ws": "^8.0.0"
+    "ws": "^8.0.0",
+    "next": "^13.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "next-auth": "^4.0.0",
+    "pg": "^8.0.0",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.2.4"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --ext js,jsx,ts,tsx"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
