@@ -1,13 +1,39 @@
 'use client';
+
 import React, { useState, FC, useRef } from 'react';
 import { ClipLoader } from 'react-spinners';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import MyDocument from './MyDocument.client';
+import { PDFViewer, PDFDownloadLink, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 
 interface QAResponse {
   question: string;
   response: string;
 }
+
+const styles = StyleSheet.create({
+  page: {
+    flexDirection: 'column',
+    backgroundColor: '#E4E4E4',
+    padding: 20,
+  },
+  section: {
+    margin: 10,
+    padding: 10,
+    flexGrow: 1,
+  },
+});
+
+const MyDocument = () => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <View style={styles.section}>
+        <Text>Section #1</Text>
+      </View>
+      <View style={styles.section}>
+        <Text>Section #2</Text>
+      </View>
+    </Page>
+  </Document>
+);
 
 const FileUploadComponent = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -15,14 +41,12 @@ const FileUploadComponent = () => {
   const [uploadStatus, setUploadStatus] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [showPdf, setShowPdf] = useState<boolean>(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       setFile(event.target.files[0]); // Capture the file from the input
-      setPdfUrl(URL.createObjectURL(event.target.files[0]));
     }
   };
 
@@ -44,7 +68,6 @@ const FileUploadComponent = () => {
     setDragActive(false);
     if (event.dataTransfer.files && event.dataTransfer.files[0]) {
       setFile(event.dataTransfer.files[0]);
-      setPdfUrl(URL.createObjectURL(event.dataTransfer.files[0]));
     }
   };
 
@@ -127,6 +150,9 @@ const FileUploadComponent = () => {
               overflow: 'auto',
             }}
           >
+            <PDFViewer style={{ width: '100%', height: '100%' }}>
+              <MyDocument />
+            </PDFViewer>
             <PDFDownloadLink document={<MyDocument />} fileName="example.pdf">
               {({ blob, url, loading, error }) =>
                 loading ? 'Loading document...' : 'Download PDF'
