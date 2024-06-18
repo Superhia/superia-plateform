@@ -1,4 +1,4 @@
-import '../polyfills';
+import './polyfills';
 import { SessionProvider } from 'next-auth/react';
 import { AppProps } from 'next/app';
 
