@@ -8,9 +8,9 @@
     "three": "^0.164.1",
     "socket.io-client": "^4.0.0",
     "ws": "^8.0.0",
-    "next": "^13.0.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
     "next-auth": "^4.0.0",
     "pg": "^8.0.0",
     "bcryptjs": "^2.4.3"
@@ -29,3 +29,4 @@
     "node": ">=14.0.0"
   }
 }
+
