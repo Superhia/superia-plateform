@@ -7,7 +7,6 @@ import OrangeForm  from './OrangeForm.client';
 import LaPosteForm  from './LaPosteForm.client';
 import DecathlonForm  from './DecathlonForm.client';
 import GeneraliForm  from './GeneraliForm.client';
-import Chatbot from '../chatbot/ChatbotForm.client';
 
 export default function Scrapping() {
   return (

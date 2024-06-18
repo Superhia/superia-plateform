@@ -5,7 +5,7 @@ import Chatbot from './ChatbotForm.client';
 export default function Home() {
   return (
     
-    <main className="flex text-black min-h-screen flex-col h-screen items-left p-14 bg-white">
+    <main className="flex text-black min-h-screen flex-col items-left p-14 bg-white">
       <Link href={"/"}>
       <img src="LaSuperAgence.png" alt="icon" className="h-8" />
       </Link>
@@ -18,7 +18,7 @@ export default function Home() {
 		</nav>
     <h1 className="text-4xl font-semibold text-center py-7">Pose tes questions à ton site web</h1>
     <p className="text-center py-2.5 mx-32 px-32">La première application qui utiliser lIA générative pour lanalyse de marque employeur. Grâce à Superia, vous pouvez désormais exploiter pleinement le potentiel de votre site carrière, en analysant et optimisant leur contenu pour attirer les meilleurs talents.</p>
-    <div className="mx-auto py-14"><Chatbot/></div>
+    <div className="mx-auto py-14 bg-white"><Chatbot/></div>
     </main>
     
   );

@@ -4,7 +4,9 @@ import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
 
 const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
-    transports: ['websocket','polling'] });
+    path: '/socket.io',
+    transports: ['websocket', 'polling']
+});
 
 interface ProgressData {
     progress: number;
@@ -13,7 +15,7 @@ interface ProgressData {
 }
 
 const ScrappingForm: React.FC = () => {
-    const [response, setResponse] = useState<string| null>(null);
+    const [response, setResponse] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [status, setStatus] = useState('');
@@ -24,7 +26,9 @@ const ScrappingForm: React.FC = () => {
         socket.on('connect', () => {
             console.log('Connected to Socket.IO server');
         });
+
         socket.on('update_progress', (data: ProgressData) => {
+            console.log('Progress update received', data); // Debug log
             setProgress(data.progress);
             setStatus(data.status);
             if (data.log) {
@@ -40,6 +44,7 @@ const ScrappingForm: React.FC = () => {
             setResponse(data);
             setLoading(false);
         });
+
         socket.on('disconnect', () => {
             console.log('Disconnected from Socket.IO server');
         });
@@ -128,13 +133,13 @@ const ScrappingForm: React.FC = () => {
                 required
             />
             <div className="flex justify-center">
-            <button
-                type="submit"
-                className="p-3 mx-auto rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
-                disabled={loading}
-            >
-                Lancer l’analyse !
-            </button>
+                <button
+                    type="submit"
+                    className="p-3 mx-auto rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
+                    disabled={loading}
+                >
+                    Lancer l’analyse !
+                </button>
             </div>
             {loading && (
                 <div className="flex flex-col items-center">
@@ -167,5 +172,6 @@ const ScrappingForm: React.FC = () => {
 };
 
 export default ScrappingForm;
+
 
 

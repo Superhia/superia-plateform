@@ -116,6 +116,17 @@ const ChatbotForm = () => {
       {loading && <ClipLoader color="#0000ff" loading={loading} size={150} />}
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
+      {responses.length > 0 && (
+        <div>
+          <h2 className='font-bold text-2xl my-5'>Réponses:</h2>
+          {responses.map((item, index) => (
+            <div key={index}>
+              <h3 className='font-bold'>Question: {item.question}</h3>
+              <div dangerouslySetInnerHTML={{ __html: item.response.replace(/\n/g, '<br />') }} />
+            </div>
+          ))}
+        </div>
+      )}
 
       {assistantId && (
         <form onSubmit={handleAsk} className="ask-form">
@@ -132,18 +143,6 @@ const ChatbotForm = () => {
             {loading ? 'Processing...' : 'Pose ta question'}
           </button>
         </form>
-      )}
-
-      {responses.length > 0 && (
-        <div>
-          <h2 className='font-bold text-2xl my-5'>Réponses:</h2>
-          {responses.map((item, index) => (
-            <div key={index}>
-              <h3 className='font-bold'>Question: {item.question}</h3>
-              <div dangerouslySetInnerHTML={{ __html: item.response.replace(/\n/g, '<br />') }} />
-            </div>
-          ))}
-        </div>
       )}
     </div>
   );

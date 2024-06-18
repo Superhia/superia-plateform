@@ -2,11 +2,11 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { Pool } from 'pg';
 
 const pool = new Pool({
-  user: 'dalvik',
-  host: 'localhost',
-  database: 'data_superia',
-  password: 'your_secure_password',
-  port: 5432,
+  user: process.env.DATABASE_USER,
+  host: process.env.DATABASE_HOST,
+  database: process.env.DATABASE_NAME,
+  password: process.env.DATABASE_PASSWORD,
+  port: parseInt(process.env.DATABASE_PORT || '5432', 10),
 });
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
