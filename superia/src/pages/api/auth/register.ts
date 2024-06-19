@@ -15,8 +15,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const client = await pool.connect();
     try {
       await client.query('INSERT INTO users (email, password) VALUES ($1, $2)', [email, password]);
-      res.redirect(302, '/login');
+      res.status(200).json({ message: 'User registered successfully' });
     } catch (error) {
+      console.error('Error registering user:', error);
       res.status(500).json({ message: 'Error registering user', error });
     } finally {
       client.release();
@@ -25,4 +26,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(405).json({ message: 'Method not allowed' });
   }
 };
+
 
