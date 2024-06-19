@@ -181,6 +181,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) =>
                     </div>
                 ))}
             </div>
+            {loading && <ClipLoader color="#0000ff" loading={loading} size={150} />}
             <form onSubmit={handleQuestionSubmit} className="flex-none flex">
                 <input
                     className="flex-grow rounded-md border-0 py-2.5 pl-7 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-2xl 2xl:leading-6"
@@ -194,7 +195,6 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) =>
                     Ask
                 </button>
             </form>
-            {loading && <ClipLoader color="#0000ff" loading={loading} size={150} />}
             {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
     );

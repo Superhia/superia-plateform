@@ -1,15 +1,17 @@
-'use client'
+'use client';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';  // Use next/navigation for new App Router
+import { useRouter } from 'next/navigation';
 import bcrypt from 'bcryptjs';
 
 const Register = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError('');  // Clear previous errors
     const hashedPassword = await bcrypt.hash(password, 10);
     const res = await fetch('/api/auth/register', {
       method: 'POST',
@@ -19,16 +21,19 @@ const Register = () => {
       body: JSON.stringify({ email, password: hashedPassword }),
     });
 
-    if (res && res.ok) {
+    if (res.ok) {
       router.push('/login');
     } else {
-      console.error('Registration failed', await res.text());
+      const result = await res.json();
+      setError(result.message);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className='container'
+    onSubmit={handleSubmit}>
       <input
+      className='block w-full mb-5 rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6'
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -36,16 +41,21 @@ const Register = () => {
         required
       />
       <input
+      className='block w-full mb-5 rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6'
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
         required
       />
-      <button type="submit">Register</button>
+      <button 
+      className='p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8'
+      type="submit">Register</button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </form>
   );
 };
 
 export default Register;
+
 
