@@ -41,14 +41,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       console.log('JWT_SECRET:', process.env.JWT_SECRET);  // Add this line to check if the secret is being accessed
 
       const token = sign({ userId: user.id }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
+        expiresIn: '24h',
       });
 
       res.setHeader('Set-Cookie', serialize('auth-token', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 3600,
+        maxAge: 86400,
         path: '/',
       }));
 

@@ -32,6 +32,23 @@ const UserList = () => {
     fetchUsers();
   }, []);
 
+  const handleDelete = async (id: number) => {
+    try {
+      const res = await fetch(`/api/users/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to delete user');
+      }
+
+      setUsers(users.filter(user => user.id !== id));
+    } catch (err) {
+      const error = err as Error;
+      setError(error.message);
+    }
+  };
+
   if (loading) {
     return <p>Loading users...</p>;
   }
@@ -42,11 +59,14 @@ const UserList = () => {
 
   return (
     <div>
-      <h2>Users List</h2>
+      <h2 className='text-2xl font-semibold py-5'>Users List</h2>
       <ul>
         {users.map((user) => (
           <li key={user.id}>
-            {user.email} (created at: {new Date(user.created_at).toLocaleString()})
+            {user.email} (créé le : {new Date(user.created_at).toLocaleString()})
+            <button 
+            className='px-2 m-1 rounded-md border-0 text-red-700 ring-1 ring-inset ring-red-300 text-xl 2xl:leading-8'
+            onClick={() => handleDelete(user.id)}>Delete</button>
           </li>
         ))}
       </ul>
@@ -55,4 +75,3 @@ const UserList = () => {
 };
 
 export default UserList;
-
