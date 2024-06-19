@@ -12,6 +12,10 @@ const pool = new Pool({
   port: parseInt(process.env.DATABASE_PORT || '5432', 10),
 });
 
+interface CustomError extends Error {
+  code?: string;
+}
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     const { email, password } = req.body;
@@ -30,7 +34,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         return res.status(401).json({ message: 'Invalid email or password' });
       }
 
-      const token = sign({ userId: user.id }, process.env.JWT_SECRET!, {
+      if (!process.env.JWT_SECRET) {
+        throw new Error('JWT_SECRET is not defined');
+      }
+
+      console.log('JWT_SECRET:', process.env.JWT_SECRET);  // Add this line to check if the secret is being accessed
+
+      const token = sign({ userId: user.id }, process.env.JWT_SECRET, {
         expiresIn: '1h',
       });
 
@@ -44,9 +54,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       console.log('Login successful, token set');
       return res.status(200).json({ message: 'Login successful' });
-    } catch (error) {
-      console.error('Error during login:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+    } catch (err) {
+      const error = err as CustomError;
+      console.error('Error during login:', error.message);
+      return res.status(500).json({ message: 'Internal server error', error: error.message });
     } finally {
       client.release();
     }
