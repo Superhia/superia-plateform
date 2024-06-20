@@ -38,11 +38,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         throw new Error('JWT_SECRET is not defined');
       }
 
-      console.log('JWT_SECRET:', process.env.JWT_SECRET);  // Add this line to check if the secret is being accessed
+      console.log('JWT_SECRET:', process.env.JWT_SECRET);  // Ensure the secret is accessed correctly
 
-      const token = sign({ userId: user.id }, process.env.JWT_SECRET, {
+      const token = sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, {
         expiresIn: '24h',
       });
+
+      console.log('Generated Token:', token);  // Log the generated token
 
       res.setHeader('Set-Cookie', serialize('auth-token', token, {
         httpOnly: true,

@@ -1,9 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import Logout from "../app/components/Logout";
 
 export default function Home() {
   return (
     <main className="flex text-black min-h-screen flex-col h-screen items-left p-14 bg-white">
+      <div className="absolute top-0 right-0 m-5 -mr-5">
+        <Logout />
+      </div>
       <Link href={"/"}>
         <img src="LaSuperAgence.png" alt="icon" className="h-8" />
       </Link>
@@ -31,6 +35,8 @@ export default function Home() {
           <Link href={"chatpdf"}>YoutubeScan</Link>
         </button>
       </div>
+      
     </main>
   );
 }
+
