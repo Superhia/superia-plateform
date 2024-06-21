@@ -10,12 +10,11 @@ export interface FileUploadComponentRef {
 }
 
 const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => {
-    const [file, setFile] = useState<File | null>(null);
+    const [fileUrl, setFileUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [assistantId, setAssistantId] = useState('');
     const [uploadStatus, setUploadStatus] = useState<string>('');
     const [showPdf, setShowPdf] = useState<boolean>(false);
-    const [fileUrl, setFileUrl] = useState<string | null>(null);
 
     const fetchPDFAndSetFile = async () => {
         try {
@@ -67,12 +66,105 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
         handleSubmit,
     }));
 
+    const AskQuestionComponent: FC<{ assistantId: string }> = ({ assistantId }) => {
+        const [question, setQuestion] = useState('');
+        const [loading, setLoading] = useState(false);
+        const [error, setError] = useState<string | null>(null);
+        const [responses, setResponses] = useState<{ question: string; response: string }[]>([]);
+        const currentResponseRef = useRef('');
+
+        const handleQuestionSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            setLoading(true);
+            setError(null);
+
+            const newResponses = [...responses, { question, response: '' }];
+            const lastIndex = newResponses.length - 1;
+            setResponses(newResponses);
+
+            try {
+                const askRes = await fetch('https://superia.northeurope.cloudapp.azure.com/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        question: question,
+                        assistant_id: assistantId,
+                    }),
+                });
+
+                if (!askRes.ok) {
+                    throw new Error(`An error occurred: ${askRes.statusText}`);
+                }
+
+                const reader = askRes.body?.getReader();
+                if (!reader) {
+                    throw new Error('Reader not available');
+                }
+
+                const decoder = new TextDecoder('utf-8');
+                let done = false;
+
+                while (!done) {
+                    const { value, done: readerDone } = await reader.read();
+                    done = readerDone;
+                    if (value) {
+                        const chunk = decoder.decode(value, { stream: true });
+                        currentResponseRef.current += chunk;
+
+                        // Update the response state incrementally
+                        newResponses[lastIndex].response = currentResponseRef.current;
+                        setResponses([...newResponses]);
+                    }
+                }
+
+                console.log('Final response content:', currentResponseRef.current);
+            } catch (error) {
+                console.error('Error querying assistant:', error);
+                setError('Failed to get a response from the assistant.');
+            } finally {
+                setLoading(false);
+                setQuestion(''); // Clear the question input after submission
+                currentResponseRef.current = ''; // Reset the ref for the next question
+            }
+        };
+
+        return (
+            <div className="container bg-white min-h-screen p-4">
+                <div className="flex-grow overflow-y-auto">
+                    {responses.map((qa, index) => (
+                        <div key={index} className="mb-4">
+                            <p className="font-bold">Question: {qa.question}</p>
+                            <div dangerouslySetInnerHTML={{ __html: qa.response.replace(/\n/g, '<br />') }} />
+                        </div>
+                    ))}
+                </div>
+                <form onSubmit={handleQuestionSubmit} className="flex-none flex">
+                    <input
+                        className="flex-grow rounded-md border-0 py-2.5 pl-7 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-2xl 2xl:leading-6"
+                        type="text"
+                        name="question"
+                        value={question}
+                        onChange={(e) => setQuestion(e.target.value)}
+                        placeholder="Ask your question"
+                    />
+                    <button className="p-3 m-1 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">
+                        Ask
+                    </button>
+                </form>
+                {loading && <ClipLoader color="#0000ff" loading={loading} size={150} />}
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+            </div>
+        );
+    };
+
     if (loading) {
         return <ClipLoader color="#0000ff" loading={loading} size={150} />;
     }
 
     return (
-        <div>
+        <div className="bg-white min-h-screen p-4">
             <button
                 className="p-5 pl-20 pr-20 m-5 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
                 onClick={handleSubmit}
@@ -99,105 +191,5 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
     );
 };
 
-interface AskQuestionComponentProps {
-    assistantId: string;
-}
-interface QAResponse {
-    question: string;
-    response: string;
-}
-const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) => {
-    const [question, setQuestion] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [responses, setResponses] = useState<QAResponse[]>([]);
-
-    const currentResponseRef = useRef('');
-
-    const handleQuestionSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setLoading(true);
-        setError(null);
-
-        const newResponses = [...responses, { question, response: '' }];
-        const lastIndex = newResponses.length - 1;
-        setResponses(newResponses);
-
-        try {
-            const askRes = await fetch('https://superia.northeurope.cloudapp.azure.com/ask', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    question: question,
-                    assistant_id: assistantId,
-                }),
-            });
-
-            if (!askRes.ok) {
-                throw new Error(`An error occurred: ${askRes.statusText}`);
-            }
-
-            const reader = askRes.body?.getReader();
-            if (!reader) {
-                throw new Error('Reader not available');
-            }
-
-            const decoder = new TextDecoder('utf-8');
-            let done = false;
-
-            while (!done) {
-                const { value, done: readerDone } = await reader.read();
-                done = readerDone;
-                if (value) {
-                    const chunk = decoder.decode(value, { stream: true });
-                    currentResponseRef.current += chunk;
-
-                    // Update the response state incrementally
-                    newResponses[lastIndex].response = currentResponseRef.current;
-                    setResponses([...newResponses]);
-                }
-            }
-
-            console.log('Final response content:', currentResponseRef.current);
-        } catch (error) {
-            console.error('Error querying assistant:', error);
-            setError('Failed to get a response from the assistant.');
-        } finally {
-            setLoading(false);
-            setQuestion(''); // Clear the question input after submission
-            currentResponseRef.current = ''; // Reset the ref for the next question
-        }
-    };
-
-    return (
-        <div className="flex flex-col h-full">
-            <div className="flex-grow overflow-y-auto">
-                {responses.map((qa, index) => (
-                    <div key={index} className="mb-4">
-                        <p className="font-bold">Question: {qa.question}</p>
-                        <div dangerouslySetInnerHTML={{ __html: qa.response.replace(/\n/g, '<br />') }} />
-                    </div>
-                ))}
-            </div>
-            <form onSubmit={handleQuestionSubmit} className="flex-none flex">
-                <input
-                    className="flex-grow rounded-md border-0 py-2.5 pl-7 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-2xl 2xl:leading-6"
-                    type="text"
-                    name="question"
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                    placeholder="Ask your question"
-                />
-                <button className="p-3 m-1 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">
-                    Ask
-                </button>
-            </form>
-            {loading && <ClipLoader color="#0000ff" loading={loading} size={150} />}
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-        </div>
-    );
-};
 Ebook.displayName = 'Ebook';
 export default forwardRef(Ebook);

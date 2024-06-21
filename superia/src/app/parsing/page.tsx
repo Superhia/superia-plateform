@@ -53,16 +53,16 @@ export default function Parsing() {
       </nav>
       <h1 className="text-4xl font-semibold text-center py-7">Pose des questions à ton Fichier</h1>
       <p className="text-center mx-32 px-32">Superia simplifie la gestion documentaire grâce à son outil de parsing intelligent, capable de traiter et d’organiser efficacement tous types de documents, vous permettant de gagner du temps et d’améliorer votre efficacité opérationnelle.</p>
-      <div className="flex justify-center py-14 bg-white" onClick={handleFileUploadClick}>
+      <div className="flex justify-center py-14" onClick={handleFileUploadClick}>
         <FileUploadComponent />
       </div>
       {!fileUploadClicked && (
         <>
           <h4 className="text-center">Testez notre outil avec un des PDF déjà chargé</h4>
-          <div className="flex justify-center space-x-8 py-14 bg-white">
+          <div className="flex justify-center space-x-8 py-14">
             {activeButton === null ? (
               <>
-                <div onClick={() => handleButtonClick('Ebook')} className="cursor-pointer">
+                <div onClick={() => handleButtonClick('Ebook')} className="cursor-pointer bg-white">
                   <Ebook />
                 </div>
                 <div onClick={() => handleButtonClick('LBAmbassadeur')} className="cursor-pointer">
@@ -84,6 +84,3 @@ export default function Parsing() {
     </main>
   );
 }
-
-
-
