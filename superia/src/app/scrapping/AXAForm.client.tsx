@@ -1,16 +1,68 @@
-"use client";
+'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
 
-export default function OrangeForm() {
+const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
+    transports: ['websocket', 'polling']
+});
+
+interface ProgressData {
+    progress: number;
+    status: string;
+    log?: string;
+}
+
+const OrangeForm: React.FC = () => {
     const [response, setResponse] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [status, setStatus] = useState('');
+    const [log, setLog] = useState<string[]>([]);
+    const [currentUrl, setCurrentUrl] = useState('');
+
+    useEffect(() => {
+        socket.on('connect', () => {
+            console.log('Connected to Socket.IO server');
+        });
+
+        socket.on('update_progress', (data: ProgressData) => {
+            console.log('Received progress update:', data);
+            setProgress(data.progress);
+            setStatus(data.status);
+            if (data.log !== undefined) {
+                setLog((prevLog) => [...prevLog, data.log!]);
+                setCurrentUrl(data.log); // Update the current URL being crawled
+            }
+            if (data.progress === 100) {
+                setLoading(false);
+            }
+        });
+
+        socket.on('crawling_complete', (data: string) => {
+            setResponse(data);
+            setLoading(false);
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from Socket.IO server');
+        });
+
+        return () => {
+            socket.off('update_progress');
+            socket.off('crawling_complete');
+        };
+    }, []);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setLoading(true);
-        setResponse(null); // Clear previous response
+        setResponse(null);
+        setProgress(0);
+        setStatus('');
+        setLog([]);
+        const form = event.currentTarget;
 
         try {
             const res = await fetch("https://superia.northeurope.cloudapp.azure.com/process_msg", {
@@ -18,7 +70,7 @@ export default function OrangeForm() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ domain: "https://audencia.teamtailor.com/" }) // Send the correct key as expected by the backend
+                body: JSON.stringify({ domain: "https://audencia.teamtailor.com/" })
             });
 
             if (!res.body) {
@@ -33,14 +85,15 @@ export default function OrangeForm() {
                 const { value, done: readerDone } = await reader.read();
                 done = readerDone;
                 const chunk = decoder.decode(value, { stream: true });
-                setResponse((prev) => (prev ? prev + chunk : chunk)); // Append the new chunk to the response
+                setResponse((prev) => (prev ? prev + chunk : chunk));
+                setLoading(false);
             }
 
         } catch (error) {
             console.error('Failed to submit:', error);
-            setResponse("Failed to submit"); // Set error message in response state
+            setStatus('Failed to submit');
         } finally {
-            setLoading(false); // Ensure loading stops regardless of the result
+            setLoading(false);
         }
     };
 
@@ -70,12 +123,34 @@ export default function OrangeForm() {
             <form onSubmit={handleSubmit}>
             <div className="flex justify-center">
                 <button className="p-5 px-28 m-5">
-                    <img src="Audencia.png" alt="logo orange" className="h-8 w-18 mx-auto" />https://audencia.teamtailor.com/
+                    <img src="Audencia.png" alt="logo orange" className="h-8 w-24 mx-auto" />https://audencia.teamtailor.com/
                 </button>
                 </div>
             </form>
-            {loading && <ClipLoader color="#0000ff" loading={loading} size={150} />}
+            {loading && (
+                <div className="flex flex-col items-center">
+                    <ClipLoader color="#0000ff" loading={loading} size={50} />
+                </div>
+            )}
+            {loading && !response && (
+                <>
+                    <div className="mb-4">
+                        <div>Status: {status}</div>
+                        <div>Currently Crawling: {currentUrl}</div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                            <div
+                                className="bg-blue-900 h-2.5 rounded-full"
+                                style={{ width: `${progress}%` }}
+                            ></div>
+                        </div>
+                        <div>{progress}%</div>
+                    </div>
+                </>
+            )}
             {renderResponse(response)}
         </div>
     );
-}
+};
+
+export default OrangeForm;
+

@@ -145,11 +145,6 @@ const OrangeForm: React.FC = () => {
                         </div>
                         <div>{progress}%</div>
                     </div>
-                    <div className="mb-4">
-                        {log.map((entry, index) => (
-                            <div key={index}>{entry}</div>
-                        ))}
-                    </div>
                 </>
             )}
             {renderResponse(response)}
