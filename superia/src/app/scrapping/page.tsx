@@ -7,6 +7,7 @@ import OrangeForm  from './OrangeForm.client';
 import LaPosteForm  from './LaPosteForm.client';
 import DecathlonForm  from './DecathlonForm.client';
 import GeneraliForm  from './GeneraliForm.client';
+import ImageScanRH from '../components/ScanRH_video.client'
 
 export default function Scrapping() {
   return (
@@ -22,8 +23,9 @@ export default function Scrapping() {
 	  </ul>
 		</nav>
     <h1 className="text-4xl font-semibold text-center py-7">Etudie tes données marques employeurs grace à SUPERIA</h1>
-          <p className="text-center py-2.5 mx-32 px-32">Notre outil ScanRH scrute votre site carrière pour en extraire des données précieuses, vous offrant ainsi une vision claire de votre image de marque employeur et de la manière dont elle est perçue par les candidats potentiels.</p>
-        <div className="mx-auto py-14">
+          <p className="text-center py-2.5 mx-40 px-64">Notre outil ScanRH scrute votre site carrière pour en extraire des données précieuses, vous offrant ainsi une vision claire de votre image de marque employeur et de la manière dont elle est perçue par les candidats potentiels.</p>
+       <div className="mx-auto py-14"><ImageScanRH/></div>
+        <div className="mx-auto ">
         <ScrappingForm />
       </div>
       <h4>Testez notre outil avec un des sites déjà analysé</h4>

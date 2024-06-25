@@ -1,6 +1,8 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { ClipLoader } from 'react-spinners';
+import Cookies from 'js-cookie';
 
 const ChatbotForm = () => {
   const [domain, setDomain] = useState<string>('');
@@ -9,11 +11,27 @@ const ChatbotForm = () => {
   const [responses, setResponses] = useState<{ question: string; response: string }[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [requestCount, setRequestCount] = useState<number>(0);
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [requestLimit, setRequestLimit] = useState<number>(200);
+
+  const requestInProgress = useRef(false);
+
+  useEffect(() => {
+    const token = Cookies.get('authToken');
+    if (token) {
+      setLoggedIn(true);
+      setRequestLimit(1000);
+    }
+  }, []);
 
   const handleScrapeSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (requestInProgress.current || requestCount >= requestLimit) return;
+
     setLoading(true);
     setError(null);
+    requestInProgress.current = true;
 
     try {
       const response = await fetch('https://superia.northeurope.cloudapp.azure.com/chatbot', {
@@ -31,18 +49,23 @@ const ChatbotForm = () => {
 
       const data = await response.json();
       setAssistantId(data.assistant_id);  // Assuming the API returns an 'assistant_id'
+      setRequestCount((prevCount) => prevCount + 1); // Increment request count
     } catch (error) {
       console.error('Error fetching scrape data:', error);
       setError((error as Error).message);
     } finally {
       setLoading(false);
+      requestInProgress.current = false;
     }
   };
 
   const handleAsk = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (requestInProgress.current || requestCount >= requestLimit) return;
+
     setLoading(true);
     setError(null);
+    requestInProgress.current = true;
 
     try {
       const response = await fetch('https://superia.northeurope.cloudapp.azure.com/ask', {
@@ -87,13 +110,22 @@ const ChatbotForm = () => {
       }
 
       console.log('Final response content:', responseContent);
+      setRequestCount((prevCount) => prevCount + 1); // Increment request count
     } catch (error) {
       console.error('Error querying assistant:', error);
       setError('Failed to get a response from the assistant.');
     } finally {
       setLoading(false);
+      requestInProgress.current = false;
       setQuestion(''); // Clear the question input after submission
     }
+  };
+
+  const handleLogin = () => {
+    // Set loggedIn to true and upgrade the request limit
+    setLoggedIn(true);
+    setRequestLimit(1000); // Upgrade the request limit on login
+    setRequestCount(0); // Reset request count on login
   };
 
   return (
@@ -107,8 +139,9 @@ const ChatbotForm = () => {
           value={domain}
           onChange={(e) => setDomain(e.target.value)}
           required
+          disabled={requestCount >= requestLimit}
         />
-        <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading}>
+        <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading || requestCount >= requestLimit}>
           {loading ? 'Processing...' : 'Envoyer'}
         </button>
       </form>
@@ -138,11 +171,20 @@ const ChatbotForm = () => {
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             required
+            disabled={requestCount >= requestLimit}
           />
-          <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading}>
+          <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading || requestCount >= requestLimit}>
             {loading ? 'Processing...' : 'Pose ta question'}
           </button>
         </form>
+      )}
+
+      {requestCount >= requestLimit && !loggedIn && (
+        <Link href="/login">
+          <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8">
+            Login to use more
+          </button>
+        </Link>
       )}
     </div>
   );

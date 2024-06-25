@@ -1,16 +1,25 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
+import React from 'react';
 
-const Logout = () => {
+interface LogoutProps {
+  setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Logout: React.FC<LogoutProps> = ({ setLoggedIn }) => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    // Clear the auth token cookie
-    document.cookie = 'auth-token=; Max-Age=0; path=/;';
+    // Clear the auth token cookie using js-cookie
+    Cookies.remove('authToken');
 
-    // Optionally, you can make an API call to handle server-side logout logic
-    // await fetch('/api/auth/logout', { method: 'POST' });
+    // Make an API call to handle server-side logout logic
+    await fetch('/api/auth/logout', { method: 'POST' });
+
+    // Update client-side state
+    setLoggedIn(false);
 
     // Redirect to login page
     router.push('/login');
@@ -27,5 +36,3 @@ const Logout = () => {
 };
 
 export default Logout;
-
-
