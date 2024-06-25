@@ -5,19 +5,6 @@ import Link from "next/link";
 import Logout from "./components/Logout";
 
 export default function Home() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    // Check local storage or your auth API to determine if the user is logged in
-    const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    setIsLoggedIn(loggedIn);
-  }, []);
-
-  const handleLogout = () => {
-    // Here you would also handle the logout logic (e.g., API call, update state)
-    localStorage.setItem('isLoggedIn', 'false');
-    setIsLoggedIn(false);
-  };
 
   return (
     <main className="flex text-black min-h-screen flex-col h-screen items-left p-14 bg-white">
@@ -31,7 +18,7 @@ export default function Home() {
             <li><Link href={"login"}>Connexion</Link></li>
         </ul>
       </nav>
-      <div className='flex justify-end -mr-32'><Logout setLoggedIn={setIsLoggedIn}/></div>
+      <div className='flex justify-end -mr-32'><Logout/></div>
       <h1 className="text-4xl font-semibold text-center py-7">Découvrez Superia,</h1>
       <p className="text-center py-2.5 mx-40 px-64">
         La première application qui utilise l'IA générative pour l'analyse de marque employeur.
