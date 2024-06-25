@@ -28,13 +28,10 @@ export default function Home() {
         <ul className="flex space-x-5 -mt-5 mr-4" id="menu">
           <li><Link href={"tarif"}>Tarif</Link></li>
           <li><Link href={"https://lasuperagence.com"}>Blog</Link></li>
-          {isLoggedIn ? (
-            <li><Logout setLoggedIn={setIsLoggedIn}/></li>
-          ) : (
             <li><Link href={"login"}>Connexion</Link></li>
-          )}
         </ul>
       </nav>
+      <div className='flex justify-end -mr-32'><Logout setLoggedIn={setIsLoggedIn}/></div>
       <h1 className="text-4xl font-semibold text-center py-7">Découvrez Superia,</h1>
       <p className="text-center py-2.5 mx-40 px-64">
         La première application qui utilise l'IA générative pour l'analyse de marque employeur.
