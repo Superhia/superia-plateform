@@ -36,5 +36,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [ '/parsing', '/dashboard', '/chatpdf','/scrapping', '/chatbot' ], // Add other routes if needed
+  matcher: [ '/','/parsing', '/dashboard', '/chatpdf','/scrapping', '/chatbot' ], // Add other routes if needed
 };
