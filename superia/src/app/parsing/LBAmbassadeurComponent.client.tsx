@@ -191,7 +191,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) =>
                     onChange={(e) => setQuestion(e.target.value)}
                     placeholder="Ask your question"
                 />
-                <button className="p-3 m-1 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">
+                <button disabled={loading} className="p-3 m-1 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">
                     Ask
                 </button>
             </form>

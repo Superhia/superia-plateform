@@ -122,7 +122,7 @@ const OrangeForm: React.FC = () => {
         <div className='rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 m-5'>
             <form onSubmit={handleSubmit}>
             <div className="flex justify-center">
-                <button className="p-5 px-28 m-5">
+                <button className="p-5 px-28 m-5" disabled={loading}>
                     <img src="Logo_Bpifrance.svg.png" alt="logo orange" className="h-8 w-24 mx-auto" />https://talents.bpifrance.fr
                 </button>
                 </div>
