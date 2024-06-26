@@ -64,9 +64,6 @@ export default function Home() {
                     <h2>Essayez maintenant !</h2>
                     <p>Découvrez la possibilité de discuter avec votre site web.</p>
                     <div><ChatbotForm/></div>
-                    <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-violet-900 ring-1 ring-inset ring-violet-300 2xl:text-2xl 2xl:leading-8">
-                        <Link href={"login"}>Découvrir toute la solution</Link>
-                    </button>
                     </div>
                 )}
             </div>

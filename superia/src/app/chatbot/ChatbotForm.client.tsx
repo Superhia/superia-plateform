@@ -198,6 +198,18 @@ const ChatbotForm = () => {
           </button>
         </Link>
       )}
+      {requestCount >= requestLimit && (
+        <div>
+          <p className="text-red-500 font-bold text-xl">Vous avez atteint le nombre maximal de requêtes.</p>
+          {!isLoggedIn && (
+            <Link href="/login">
+              <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-violet-900 ring-1 ring-inset ring-violet-300 text-xl 2xl:leading-8">
+              Découvrir toute la solution
+              </button>
+            </Link>
+          )}
+        </div>
+      )}
     </div>
   );
 };
