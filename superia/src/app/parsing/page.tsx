@@ -6,6 +6,7 @@ import LBAmbassadeur from './LBAmbassadeurComponent.client';
 import LBMarketing from './LBMarketingComponent.client';
 import LSiteCarriere from './LSiteCarriereComponent.client';
 import FileUploadComponent from './UploadComponent.client';
+import Parsing_video from '../components/Parsing_video.client';
 
 export default function Parsing() {
   const [response, setResponse] = useState<string>('');
@@ -53,6 +54,7 @@ export default function Parsing() {
       </nav>
       <h1 className="text-4xl font-semibold text-center py-7">Pose des questions à ton Fichier</h1>
       <p className="text-center mx-40 px-64">Superia simplifie la gestion documentaire grâce à son outil de parsing intelligent, capable de traiter et d’organiser efficacement tous types de documents, vous permettant de gagner du temps et d’améliorer votre efficacité opérationnelle.</p>
+      <div className='flex flex-col items-center'><Parsing_video/></div>
       <div className="flex justify-center py-14" onClick={handleFileUploadClick}>
         <FileUploadComponent />
       </div>

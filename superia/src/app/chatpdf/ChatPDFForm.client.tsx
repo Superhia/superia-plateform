@@ -10,9 +10,13 @@ const YoutubeDataForm = () => {
   const [youtubeData, setYoutubeData] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [requestCount, setRequestCount] = useState<number>(0);
+  const [requestLimit, setRequestLimit] = useState<number>(1000);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (requestCount >= requestLimit) return;
+
     setLoading(true);
     setError(null);
     setYoutubeData(null);
@@ -48,6 +52,8 @@ const YoutubeDataForm = () => {
           }
         }
       }
+
+      setRequestCount((prevCount) => prevCount + 1); // Increment request count
     } catch (error) {
       console.error('Error fetching YouTube data:', error);
       setError((error as Error).message);
@@ -58,6 +64,8 @@ const YoutubeDataForm = () => {
 
   const handleAsk = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (requestCount >= requestLimit) return;
+
     setLoading(true);
     setError(null);
 
@@ -104,6 +112,7 @@ const YoutubeDataForm = () => {
       }
 
       console.log('Final response content:', responseContent);
+      setRequestCount((prevCount) => prevCount + 1); // Increment request count
     } catch (error) {
       console.error('Error querying assistant:', error);
       setError('Failed to get a response from the assistant.');
@@ -124,8 +133,9 @@ const YoutubeDataForm = () => {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           required
+          disabled={requestCount >= requestLimit}
         />
-        <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading}>
+        <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading || requestCount >= requestLimit}>
           {loading ? 'Processing...' : 'Envoyer'}
         </button>
       </form>
@@ -140,7 +150,8 @@ const YoutubeDataForm = () => {
           <div dangerouslySetInnerHTML={{ __html: youtubeData.replace(/\n/g, '<br />') }} />
         </div>
       )}
-{responses.length > 0 && (
+
+      {responses.length > 0 && (
         <div>
           <h2 className='font-bold text-2xl my-5'>Réponses:</h2>
           {responses.map((item, index) => (
@@ -151,7 +162,8 @@ const YoutubeDataForm = () => {
           ))}
         </div>
       )}
-      {assistantId && (
+
+      {assistantId && requestCount < requestLimit && (
         <form onSubmit={handleAsk} className="ask-form">
           <label htmlFor="question">Question:</label>
           <input
@@ -161,23 +173,21 @@ const YoutubeDataForm = () => {
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             required
+            disabled={requestCount >= requestLimit}
           />
-          <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading}>
+          <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading || requestCount >= requestLimit}>
             {loading ? 'Processing...' : 'Pose ta question'}
           </button>
         </form>
+      )}
+
+      {requestCount >= requestLimit && (
+        <div>
+          <p className="text-red-500 font-bold text-xl">You have reached the maximum number of requests.</p>
+        </div>
       )}
     </div>
   );
 };
 
 export default YoutubeDataForm;
-
-
-
-
-
-
-
-
-

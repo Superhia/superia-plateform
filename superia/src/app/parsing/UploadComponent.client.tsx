@@ -1,6 +1,5 @@
-'use client';
-
-import React, { useState,FC, useRef } from 'react';
+'use client'
+import React, { useState, FC, useRef } from 'react';
 import { ClipLoader } from 'react-spinners';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
@@ -19,10 +18,12 @@ const FileUploadComponent = () => {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [showPdf, setShowPdf] = useState<boolean>(false);
+  const [requestCount, setRequestCount] = useState<number>(0);
+  const [requestLimit, setRequestLimit] = useState<number>(1000);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      setFile(event.target.files[0]); // Capture the file from the input
+      setFile(event.target.files[0]);
       setPdfUrl(URL.createObjectURL(event.target.files[0]));
     }
   };
@@ -55,8 +56,8 @@ const FileUploadComponent = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!file) {
-      alert('Please select a file.');
+    if (!file || requestCount >= requestLimit) {
+      alert('Please select a file or you have reached the request limit.');
       return;
     }
     setLoading(true);
@@ -74,6 +75,7 @@ const FileUploadComponent = () => {
         setAssistantId(result.assistant_id);
         setUploadStatus('File uploaded successfully.');
         setShowPdf(true);
+        setRequestCount((prevCount) => prevCount + 1); // Increment request count
       } else {
         setUploadStatus(result.error || 'Failed to upload the file.');
       }
@@ -109,16 +111,22 @@ const FileUploadComponent = () => {
             ref={inputRef}
             style={{ display: 'none' }}
             onChange={handleFileChange}
+            disabled={requestCount >= requestLimit}
           />
         </div>
         <button
           className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
-          type="submit" disabled={loading}
+          type="submit" disabled={loading || requestCount >= requestLimit}
         >
-          Envoyer
+          {loading ? 'Processing...' : 'Envoyer'}
         </button>
       </form>
       {uploadStatus && <p>{uploadStatus}</p>}
+      {requestCount >= requestLimit && (
+        <div>
+          <p className="text-red-500 font-bold text-xl">You have reached the maximum number of requests.</p>
+        </div>
+      )}
       {showPdf && assistantId && pdfUrl && (
         <div className="grid grid-cols-2 gap-4 h-screen">
           <div
@@ -135,7 +143,7 @@ const FileUploadComponent = () => {
             </Worker>
           </div>
           <div className="flex flex-col justify-between p-5">
-            <AskQuestionComponent assistantId={assistantId} />
+            <AskQuestionComponent assistantId={assistantId} requestCount={requestCount} requestLimit={requestLimit} setRequestCount={setRequestCount} />
           </div>
         </div>
       )}
@@ -145,9 +153,12 @@ const FileUploadComponent = () => {
 
 interface AskQuestionComponentProps {
   assistantId: string;
+  requestCount: number;
+  requestLimit: number;
+  setRequestCount: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) => {
+const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requestCount, requestLimit, setRequestCount }) => {
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -155,6 +166,8 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) =>
 
   const handleQuestionSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (requestCount >= requestLimit) return;
+
     setLoading(true);
     setError(null);
 
@@ -201,6 +214,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) =>
       }
 
       console.log('Final response content:', responseContent);
+      setRequestCount((prevCount) => prevCount + 1); // Increment request count
     } catch (error) {
       console.error('Error querying assistant:', error);
       setError('Failed to get a response from the assistant.');
@@ -221,19 +235,26 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId }) =>
         ))}
       </div>
       {loading && <ClipLoader color="#0000ff" loading={loading} size={150} />}
-      <form onSubmit={handleQuestionSubmit} className="flex-none flex">
-        <input
-          className="flex-grow rounded-md border-0 py-2.5 pl-7 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-2xl 2xl:leading-6"
-          type="text"
-          name="question"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Ask your question"
-        />
-        <button disabled={loading} className="p-3 m-1 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">
-          Ask
-        </button>
-      </form>
+      {requestCount < requestLimit && (
+        <form onSubmit={handleQuestionSubmit} className="flex-none flex">
+          <input
+            className="flex-grow rounded-md border-0 py-2.5 pl-7 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-2xl 2xl:leading-6"
+            type="text"
+            name="question"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="Ask your question"
+          />
+          <button disabled={loading} className="p-3 m-1 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">
+            Ask
+          </button>
+        </form>
+      )}
+      {requestCount >= requestLimit && (
+        <div>
+          <p className="text-red-500 font-bold text-xl">You have reached the maximum number of requests.</p>
+        </div>
+      )}
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
   );
