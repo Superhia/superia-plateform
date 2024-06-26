@@ -4,15 +4,24 @@ import Link from "next/link";
 import Logout from "./components/Logout";
 
 export default function Home() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    // Check the auth token or user state in localStorage or through your auth provider
-    const loggedIn = localStorage.getItem('isLoggedIn') === 'true'; // Simulate checking auth
-    console.log('Logged In Status:', loggedIn);
-    setIsLoggedIn(loggedIn);
-  }, []);
+    useEffect(() => {
+        // Call the API to validate session
+        const validateSession = async () => {
+            try {
+                const response = await fetch('/api/auth/validate-session');
+                const data = await response.json();
+                setIsLoggedIn(data.isLoggedIn); // Set based on the response from the server
+                console.log('Logged In Status:', data.isLoggedIn);
+            } catch (error) {
+                console.error('Error validating session:', error);
+                setIsLoggedIn(false);
+            }
+        };
 
+        validateSession();
+    }, []);
   return (
     <main className="flex text-black min-h-screen flex-col h-screen items-left p-14 bg-white">
       <Link href={"/"}>
