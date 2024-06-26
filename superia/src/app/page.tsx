@@ -61,8 +61,8 @@ export default function Home() {
                     </>
                 ) : (
                   <div><ScanRH_Video/>
-                    <h2>Essayez maintenant !</h2>
-                    <p>Découvrez la possibilité de discuter avec votre site web.</p>
+                    <h2 className="text-2xl font-semibold py-7">Essayez maintenant !</h2>
+                    <p className='py-2.5 mx-40 px-64'>Découvrez la possibilité de discuter avec votre site web.</p>
                     <div><ChatbotForm/></div>
                     </div>
                 )}
