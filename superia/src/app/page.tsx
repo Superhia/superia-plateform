@@ -1,10 +1,17 @@
-'use client';
+'use client'
 import { useState, useEffect } from 'react';
-import Image from "next/image";
 import Link from "next/link";
 import Logout from "./components/Logout";
 
 export default function Home() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check the auth token or user state in localStorage or through your auth provider
+    const loggedIn = localStorage.getItem('isLoggedIn') === 'true'; // Simulate checking auth
+    console.log('Logged In Status:', loggedIn);
+    setIsLoggedIn(loggedIn);
+  }, []);
 
   return (
     <main className="flex text-black min-h-screen flex-col h-screen items-left p-14 bg-white">
@@ -15,10 +22,13 @@ export default function Home() {
         <ul className="flex space-x-5 -mt-5 mr-4" id="menu">
           <li><Link href={"tarif"}>Tarif</Link></li>
           <li><Link href={"https://lasuperagence.com"}>Blog</Link></li>
+          {isLoggedIn ? (
+            <li><Logout/></li>
+          ) : (
             <li><Link href={"login"}>Connexion</Link></li>
+          )}
         </ul>
       </nav>
-      <div className='flex justify-end -mr-32'><Logout/></div>
       <h1 className="text-4xl font-semibold text-center py-7">Découvrez Superia,</h1>
       <p className="text-center py-2.5 mx-40 px-64">
         La première application qui utilise l'IA générative pour l'analyse de marque employeur.

@@ -17,8 +17,7 @@ const Logout = () => {
   };
 
   return (
-    <button 
-      className='p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-red-900 ring-1 ring-inset ring-red-300 text-xl 2xl:leading-8'
+    <button
       onClick={handleLogout}
     >
       Logout
