@@ -1,4 +1,4 @@
-'use client';
+'use client'
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { ClipLoader } from 'react-spinners';
@@ -12,17 +12,29 @@ const ChatbotForm = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [requestCount, setRequestCount] = useState<number>(0);
-  const [loggedIn, setLoggedIn] = useState<boolean>(false);
-  const [requestLimit, setRequestLimit] = useState<number>(200);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [requestLimit, setRequestLimit] = useState<number>(5);
 
   const requestInProgress = useRef(false);
 
   useEffect(() => {
-    const token = Cookies.get('authToken');
-    if (token) {
-      setLoggedIn(true);
-      setRequestLimit(1000);
-    }
+    // Call the API to validate session
+    const validateSession = async () => {
+      try {
+        const response = await fetch('/api/auth/validate-session');
+        const data = await response.json();
+        setIsLoggedIn(data.isLoggedIn); // Set based on the response from the server
+        if (data.isLoggedIn) {
+          setRequestLimit(1000); // Set the request limit for logged in users
+        }
+        console.log('Logged In Status:', data.isLoggedIn);
+      } catch (error) {
+        console.error('Error validating session:', error);
+        setIsLoggedIn(false);
+      }
+    };
+
+    validateSession();
   }, []);
 
   const handleScrapeSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -123,7 +135,7 @@ const ChatbotForm = () => {
 
   const handleLogin = () => {
     // Set loggedIn to true and upgrade the request limit
-    setLoggedIn(true);
+    setIsLoggedIn(true);
     setRequestLimit(1000); // Upgrade the request limit on login
     setRequestCount(0); // Reset request count on login
   };
@@ -179,7 +191,7 @@ const ChatbotForm = () => {
         </form>
       )}
 
-      {requestCount >= requestLimit && !loggedIn && (
+      {requestCount >= requestLimit && !isLoggedIn && (
         <Link href="/login">
           <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8">
             Login to use more
