@@ -173,7 +173,7 @@ const ChatbotForm = () => {
         </div>
       )}
 
-      {assistantId && (
+      {assistantId && requestCount < requestLimit &&(
         <form onSubmit={handleAsk} className="ask-form">
           <label htmlFor="question">Question:</label>
           <input
