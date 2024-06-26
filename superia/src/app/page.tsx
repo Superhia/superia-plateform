@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from "next/link";
 import Logout from "./components/Logout";
+import ScanRH_Video from "./components/ScanRH_video.client"
 
 export default function Home() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -58,9 +59,11 @@ export default function Home() {
                         </button>
                     </>
                 ) : (
+                  <div><ScanRH_Video/>
                     <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-violet-900 ring-1 ring-inset ring-violet-300 2xl:text-2xl 2xl:leading-8">
                         <Link href={"login"}>Je veux essayer</Link>
                     </button>
+                    </div>
                 )}
             </div>
     </main>
