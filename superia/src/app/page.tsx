@@ -45,10 +45,24 @@ export default function Home() {
         en analysant et optimisant leur contenu pour attirer les meilleurs talents.
       </p>
       <div className="mx-auto text-2xl">
-        <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-violet-900 ring-1 ring-inset ring-violet-300 2xl:text-2xl 2xl:leading-8">
-          <Link href={"login"}>Je veux essayer</Link>
-        </button>
-      </div>
+                {isLoggedIn ? (
+                    <>
+                        <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8">
+                            <Link href={"scrapping"}>ScanRH</Link>
+                        </button>
+                        <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8">
+                            <Link href={"parsing"}>DocuParse</Link>
+                        </button>
+                        <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8">
+                            <Link href={"chatpdf"}>YoutubeScan</Link>
+                        </button>
+                    </>
+                ) : (
+                    <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-violet-900 ring-1 ring-inset ring-violet-300 2xl:text-2xl 2xl:leading-8">
+                        <Link href={"login"}>Je veux essayer</Link>
+                    </button>
+                )}
+            </div>
     </main>
   );
 }

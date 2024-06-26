@@ -9,8 +9,8 @@ export default function Home() {
       <Link href={"/"}>
       <img src="LaSuperAgence.png" alt="icon" className="h-8" />
       </Link>
-      <nav className="flex">
-		<ul className="flex space-x-5 mx-auto -mt-5" id="menu">
+      <nav className="flex justify-end">
+		<ul className="flex space-x-5 mx-auto -mt-5 mr-4" id="menu">
 			<li><Link href={"scrapping"}>ScanRH</Link></li>
 			<li><Link href={"parsing"}>DocuParse</Link></li>
 			<li><Link href={"chatpdf"}>YoutubeScan</Link></li>
