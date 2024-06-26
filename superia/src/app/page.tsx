@@ -29,8 +29,8 @@ export default function Home() {
       </Link>
       <nav className="flex justify-end">
         <ul className="flex space-x-5 -mt-5 mr-4" id="menu">
-          <li><Link href={"tarif"}>Tarif</Link></li>
-          <li><Link href={"https://lasuperagence.com"}>Blog</Link></li>
+          <li><Link href={"tarif"}>Tarifs</Link></li>
+          <li><Link href={"https://inbound.lasuperagence.com/blog"}>Blog</Link></li>
           {isLoggedIn ? (
             <li><Logout/></li>
           ) : (
@@ -45,14 +45,8 @@ export default function Home() {
         en analysant et optimisant leur contenu pour attirer les meilleurs talents.
       </p>
       <div className="mx-auto text-2xl">
-        <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8">
-          <Link href={"scrapping"}>ScanRH</Link>
-        </button>
-        <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8">
-          <Link href={"parsing"}>DocuParse</Link>
-        </button>
-        <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8">
-          <Link href={"chatpdf"}>YoutubeScan</Link>
+        <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-violet-900 ring-1 ring-inset ring-violet-300 2xl:text-2xl 2xl:leading-8">
+          <Link href={"login"}>Je veux essayer</Link>
         </button>
       </div>
     </main>
