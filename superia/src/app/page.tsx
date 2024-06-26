@@ -46,7 +46,7 @@ export default function Home() {
         Grâce à Superia, vous pouvez désormais exploiter pleinement le potentiel de votre site carrière,
         en analysant et optimisant leur contenu pour attirer les meilleurs talents.
       </p>
-      <div className="mx-auto text-2xl">
+      <div className="mx-auto">
                 {isLoggedIn ? (
                     <>
                         <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8">
@@ -60,7 +60,7 @@ export default function Home() {
                         </button>
                     </>
                 ) : (
-                  <div><ScanRH_Video/>
+                  <div className='flex flex-col items-center'><ScanRH_Video/>
                     <h2 className="text-2xl font-semibold py-7">Essayez maintenant !</h2>
                     <p className='py-2.5 mx-40 px-64'>Découvrez la possibilité de discuter avec votre site web.</p>
                     <div><ChatbotForm/></div>

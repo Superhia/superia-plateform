@@ -13,7 +13,7 @@ const ChatbotForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [requestCount, setRequestCount] = useState<number>(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [requestLimit, setRequestLimit] = useState<number>(5);
+  const [requestLimit, setRequestLimit] = useState<number>(2);
 
   const requestInProgress = useRef(false);
 
@@ -189,14 +189,6 @@ const ChatbotForm = () => {
             {loading ? 'Processing...' : 'Pose ta question'}
           </button>
         </form>
-      )}
-
-      {requestCount >= requestLimit && !isLoggedIn && (
-        <Link href="/login">
-          <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8">
-            Login to use more
-          </button>
-        </Link>
       )}
       {requestCount >= requestLimit && (
         <div>
