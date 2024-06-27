@@ -60,6 +60,8 @@ export default function Home() {
                         <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8">
                             <Link href={"chatpdf"}>YoutubeScan</Link>
                         </button>
+                        <h2 className="text-3xl font-semibold py-7">Converser avec votre site web</h2>
+                        <div><ChatbotForm/></div>
                     </>
                 ) : (
                   <div className='flex flex-col items-center py-14'>
