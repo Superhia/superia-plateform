@@ -60,7 +60,7 @@ export default function Home() {
                         </button>
                     </>
                 ) : (
-                  <div className='flex flex-col items-center'><ScanRH_Video/>
+                  <div className='flex flex-col items-center py-14'><ScanRH_Video/>
                     <h2 className="text-2xl font-semibold py-7">Essayez maintenant !</h2>
                     <p className='py-2.5 mx-40 px-64'>Découvrez la possibilité de discuter avec votre site web.</p>
                     <div><ChatbotForm/></div>
