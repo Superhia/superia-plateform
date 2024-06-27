@@ -4,6 +4,8 @@ import Link from "next/link";
 import Logout from "./components/Logout";
 import ScanRH_Video from "./components/ScanRH_video.client"
 import ChatbotForm from './chatbot/ChatbotForm.client';
+import Parsing_video from './components/Parsing_video.client';
+import Youtube_video from './components/Youtube_video.client';
 
 export default function Home() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -60,8 +62,17 @@ export default function Home() {
                         </button>
                     </>
                 ) : (
-                  <div className='flex flex-col items-center py-14'><ScanRH_Video/>
-                    <h2 className="text-2xl font-semibold py-7">Essayez maintenant !</h2>
+                  <div className='flex flex-col items-center py-14'>
+                    <div className='py-7'>
+                      <h3 className='m-3 text-2xl font-semibold'>ScanRH</h3>
+                      <ScanRH_Video/></div>
+                      <div className='py-7'>
+                      <h3 className='m-3 text-2xl font-semibold'>Parsing</h3>
+                        <Parsing_video/></div>
+                      <div className='py-7'>
+                      <h3 className='m-3 text-2xl font-semibold'>YoutubeScan</h3>
+                        <Youtube_video/></div>
+                    <h2 className="text-3xl font-semibold py-7">Essayez maintenant !</h2>
                     <p className='py-2.5 mx-40 px-64'>Découvrez la possibilité de discuter avec votre site web.</p>
                     <div><ChatbotForm/></div>
                     </div>
