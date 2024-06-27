@@ -73,7 +73,7 @@ export default function Home() {
                         <Parsing_video/></div>
                       <div className='py-7'>
                       <h3 className='m-3 text-2xl font-semibold'>YoutubeScan</h3>
-                      <p className='py-4'>Notre fonctionnalité d analyse de sentiments de vos vidéos youtube permet une interaction directe.</p>
+                      <p className='py-4'>Notre analyse de sentiments de vos vidéos youtube permet une interaction directe.</p>
                         <Youtube_video/></div>
                     <h2 className="text-3xl font-semibold py-7">Essayez maintenant !</h2>
                     <p className='py-2.5 mx-40 px-64'>Découvrez la possibilité de discuter avec votre site web.</p>
