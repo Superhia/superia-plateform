@@ -65,12 +65,15 @@ export default function Home() {
                   <div className='flex flex-col items-center py-14'>
                     <div className='py-7'>
                       <h3 className='m-3 text-2xl font-semibold'>ScanRH</h3>
+                      <p className='py-4'>Notre outil ScanRH scrute votre site carrière pour en extraire des données précieuses.</p>
                       <ScanRH_Video/></div>
                       <div className='py-7'>
                       <h3 className='m-3 text-2xl font-semibold'>Parsing</h3>
+                      <p className='py-4'>Pose des questions à ton Fichier avec SuperIA Parsing</p>
                         <Parsing_video/></div>
                       <div className='py-7'>
                       <h3 className='m-3 text-2xl font-semibold'>YoutubeScan</h3>
+                      <p className='py-4'>Notre fonctionnalité d analyse de sentiments de vos vidéos youtube permet une interaction directe.</p>
                         <Youtube_video/></div>
                     <h2 className="text-3xl font-semibold py-7">Essayez maintenant !</h2>
                     <p className='py-2.5 mx-40 px-64'>Découvrez la possibilité de discuter avec votre site web.</p>
