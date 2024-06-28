@@ -1,5 +1,6 @@
 'use client'
-import React, { useState, FC, useRef } from 'react';
+import React, { useState, useRef, useEffect, FC } from 'react';
+import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
@@ -9,6 +10,17 @@ interface QAResponse {
   response: string;
 }
 
+interface ProgressData {
+  progress: number;
+  status: string;
+  log?: string;
+}
+
+const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
+    path: '/socket.io',
+    transports: ['websocket', 'polling']
+});
+
 const FileUploadComponent = () => {
   const [file, setFile] = useState<File | null>(null);
   const [assistantId, setAssistantId] = useState<string | null>(null);
@@ -16,10 +28,47 @@ const FileUploadComponent = () => {
   const [loading, setLoading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
   const [showPdf, setShowPdf] = useState<boolean>(false);
   const [requestCount, setRequestCount] = useState<number>(0);
   const [requestLimit, setRequestLimit] = useState<number>(1000);
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState('');
+  const [currentUrl, setCurrentUrl] = useState('');
+  const [streaming, setStreaming] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log('Connected to Socket.IO server');
+    });
+
+    socket.on('update_progress', (data: ProgressData) => {
+      console.log('Progress update received', data); // Debug log
+      setProgress(data.progress);
+      setStatus(data.status);
+      if (data.log) {
+        setCurrentUrl(data.log); // Update the current URL being processed
+      }
+      if (data.progress === 100) {
+        setLoading(false);
+      }
+    });
+
+    socket.on('upload_complete', (data: string) => {
+      setUploadStatus(data);
+      setLoading(false);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from Socket.IO server');
+    });
+
+    return () => {
+      socket.off('update_progress');
+      socket.off('upload_complete');
+    };
+  }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -61,6 +110,7 @@ const FileUploadComponent = () => {
       return;
     }
     setLoading(true);
+    setStreaming(false);
     const formData = new FormData();
     formData.append('file', file);
 
@@ -87,8 +137,21 @@ const FileUploadComponent = () => {
     }
   };
 
-  if (loading) {
-    return <ClipLoader color="#0000ff" loading={loading} size={150} />;
+  if (loading && !streaming) {
+    return (
+      <div className="flex flex-col items-center py-7">
+        <ClipLoader color="#0000ff" loading={loading} size={50} />
+        <div className="mt-2">{status}</div>
+        <div>Currently Processing: {currentUrl}</div>
+        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4">
+          <div
+            className="bg-blue-900 h-2.5 rounded-full"
+            style={{ width: `${progress}%` }}
+          ></div>
+          <div>{progress}%</div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -163,6 +226,42 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [responses, setResponses] = useState<QAResponse[]>([]);
+  const [streaming, setStreaming] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState('');
+  const [currentUrl, setCurrentUrl] = useState('');
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log('Connected to Socket.IO server');
+    });
+
+    socket.on('update_progress', (data: ProgressData) => {
+      console.log('Progress update received', data); // Debug log
+      setProgress(data.progress);
+      setStatus(data.status);
+      if (data.log) {
+        setCurrentUrl(data.log); // Update the current URL being processed
+      }
+      if (data.progress === 100) {
+        setLoading(false);
+      }
+    });
+
+    socket.on('response_complete', (data: string) => {
+      setResponses((prev) => [...prev, { question: 'Response complete', response: data }]);
+      setLoading(false);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from Socket.IO server');
+    });
+
+    return () => {
+      socket.off('update_progress');
+      socket.off('response_complete');
+    };
+  }, []);
 
   const handleQuestionSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -170,6 +269,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
 
     setLoading(true);
     setError(null);
+    setStreaming(false);
 
     try {
       const askRes = await fetch('https://superia.northeurope.cloudapp.azure.com/ask', {
@@ -204,6 +304,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
         const { value, done: readerDone } = await reader.read();
         done = readerDone;
         if (value) {
+          setStreaming(true);
           const chunk = decoder.decode(value, { stream: true });
           responseContent += chunk;
 
@@ -234,7 +335,20 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
           </div>
         ))}
       </div>
-      {loading && <ClipLoader color="#0000ff" loading={loading} size={150} />}
+      {loading && !streaming && (
+        <div className="flex flex-col items-center">
+          <ClipLoader color="#0000ff" loading={loading} size={50} />
+          <div className="mt-2">{status}</div>
+          <div>Currently Processing: {currentUrl}</div>
+          <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4">
+            <div
+              className="bg-blue-900 h-2.5 rounded-full"
+              style={{ width: `${progress}%` }}
+            ></div>
+            <div>{progress}%</div>
+          </div>
+        </div>
+      )}
       {requestCount < requestLimit && (
         <form onSubmit={handleQuestionSubmit} className="flex-none flex">
           <input

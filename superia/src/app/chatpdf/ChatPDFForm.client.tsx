@@ -1,17 +1,70 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
+
+const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
+    path: '/socket.io',
+    transports: ['websocket', 'polling']
+});
+
+interface QAResponse {
+  question: string;
+  response: string;
+}
+
+interface ProgressData {
+  progress: number;
+  status: string;
+  log?: string;
+}
 
 const YoutubeDataForm = () => {
   const [url, setUrl] = useState<string>('');
   const [question, setQuestion] = useState<string>('');
   const [assistantId, setAssistantId] = useState<string>('');
-  const [responses, setResponses] = useState<{ question: string; response: string }[]>([]);
+  const [responses, setResponses] = useState<QAResponse[]>([]);
   const [youtubeData, setYoutubeData] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [requestCount, setRequestCount] = useState<number>(0);
   const [requestLimit, setRequestLimit] = useState<number>(1000);
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState('');
+  const [currentUrl, setCurrentUrl] = useState('');
+  const [streaming, setStreaming] = useState(false);
+
+  useEffect(() => {
+    socket.on('connect', () => {
+      console.log('Connected to Socket.IO server');
+    });
+
+    socket.on('update_progress', (data: ProgressData) => {
+      console.log('Progress update received', data); // Debug log
+      setProgress(data.progress);
+      setStatus(data.status);
+      if (data.log) {
+        setCurrentUrl(data.log); // Update the current URL being processed
+      }
+      if (data.progress === 100) {
+        setLoading(false);
+      }
+    });
+
+    socket.on('youtube_data_complete', (data: string) => {
+      setYoutubeData(data);
+      setLoading(false);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from Socket.IO server');
+    });
+
+    return () => {
+      socket.off('update_progress');
+      socket.off('youtube_data_complete');
+    };
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -20,6 +73,7 @@ const YoutubeDataForm = () => {
     setLoading(true);
     setError(null);
     setYoutubeData(null);
+    setStreaming(false);
 
     try {
       const response = await fetch(`https://superia.northeurope.cloudapp.azure.com/youtube_data?url=${encodeURIComponent(url)}`);
@@ -68,6 +122,7 @@ const YoutubeDataForm = () => {
 
     setLoading(true);
     setError(null);
+    setStreaming(false);
 
     try {
       const askRes = await fetch('https://superia.northeurope.cloudapp.azure.com/query', {
@@ -102,6 +157,7 @@ const YoutubeDataForm = () => {
         const { value, done: readerDone } = await reader.read();
         done = readerDone;
         if (value) {
+          setStreaming(true);
           const chunk = decoder.decode(value, { stream: true });
           responseContent += chunk;
 
@@ -140,7 +196,20 @@ const YoutubeDataForm = () => {
         </button>
       </form>
 
-      {loading && <ClipLoader color="#0000ff" loading={loading} size={150} />}
+      {loading && !streaming && (
+        <div className="flex flex-col items-center">
+          <ClipLoader color="#0000ff" loading={loading} size={50} />
+          <div className="mt-2">{status}</div>
+          <div>Currently Processing: {currentUrl}</div>
+          <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4">
+            <div
+              className="bg-blue-900 h-2.5 rounded-full"
+              style={{ width: `${progress}%` }}
+            ></div>
+            <div>{progress}%</div>
+          </div>
+        </div>
+      )}
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 

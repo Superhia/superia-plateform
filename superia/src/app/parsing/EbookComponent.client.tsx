@@ -1,6 +1,15 @@
 'use client';
 
-import React, { useState, useRef, FC, useImperativeHandle, forwardRef, ForwardRefRenderFunction } from 'react';
+import React, {
+    useState,
+    useRef,
+    FC,
+    useImperativeHandle,
+    forwardRef,
+    ForwardRefRenderFunction,
+    useEffect,
+} from 'react';
+import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
@@ -9,12 +18,32 @@ export interface FileUploadComponentRef {
     handleSubmit: (question: string) => void;
 }
 
+interface QAResponse {
+    question: string;
+    response: string;
+}
+
+interface ProgressData {
+    progress: number;
+    status: string;
+    log?: string;
+}
+
+const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
+    path: '/socket.io',
+    transports: ['websocket', 'polling'],
+});
+
 const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => {
     const [fileUrl, setFileUrl] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [assistantId, setAssistantId] = useState('');
     const [uploadStatus, setUploadStatus] = useState<string>('');
     const [showPdf, setShowPdf] = useState<boolean>(false);
+    const [progress, setProgress] = useState(0);
+    const [status, setStatus] = useState('');
+    const [currentUrl, setCurrentUrl] = useState('');
+    const [streaming, setStreaming] = useState(false);
 
     const fetchPDFAndSetFile = async () => {
         try {
@@ -31,6 +60,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
 
     const handleSubmit = async () => {
         setLoading(true);
+        setStreaming(false);
         const fileUrl = await fetchPDFAndSetFile();
         if (!fileUrl) {
             setLoading(false);
@@ -66,17 +96,86 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
         handleSubmit,
     }));
 
+    useEffect(() => {
+        socket.on('connect', () => {
+            console.log('Connected to Socket.IO server');
+        });
+
+        socket.on('update_progress', (data: ProgressData) => {
+            console.log('Progress update received', data); // Debug log
+            setProgress(data.progress);
+            setStatus(data.status);
+            if (data.log) {
+                setCurrentUrl(data.log); // Update the current URL being processed
+            }
+            if (data.progress === 100) {
+                setLoading(false);
+            }
+        });
+
+        socket.on('upload_complete', (data: string) => {
+            setUploadStatus(data);
+            setLoading(false);
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from Socket.IO server');
+        });
+
+        return () => {
+            socket.off('update_progress');
+            socket.off('upload_complete');
+        };
+    }, []);
+
     const AskQuestionComponent: FC<{ assistantId: string }> = ({ assistantId }) => {
         const [question, setQuestion] = useState('');
         const [loading, setLoading] = useState(false);
         const [error, setError] = useState<string | null>(null);
-        const [responses, setResponses] = useState<{ question: string; response: string }[]>([]);
+        const [responses, setResponses] = useState<QAResponse[]>([]);
+        const [progress, setProgress] = useState(0);
+        const [status, setStatus] = useState('');
+        const [currentUrl, setCurrentUrl] = useState('');
+        const [streaming, setStreaming] = useState(false);
         const currentResponseRef = useRef('');
+
+        useEffect(() => {
+            socket.on('connect', () => {
+                console.log('Connected to Socket.IO server');
+            });
+
+            socket.on('update_progress', (data: ProgressData) => {
+                console.log('Progress update received', data); // Debug log
+                setProgress(data.progress);
+                setStatus(data.status);
+                if (data.log) {
+                    setCurrentUrl(data.log); // Update the current URL being processed
+                }
+                if (data.progress === 100) {
+                    setLoading(false);
+                }
+            });
+
+            socket.on('response_complete', (data: string) => {
+                setResponses((prev) => [...prev, { question: 'Response complete', response: data }]);
+                setLoading(false);
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Disconnected from Socket.IO server');
+            });
+
+            return () => {
+                socket.off('update_progress');
+                socket.off('response_complete');
+            };
+        }, []);
 
         const handleQuestionSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
             setLoading(true);
             setError(null);
+            setStreaming(false);
 
             const newResponses = [...responses, { question, response: '' }];
             const lastIndex = newResponses.length - 1;
@@ -110,6 +209,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
                     const { value, done: readerDone } = await reader.read();
                     done = readerDone;
                     if (value) {
+                        setStreaming(true);
                         const chunk = decoder.decode(value, { stream: true });
                         currentResponseRef.current += chunk;
 
@@ -140,6 +240,20 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
                         </div>
                     ))}
                 </div>
+                {loading && !streaming && (
+                    <div className="flex flex-col items-center py-7">
+                        <ClipLoader color="#0000ff" loading={loading} size={50} />
+                        <div className="mt-2">{status}</div>
+                        <div>Currently Processing: {currentUrl}</div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4">
+                            <div
+                                className="bg-blue-900 h-2.5 rounded-full"
+                                style={{ width: `${progress}%` }}
+                            ></div>
+                            <div>{progress}%</div>
+                        </div>
+                    </div>
+                )}
                 <form onSubmit={handleQuestionSubmit} className="flex-none flex">
                     <input
                         className="flex-grow rounded-md border-0 py-2.5 pl-7 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-2xl 2xl:leading-6"
@@ -153,14 +267,26 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
                         Ask
                     </button>
                 </form>
-                {loading && <ClipLoader color="#0000ff" loading={loading} size={150} />}
                 {error && <p style={{ color: 'red' }}>{error}</p>}
             </div>
         );
     };
 
-    if (loading) {
-        return <ClipLoader color="#0000ff" loading={loading} size={150} />;
+    if (loading && !streaming) {
+        return (
+            <div className="flex flex-col items-center py-7">
+                <ClipLoader color="#0000ff" loading={loading} size={50} />
+                <div className="mt-2">{status}</div>
+                <div>Currently Processing: {currentUrl}</div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4">
+                    <div
+                        className="bg-blue-900 h-2.5 rounded-full"
+                        style={{ width: `${progress}%` }}
+                    ></div>
+                    <div>{progress}%</div>
+                </div>
+            </div>
+        );
     }
 
     return (
