@@ -336,7 +336,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
         ))}
       </div>
       {loading && !streaming && (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center py-7">
           <ClipLoader color="#0000ff" loading={loading} size={50} />
           <div className="mt-2">{status}</div>
           <div>Currently Processing: {currentUrl}</div>

@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
 import Cookies from 'js-cookie';
 
-const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
+const socket = io('http://127.0.0.1:8000', {
     path: '/socket.io',
     transports: ['websocket', 'polling']
 });
@@ -99,7 +99,7 @@ const ChatbotForm = () => {
     requestInProgress.current = true;
 
     try {
-      const response = await fetch('https://superia.northeurope.cloudapp.azure.com/chatbot', {
+      const response = await fetch('http://127.0.0.1:8000/chatbot', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ const ChatbotForm = () => {
     setStreaming(false);
 
     try {
-      const response = await fetch('https://superia.northeurope.cloudapp.azure.com/ask', {
+      const response = await fetch('http://127.0.0.1:8000/ask', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
