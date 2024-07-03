@@ -16,7 +16,7 @@ const ScanRH = () => {
                 <img
                     src="Docuparse.jpg"
                     alt="ScanRH"
-                    className="scanrh-image"
+                    className="scanrh-image w-64"
                     onClick={handleClick}
                 />
             )}
