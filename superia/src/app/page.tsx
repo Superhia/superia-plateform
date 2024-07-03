@@ -65,9 +65,11 @@ export default function Home() {
                     </>
                 ) : (
                   <div className='flex flex-col items-center py-14 mx-auto'>
+                    <div className='flex justify-center space-x-10'>
                     <div className='cursor-pointer m-10'><ScanRH_Video/></div>
                       <div className='cursor-pointer m-10'><Parsing_video/></div>
                      <div className='cursor-pointer m-10'><Youtube_video/></div>
+                     </div>
                     <h2 className="text-3xl font-semibold py-7">Essayez maintenant !</h2>
                     <p className='py-2.5 mx-40 px-64'>Découvrez la possibilité de discuter avec votre site web.</p>
                     <div><ChatbotForm/></div>

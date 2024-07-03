@@ -14,8 +14,8 @@ const ScanRH = () => {
         <div className="scanrh-container">
             {!showVideo && (
                 <img
-                    src="Docuparse.jpg"
-                    alt="ScanRH"
+                    src="Docuparse.JPG"
+                    alt="Docuparse"
                     className="scanrh-image w-64"
                     onClick={handleClick}
                 />
