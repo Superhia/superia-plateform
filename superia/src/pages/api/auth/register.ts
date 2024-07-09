@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Pool } from 'pg';
+import nodemailer from 'nodemailer';
+import crypto from 'crypto';
 
 const pool = new Pool({
   user: process.env.DATABASE_USER,
@@ -13,13 +15,41 @@ interface PgError extends Error {
   code?: string;
 }
 
+const EMAIL_PORT = process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT, 10) : 587;
+
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: EMAIL_PORT,
+  secure: EMAIL_PORT === 465, // true for port 465, false for other ports
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+  logger: true, // Enable logging
+  debug: true, // Enable debug mode
+});
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     const { email, password } = req.body;
     const client = await pool.connect();
+    const token = crypto.randomBytes(32).toString('hex');
+    const confirmationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/confirm?token=${token}`;
+
     try {
-      await client.query('INSERT INTO users (email, password) VALUES ($1, $2)', [email, password]);
-      res.status(200).json({ message: 'User registered successfully' });
+      await client.query('INSERT INTO users (email, password, confirmation_token) VALUES ($1, $2, $3)', [email, password, token]);
+      
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Email Confirmation',
+        html: `<p>Please confirm your email by clicking the following link: <a href="${confirmationUrl}">${confirmationUrl}</a></p>`,
+      });
+
+      res.status(200).json({ message: 'User registered successfully. Please check your email to confirm your registration.' });
     } catch (err) {
       const error = err as PgError;
       if (error.code === '23505') {  // Unique violation
@@ -35,4 +65,3 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(405).json({ message: 'Method not allowed' });
   }
 };
-

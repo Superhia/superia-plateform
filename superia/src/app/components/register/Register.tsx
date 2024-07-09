@@ -25,8 +25,7 @@ const Register = () => {
     });
 
     if (res.ok) {
-      setSuccess('Registration successful!');
-       // Redirect after 2 seconds
+      setSuccess('Registration successful! Please check your email to confirm your registration.');
     } else {
       const result = await res.json();
       setError(result.message);
