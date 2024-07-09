@@ -14,11 +14,11 @@ const pool = new Pool({
 interface PgError extends Error {
   code?: string;
 }
-
-const EMAIL_PORT = process.env.EMAIL_PORT ? parseInt(process.env.EMAIL_PORT, 10) : 587;
+const EMAIL_HOST = process.env.EMAIL_HOST || 'smtp.hostinger.com';
+const EMAIL_PORT = parseInt(process.env.EMAIL_PORT || '587', 10);
 
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
+  host: EMAIL_HOST,
   port: EMAIL_PORT,
   secure: EMAIL_PORT === 465, // true for port 465, false for other ports
   auth: {
