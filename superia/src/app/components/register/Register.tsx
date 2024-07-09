@@ -57,7 +57,7 @@ const Register = () => {
         className='p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8'
         type="submit"
       >
-        Register
+        Je m'enregistre
       </button>
     </form>
   );

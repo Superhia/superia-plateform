@@ -42,36 +42,61 @@ export default function Home() {
           )}
         </ul>
       </nav>
-      <h1 className="text-4xl font-semibold text-center py-7">Découvrez Superia,</h1>
-      <p className="text-center py-2.5 mx-40 px-64">
-        La première application qui utilise l'IA générative pour l'analyse de marque employeur.
-        Grâce à Superia, vous pouvez désormais exploiter pleinement le potentiel de votre site carrière,
-        en analysant et optimisant leur contenu pour attirer les meilleurs talents.
-      </p>
       <div className="mx-auto">
                 {isLoggedIn ? (
                     <>
-                        <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8">
-                            <Link href={"scrapping"}>ScanRH</Link>
-                        </button>
-                        <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8">
-                            <Link href={"parsing"}>DocuParse</Link>
-                        </button>
-                        <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8">
-                            <Link href={"chatpdf"}>YoutubeScan</Link>
-                        </button>
+                    <div><h1 className="text-4xl font-semibold text-center py-7">Bienvenue dans votre espace personnel Superia ! </h1>
+      <p className="text-xl text-center py-2.5 mx-40 px-64">
+      Découvrez Superia, la première plateforme pour la Marque Employeur utilisant l’IA générative
+      </p></div>
+                    <div className='grid grid-cols-3 gap-10 my-10'>
+                            <div className='text-center'>
+                                <Link href={"scrapping"}>
+                                    <img
+                                        src="ScanRH.JPG"
+                                        alt="ScanRH"
+                                        className="scanrh-image w-64 mx-auto"
+                                    />
+                                </Link>
+                                <p className="mt-4">Analysez votre site carrières en 1 clic et découvrez les recommandations de l’IA</p>
+                            </div>
+                            <div className='text-center'>
+                                <Link href={"parsing"}>
+                                    <img
+                                        src="Docuparse.JPG"
+                                        alt="Docuparse"
+                                        className="scanrh-image w-64 mx-auto"
+                                    />
+                                </Link>
+                                <p className="mt-4">Scannez vos documents RH et interagissez avec eux de manière fluide</p>
+                            </div>
+                            <div className='text-center'>
+                                <Link href={"chatpdf"}>
+                                    <img
+                                        src="YoutubeScan.JPG"
+                                        alt="YoutubeScan"
+                                        className="scanrh-image w-64 mx-auto"
+                                    />
+                                </Link>
+                                <p className="mt-4">Importez vos vidéos Youtube de marque employeur et découvrez ce qu’en pensent vos futurs candidats</p>
+                            </div>
+                        </div>
                         <h2 className="text-3xl font-semibold py-7">Converser avec votre site web</h2>
                         <div><ChatbotForm/></div>
                     </>
                 ) : (
                   <div className='flex flex-col items-center py-14 mx-auto'>
+                    <h1 className="text-4xl font-semibold text-center py-7">Découvrez Superia,</h1>
+      <p className="text-xl text-center py-2.5 mx-40 px-64">
+      Découvrez Superia, la première plateforme pour la Marque Employeur utilisant l’IA générative
+      </p>
                     <div className='flex justify-center space-x-10'>
                     <div className='cursor-pointer m-10'><ScanRH_Video/></div>
                       <div className='cursor-pointer m-10'><Parsing_video/></div>
                      <div className='cursor-pointer m-10'><Youtube_video/></div>
                      </div>
                     <h2 className="text-3xl font-semibold py-7">Essayez maintenant !</h2>
-                    <p className='py-2.5 mx-40 px-64'>Découvrez la possibilité de discuter avec votre site web.</p>
+                    <p className='py-2.5 mx-40 px-64'>Discutez avec votre site carrière au moyen d’un chatbot et identifiez vos axes d’amélioration</p>
                     <div><ChatbotForm/></div>
                     </div>
                 )}
