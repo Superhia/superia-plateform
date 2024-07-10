@@ -1,6 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import ReCAPTCHA from 'react-google-recaptcha';
 
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
@@ -9,14 +8,34 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null); // State for reCAPTCHA token
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const loadRecaptchaScript = () => {
+      const script = document.createElement('script');
+      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+      script.async = true;
+      script.onload = () => {
+        if (window.grecaptcha) {
+          window.grecaptcha.ready(() => {
+            window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'login' }).then((token: string) => {
+              setRecaptchaToken(token);
+            });
+          });
+        }
+      };
+      document.body.appendChild(script);
+    };
+
+    loadRecaptchaScript();
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!recaptchaToken) {
-      setError('Please complete the reCAPTCHA.');
+      setError('reCAPTCHA verification failed. Please try again.');
       return;
     }
 
@@ -30,7 +49,6 @@ const Login = () => {
       });
 
       if (res.ok) {
-        console.log('Login successful, navigating to home page');
         router.push('/');
       } else {
         const data = await res.json();
@@ -68,10 +86,6 @@ const Login = () => {
             {showPassword ? 'Hide' : 'Show'}
           </button>
         </div>
-      <ReCAPTCHA
-        sitekey={RECAPTCHA_SITE_KEY || ''}
-        onChange={setRecaptchaToken}
-      />
       <button
         className='p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8'
         type="submit">Je me connecte</button>
