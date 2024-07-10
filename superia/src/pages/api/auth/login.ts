@@ -25,7 +25,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       const user = result.rows[0];
       
-      if (!user.confirmed) {
+      if (!user.confirmed && user.role !== 'admin') {
         return res.status(400).json({ message: 'Please confirm your email before logging in' });
       }
 
