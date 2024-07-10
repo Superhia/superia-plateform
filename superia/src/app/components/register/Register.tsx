@@ -1,8 +1,7 @@
 'use client'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import bcrypt from 'bcryptjs';
-import ReCAPTCHA from 'react-google-recaptcha';
 
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
@@ -11,17 +10,37 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [success, setSuccess] = useState('');  // New state for success message
+  const [success, setSuccess] = useState('');
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null); // State for reCAPTCHA token
   const router = useRouter();
 
+  useEffect(() => {
+    const loadRecaptchaScript = () => {
+      const script = document.createElement('script');
+      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+      script.async = true;
+      script.onload = () => {
+        if (window.grecaptcha) {
+          window.grecaptcha.ready(() => {
+            window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'register' }).then((token: string) => {
+              setRecaptchaToken(token);
+            });
+          });
+        }
+      };
+      document.body.appendChild(script);
+    };
+
+    loadRecaptchaScript();
+  }, []);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setError('');  // Clear previous errors
-    setSuccess('');  // Clear previous success message
+    setError('');
+    setSuccess('');
 
     if (!recaptchaToken) {
-      setError('Please complete the reCAPTCHA.');
+      setError('reCAPTCHA verification failed. Please try again.');
       return;
     }
 
@@ -53,29 +72,25 @@ const Register = () => {
         required
       />
       <div className='relative mb-5'>
-          <input
-            className='block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6'
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            required
-          />
-          <button
-            type="button"
-            className='absolute inset-y-0 right-0 flex items-center px-4 text-gray-600'
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? 'Hide' : 'Show'}
-          </button>
-        </div>
-      <ReCAPTCHA
-        sitekey={RECAPTCHA_SITE_KEY || ''}
-        onChange={setRecaptchaToken}
-      />
+        <input
+          className='block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6'
+          type={showPassword ? "text" : "password"}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          required
+        />
+        <button
+          type="button"
+          className='absolute inset-y-0 right-0 flex items-center px-4 text-gray-600'
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? 'Hide' : 'Show'}
+        </button>
+      </div>
       {success && <p style={{ color: 'green' }}>{success}</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <button 
+      <button
         className='p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8'
         type="submit"
       >

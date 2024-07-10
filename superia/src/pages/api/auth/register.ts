@@ -23,7 +23,7 @@ const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
 const transporter = nodemailer.createTransport({
   host: EMAIL_HOST,
   port: EMAIL_PORT,
-  secure: EMAIL_PORT === 465, // true for port 465, false for other ports
+  secure: EMAIL_PORT === 465,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD,
@@ -31,13 +31,16 @@ const transporter = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false,
   },
-  logger: true, // Enable logging
-  debug: true, // Enable debug mode
+  logger: true,
+  debug: true,
 });
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     const { email, password, recaptchaToken } = req.body;
+    const client = await pool.connect();
+    const token = crypto.randomBytes(32).toString('hex');
+    const confirmationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/confirm?token=${token}`;
 
     // Verify reCAPTCHA
     try {
@@ -56,13 +59,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       return res.status(500).json({ message: 'Internal server error during reCAPTCHA verification.' });
     }
 
-    const client = await pool.connect();
-    const token = crypto.randomBytes(32).toString('hex');
-    const confirmationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/confirm?token=${token}`;
-
     try {
       await client.query('INSERT INTO users (email, password, confirmation_token) VALUES ($1, $2, $3)', [email, password, token]);
-
+      
       await transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: email,
@@ -73,7 +72,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       res.status(200).json({ message: 'User registered successfully. Please check your email to confirm your registration.' });
     } catch (err) {
       const error = err as PgError;
-      if (error.code === '23505') {  // Unique violation
+      if (error.code === '23505') {
         res.status(400).json({ message: 'Email already exists' });
       } else {
         console.error('Error registering user:', error);
