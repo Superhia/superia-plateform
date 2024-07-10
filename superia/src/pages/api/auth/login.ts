@@ -3,6 +3,7 @@ import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { serialize } from 'cookie';
+import axios from 'axios';
 
 const pool = new Pool({
   user: process.env.DATABASE_USER,
@@ -12,10 +13,29 @@ const pool = new Pool({
   port: parseInt(process.env.DATABASE_PORT || '5432', 10),
 });
 
+const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
-    const { email, password } = req.body;
+    const { email, password, recaptchaToken } = req.body;
     const client = await pool.connect();
+
+    // Verify reCAPTCHA
+    try {
+      const recaptchaResponse = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, {}, {
+        params: {
+          secret: RECAPTCHA_SECRET_KEY,
+          response: recaptchaToken,
+        },
+      });
+
+      if (!recaptchaResponse.data.success) {
+        return res.status(400).json({ message: 'reCAPTCHA verification failed. Please try again.' });
+      }
+    } catch (error) {
+      console.error('Error verifying reCAPTCHA:', error);
+      return res.status(500).json({ message: 'Internal server error during reCAPTCHA verification.' });
+    }
 
     try {
       const result = await client.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -24,7 +44,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       }
 
       const user = result.rows[0];
-      
+
       if (!user.confirmed && user.role !== 'admin') {
         return res.status(400).json({ message: 'Please confirm your email before logging in' });
       }

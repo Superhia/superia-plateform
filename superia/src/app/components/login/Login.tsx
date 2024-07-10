@@ -1,23 +1,32 @@
-'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import ReCAPTCHA from 'react-google-recaptcha';
+
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null); // State for reCAPTCHA token
   const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!recaptchaToken) {
+      setError('Please complete the reCAPTCHA.');
+      return;
+    }
+
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, recaptchaToken }),
       });
 
       if (res.ok) {
@@ -59,6 +68,10 @@ const Login = () => {
             {showPassword ? 'Hide' : 'Show'}
           </button>
         </div>
+      <ReCAPTCHA
+        sitekey={RECAPTCHA_SITE_KEY || ''}
+        onChange={setRecaptchaToken}
+      />
       <button
         className='p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8'
         type="submit">Je me connecte</button>
