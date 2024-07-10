@@ -1,8 +1,9 @@
-'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import bcrypt from 'bcryptjs';
 import ReCAPTCHA from 'react-google-recaptcha';
+
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [success, setSuccess] = useState('');  // New state for success message
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null); // State for reCAPTCHA token
   const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -17,13 +19,18 @@ const Register = () => {
     setError('');  // Clear previous errors
     setSuccess('');  // Clear previous success message
 
+    if (!recaptchaToken) {
+      setError('Please complete the reCAPTCHA.');
+      return;
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password: hashedPassword }),
+      body: JSON.stringify({ email, password: hashedPassword, recaptchaToken }),
     });
 
     if (res.ok) {
@@ -61,6 +68,10 @@ const Register = () => {
             {showPassword ? 'Hide' : 'Show'}
           </button>
         </div>
+      <ReCAPTCHA
+        sitekey={RECAPTCHA_SITE_KEY || ''}
+        onChange={setRecaptchaToken}
+      />
       {success && <p style={{ color: 'green' }}>{success}</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <button 

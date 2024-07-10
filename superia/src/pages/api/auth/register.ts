@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { Pool } from 'pg';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
+import axios from 'axios';
 
 const pool = new Pool({
   user: process.env.DATABASE_USER,
@@ -14,8 +15,10 @@ const pool = new Pool({
 interface PgError extends Error {
   code?: string;
 }
+
 const EMAIL_HOST = process.env.EMAIL_HOST || 'smtp.hostinger.com';
 const EMAIL_PORT = parseInt(process.env.EMAIL_PORT || '587', 10);
+const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
 
 const transporter = nodemailer.createTransport({
   host: EMAIL_HOST,
@@ -34,14 +37,32 @@ const transporter = nodemailer.createTransport({
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
-    const { email, password } = req.body;
+    const { email, password, recaptchaToken } = req.body;
+
+    // Verify reCAPTCHA
+    try {
+      const recaptchaResponse = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, {}, {
+        params: {
+          secret: RECAPTCHA_SECRET_KEY,
+          response: recaptchaToken,
+        },
+      });
+
+      if (!recaptchaResponse.data.success) {
+        return res.status(400).json({ message: 'reCAPTCHA verification failed. Please try again.' });
+      }
+    } catch (error) {
+      console.error('Error verifying reCAPTCHA:', error);
+      return res.status(500).json({ message: 'Internal server error during reCAPTCHA verification.' });
+    }
+
     const client = await pool.connect();
     const token = crypto.randomBytes(32).toString('hex');
     const confirmationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/confirm?token=${token}`;
 
     try {
       await client.query('INSERT INTO users (email, password, confirmation_token) VALUES ($1, $2, $3)', [email, password, token]);
-      
+
       await transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: email,
