@@ -1,7 +1,8 @@
+'use client'
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
-const Confirm = () => {
+const ConfirmPage = () => {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const router = useRouter();
   const { token } = router.query;
@@ -32,9 +33,9 @@ const Confirm = () => {
   }
 
   return (
-    <div className="container">
+    <div className="container mx-auto text-center mt-10">
       {status === 'success' && (
-        <div className="text-center mt-10">
+        <div>
           <h1 className="text-2xl font-bold mb-4">Email Confirmed</h1>
           <p>Your email has been confirmed successfully. You can now log in.</p>
           <button
@@ -46,7 +47,7 @@ const Confirm = () => {
         </div>
       )}
       {status === 'error' && (
-        <div className="text-center mt-10">
+        <div>
           <h1 className="text-2xl font-bold mb-4">Error</h1>
           <p>There was an error confirming your email. Please try again or contact support.</p>
         </div>
@@ -55,4 +56,4 @@ const Confirm = () => {
   );
 };
 
-export default Confirm;
+export default ConfirmPage;
