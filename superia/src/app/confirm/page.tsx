@@ -1,14 +1,17 @@
-'use client'
+'use client';
+
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const ConfirmPage = () => {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const router = useRouter();
-  const { token } = router.query;
+  const searchParams = useSearchParams();
+  const token = searchParams ? searchParams.get('token') : null;
 
   useEffect(() => {
     if (!token) {
+      setStatus('error');
       return;
     }
 
