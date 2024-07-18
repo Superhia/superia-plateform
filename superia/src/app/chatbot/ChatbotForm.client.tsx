@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
 import Cookies from 'js-cookie';
 
-const socket = io('http://127.0.0.1:8000', {
+const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
     path: '/socket.io',
     transports: ['websocket', 'polling']
 });
@@ -18,6 +18,8 @@ interface ProgressData {
 
 const ChatbotForm = () => {
   const [domain, setDomain] = useState<string>('');
+  const [assistantName, setAssistantName] = useState<string>('Custom Assistant');
+  const [instructions, setInstructions] = useState<string>('You are a helpful assistant that answers questions based on the document.');
   const [question, setQuestion] = useState<string>('');
   const [assistantId, setAssistantId] = useState<string>('');
   const [responses, setResponses] = useState<{ question: string; response: string }[]>([]);
@@ -35,14 +37,13 @@ const ChatbotForm = () => {
   const requestInProgress = useRef(false);
 
   useEffect(() => {
-    // Call the API to validate session
     const validateSession = async () => {
       try {
         const response = await fetch('/api/auth/validate-session');
         const data = await response.json();
-        setIsLoggedIn(data.isLoggedIn); // Set based on the response from the server
+        setIsLoggedIn(data.isLoggedIn);
         if (data.isLoggedIn) {
-          setRequestLimit(1000); // Set the request limit for logged in users
+          setRequestLimit(1000);
         }
         console.log('Logged In Status:', data.isLoggedIn);
       } catch (error) {
@@ -60,12 +61,12 @@ const ChatbotForm = () => {
     });
 
     socket.on('update_progress', (data: ProgressData) => {
-      console.log('Progress update received', data); // Debug log
+      console.log('Progress update received', data);
       setProgress(data.progress);
       setStatus(data.status);
       if (data.log) {
         setLog((prevLog) => [...prevLog, data.log!]);
-        setCurrentUrl(data.log); // Update the current URL being crawled
+        setCurrentUrl(data.log);
       }
       if (data.progress === 100) {
         setLoading(false);
@@ -87,8 +88,32 @@ const ChatbotForm = () => {
     };
   }, []);
 
-  const handleScrapeSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const preconfiguredAssistants = [
+    {
+      name: 'Analyse Marque Employeur',
+      instructions: "Génère du contenu de plusieurs rubriques relatives à la marque employeur d'une entreprise. Voici la rubrique à inclure : 'Analyse générale de la marque employeur' avec les sous-rubriques Proposition de valeur et Culture d'entreprise.Assure-toi de bien Retirer les 【3:0†source]. "
+    },
+    {
+      name: 'Candidate persona',
+      instructions: "Génère du contenu de plusieurs rubriques relatives à la marque employeur d'une entreprise. Voici la rubrique à inclure : 'Proposer un candidate persona' principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels. Assure-toi de bien Retirer les 【3:0†source]. "
+    },
+    {
+      name: 'Employee Value Propositions',
+      instructions: "Génère du contenu de plusieurs rubriques relatives à la marque employeur d'une entreprise. Voici la rubrique à inclure : 'Définir 3 Employee Value Propositions (EVP)' qui mettent en avant les avantages uniques de travailler pour l'entreprise.Assure-toi de bien Retirer les 【3:0†source]. "
+    }
+  ];
+
+  const handlePreconfiguredSubmit = (configIndex: number) => {
+    const config = preconfiguredAssistants[configIndex];
+    setAssistantName(config.name);
+    setInstructions(config.instructions);
+    handleScrapeSubmit();
+  };
+
+  const handleScrapeSubmit = async (event?: React.FormEvent<HTMLFormElement>) => {
+    if (event) {
+      event.preventDefault();
+    }
     if (requestInProgress.current || requestCount >= requestLimit) return;
 
     setLoading(true);
@@ -97,14 +122,15 @@ const ChatbotForm = () => {
     setStatus('');
     setLog([]);
     requestInProgress.current = true;
+    setStreaming(true);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/chatbot', {
+      const response = await fetch('https://superia.northeurope.cloudapp.azure.com/chatbot', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ domain }),
+        body: JSON.stringify({ domain, assistant_name: assistantName, instructions }),
       });
 
       if (!response.ok) {
@@ -112,17 +138,49 @@ const ChatbotForm = () => {
         throw new Error(data.error || `An error occurred: ${response.statusText}`);
       }
 
-      const data = await response.json();
-      setAssistantId(data.assistant_id);  // Assuming the API returns an 'assistant_id'
-      setRequestCount((prevCount) => prevCount + 1); // Increment request count
-    } catch (error) {
-      console.error('Error fetching scrape data:', error);
-      setError((error as Error).message);
-    } finally {
-      setLoading(false);
-      requestInProgress.current = false;
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('Reader not available');
+      }
+
+      const decoder = new TextDecoder('utf-8');
+      let done = false;
+      let responseContent = '';
+
+      const newResponses = [...responses, { question: 'Scraping in progress', response: '' }];
+      const lastIndex = newResponses.length - 1;
+      setResponses(newResponses);
+
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true });
+          responseContent += chunk;
+
+          // Update the response state incrementally
+          newResponses[lastIndex].response = responseContent;
+          setResponses([...newResponses]);
+        }
+      }
+
+      console.log('Final response content:', responseContent);
+    const match = responseContent.match(/assistant_id: (\w+)/);
+    if (match) {
+      setAssistantId(match[1]); // Extract assistant_id from the stream
+    } else {
+      throw new Error('assistant_id not found in the response');
     }
-  };
+    setRequestCount((prevCount) => prevCount + 1);
+  } catch (error) {
+    console.error('Error fetching scrape data:', error);
+    setError((error as Error).message);
+  } finally {
+    setLoading(false);
+    requestInProgress.current = false;
+    setStreaming(false);
+  }
+};
 
   const handleAsk = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -134,7 +192,7 @@ const ChatbotForm = () => {
     setStreaming(false);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/ask', {
+      const response = await fetch('https://superia.northeurope.cloudapp.azure.com/ask', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -170,29 +228,27 @@ const ChatbotForm = () => {
           const chunk = decoder.decode(value, { stream: true });
           responseContent += chunk;
 
-          // Update the response state incrementally
           newResponses[lastIndex].response = responseContent;
           setResponses([...newResponses]);
         }
       }
 
       console.log('Final response content:', responseContent);
-      setRequestCount((prevCount) => prevCount + 1); // Increment request count
+      setRequestCount((prevCount) => prevCount + 1);
     } catch (error) {
       console.error('Error querying assistant:', error);
       setError('Failed to get a response from the assistant.');
     } finally {
       setLoading(false);
       requestInProgress.current = false;
-      setQuestion(''); // Clear the question input after submission
+      setQuestion('');
     }
   };
 
   const handleLogin = () => {
-    // Set loggedIn to true and upgrade the request limit
     setIsLoggedIn(true);
-    setRequestLimit(1000); // Upgrade the request limit on login
-    setRequestCount(0); // Reset request count on login
+    setRequestLimit(1000);
+    setRequestCount(0);
   };
 
   return (
@@ -203,17 +259,28 @@ const ChatbotForm = () => {
           className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6"
           type="url"
           id="domain"
+          placeholder='https://lasuperagence.com'
           value={domain}
           onChange={(e) => setDomain(e.target.value)}
           required
           disabled={requestCount >= requestLimit}
         />
-        <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading || requestCount >= requestLimit}>
-          {loading ? 'Processing...' : 'Envoyer'}
-        </button>
       </form>
 
-      {loading && !streaming && (
+      <div className="preconfigured-buttons">
+        {preconfiguredAssistants.map((config, index) => (
+          <button
+            key={index}
+            className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
+            onClick={() => handlePreconfiguredSubmit(index)}
+            disabled={loading || requestCount >= requestLimit}
+          >
+            {config.name}
+          </button>
+        ))}
+      </div>
+
+      {loading && (
         <div className="flex flex-col items-center py-7">
           <ClipLoader color="#0000ff" loading={loading} size={50} />
           <div className="mt-2">{status}</div>
@@ -241,13 +308,14 @@ const ChatbotForm = () => {
         </div>
       )}
 
-      {assistantId && requestCount < requestLimit &&(
+      {assistantId && requestCount < requestLimit && (
         <form onSubmit={handleAsk} className="ask-form">
           <label htmlFor="question">Question:</label>
           <input
             className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6"
             type="text"
             id="question"
+            placeholder='Résume moi ce texte'
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             required
@@ -264,7 +332,7 @@ const ChatbotForm = () => {
           {!isLoggedIn && (
             <Link href="/login">
               <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-violet-900 ring-1 ring-inset ring-violet-300 text-xl 2xl:leading-8">
-              Découvrir toute la solution
+                Découvrir toute la solution
               </button>
             </Link>
           )}

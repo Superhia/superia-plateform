@@ -81,8 +81,6 @@ export default function Home() {
                                 <p className="mt-4">Importez vos vidéos Youtube de marque employeur et découvrez ce qu’en pensent vos futurs candidats</p>
                             </div>
                         </div>
-                        <h2 className="text-3xl font-semibold py-7">Converser avec votre site web</h2>
-                        <div><ChatbotForm/></div>
                     </>
                 ) : (
                   <div className='flex flex-col items-center py-14 mx-auto'>
@@ -95,9 +93,6 @@ export default function Home() {
                       <div className='cursor-pointer m-10'><Parsing_video/></div>
                      <div className='cursor-pointer m-10'><Youtube_video/></div>
                      </div>
-                    <h2 className="text-3xl font-semibold py-7">Essayez maintenant !</h2>
-                    <p className='py-2.5 mx-40 px-64'>Discutez avec votre site carrière au moyen d’un chatbot et identifiez vos axes d’amélioration</p>
-                    <div><ChatbotForm/></div>
                     </div>
                 )}
             </div>
