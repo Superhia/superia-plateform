@@ -91,15 +91,15 @@ const ChatbotForm = () => {
   const preconfiguredAssistants = [
     {
       name: 'Analyse Marque Employeur',
-      instructions: "Génère du contenu de plusieurs rubriques relatives à la marque employeur d'une entreprise. Voici la rubrique à inclure : 'Analyse générale de la marque employeur' avec les sous-rubriques Proposition de valeur et Culture d'entreprise.Assure-toi de bien Retirer les 【3:0†source]. "
+      instructions: " 'Analyse générale de la marque employeur' avec les sous-rubriques Proposition de valeur et Culture d'entreprise.Assure-toi de bien Retirer les 【3:0†source]. "
     },
     {
       name: 'Candidate persona',
-      instructions: "Génère du contenu de plusieurs rubriques relatives à la marque employeur d'une entreprise. Voici la rubrique à inclure : 'Proposer un candidate persona' principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels. Assure-toi de bien Retirer les 【3:0†source]. "
+      instructions: " 'Proposer un candidate persona' principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels. Assure-toi de bien Retirer les 【3:0†source]. "
     },
     {
       name: 'Employee Value Propositions',
-      instructions: "Génère du contenu de plusieurs rubriques relatives à la marque employeur d'une entreprise. Voici la rubrique à inclure : 'Définir 3 Employee Value Propositions (EVP)' qui mettent en avant les avantages uniques de travailler pour l'entreprise.Assure-toi de bien Retirer les 【3:0†source]. "
+      instructions: " 'Définir 3 Employee Value Propositions (EVP)' qui mettent en avant les avantages uniques de travailler pour l'entreprise.Assure-toi de bien Retirer les 【3:0†source]. "
     }
   ];
 
@@ -315,7 +315,7 @@ const ChatbotForm = () => {
             className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6"
             type="text"
             id="question"
-            placeholder='Résume moi ce texte'
+            placeholder='Dis moi en plus sur : '
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             required
