@@ -1,0 +1,155 @@
+import React, { useState, useEffect, FormEvent, useRef } from 'react';
+import { io, Socket } from 'socket.io-client';
+import ClipLoader from 'react-spinners/ClipLoader';
+
+const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
+    path: '/socket.io',
+    transports: ['websocket', 'polling']
+});
+const AgentComponent: React.FC = () => {
+    const [question, setQuestion] = useState<string>('');
+    const [responses, setResponses] = useState<{ question: string, response: string }[]>([]);
+    const [progress, setProgress] = useState<number>(0);
+    const [fetchedFiles, setFetchedFiles] = useState<File[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [status, setStatus] = useState<string>('');
+    const [currentUrl, setCurrentUrl] = useState<string>('');
+    const [streaming, setStreaming] = useState<boolean>(false);
+
+    useEffect(() => {
+        fetchPDFFilesAndSetFiles();
+
+        // Handle socket.io events
+        socket.on('update_progress', (data: { progress: number; status: string; log: string }) => {
+            setProgress(data.progress);
+            setStatus(data.status);
+            setCurrentUrl(data.log); // Adjust this if log contains the current URL or status you want to show
+        });
+
+        return () => {
+            socket.off('update_progress');
+        };
+    }, []);
+
+    const handleQuestionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setQuestion(e.target.value);
+    };
+
+    const fetchPDFFilesAndSetFiles = async () => {
+        try {
+            const fileUrls = [
+                '/ebookExperienceCandidat_nosummary.pdf',
+                '/Livre_blanc_Ambassadeur_Marque_Employeur.pdf',
+            ];
+
+            const fileFetchPromises = fileUrls.map(async (url) => {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                return new File([blob], url.split('/').pop()!, { type: blob.type });
+            });
+
+            const files = await Promise.all(fileFetchPromises);
+            setFetchedFiles(files);
+        } catch (error) {
+            console.error('Error fetching the files:', error);
+            alert('Failed to fetch the files.');
+        }
+    };
+
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+
+        if (fetchedFiles.length === 0) {
+            setResponses([{ question, response: 'No files fetched' }]);
+            return;
+        }
+
+        const formData = new FormData();
+        fetchedFiles.forEach((file) => formData.append('file', file));
+        formData.append('question', question);
+
+        setLoading(true);
+
+        try {
+            const response = await fetch('https://superia.northeurope.cloudapp.azure.com/agent', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.body) {
+                throw new Error('ReadableStream not supported in this browser.');
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+            let done = false;
+            let responseContent = '';
+
+            const newResponses = [...responses, { question, response: '' }];
+            const lastIndex = newResponses.length - 1;
+            setResponses(newResponses);
+
+            while (!done) {
+                const { value, done: readerDone } = await reader.read();
+                done = readerDone;
+                if (value) {
+                    setStreaming(true);
+                    const chunk = decoder.decode(value, { stream: true });
+                    responseContent += chunk;
+
+                    newResponses[lastIndex].response = responseContent;
+                    setResponses([...newResponses]);
+                }
+            }
+
+            console.log('Final response content:', responseContent);
+        } catch (error) {
+            console.error('Error querying assistant:', error);
+            setResponses([{ question, response: 'Failed to get a response from the assistant.' }]);
+        } finally {
+            setLoading(false);
+            setStreaming(false);
+            setQuestion('');
+        }
+    };
+
+    return (
+        <div>
+            <form onSubmit={handleSubmit}>
+                <div>
+                    <input 
+                    placeholder='Entre ta question'
+                    className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6"
+                    type="text" id="question" value={question} onChange={handleQuestionChange} />
+                </div>
+                <button 
+                className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
+                type="submit">Submit</button>
+            </form>
+            {loading && !streaming &&(
+                <div className="flex flex-col items-center py-7">
+                    <ClipLoader color="#0000ff" loading={loading} size={50} />
+                    <div className="mt-2">{status}</div>
+                    <div>Currently Crawling: {currentUrl}</div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4">
+                        <div
+                            className="bg-blue-900 h-2.5 rounded-full"
+                            style={{ width: `${progress}%` }}
+                        ></div>
+                        <div>{progress}%</div>
+                    </div>
+                </div>
+            )}
+            <div>
+                {responses.map((res, index) => (
+                    <div key={index}>
+                        <strong>Q: {res.question}</strong>
+                        <p>A: {res.response}</p>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+export default AgentComponent;

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from "next/link";
 import Logout from "./components/Logout";
 import ScanRH_Video from "./components/ScanRH_video.client"
-import ChatbotForm from './chatbot/ChatbotForm.client';
+import AgentForm from "./chatbot/AgentForm.client"
 import Parsing_video from './components/Parsing_video.client';
 import Youtube_video from './components/Youtube_video.client';
 
@@ -81,6 +81,8 @@ export default function Home() {
                                 <p className="mt-4">Importez vos vidéos Youtube de marque employeur et découvrez ce qu’en pensent vos futurs candidats</p>
                             </div>
                         </div>
+                        <div className='flex flex-col items-center py-7 mx-auto'><h2 className="text-2xl font-semibold text-center py-5">Converser avec notre agent ! </h2>
+                      <AgentForm/></div>
                     </>
                 ) : (
                   <div className='flex flex-col items-center py-14 mx-auto'>
@@ -93,6 +95,8 @@ export default function Home() {
                       <div className='cursor-pointer m-10'><Parsing_video/></div>
                      <div className='cursor-pointer m-10'><Youtube_video/></div>
                      </div>
+                     <h2 className="text-2xl font-semibold text-center py-5">Essayer Maintenant ! </h2>
+                     <div><AgentForm/></div>
                     </div>
                 )}
             </div>

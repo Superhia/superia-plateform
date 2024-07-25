@@ -271,7 +271,7 @@ const ChatbotForm = () => {
         {preconfiguredAssistants.map((config, index) => (
           <button
             key={index}
-            className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
+            className="p-5 pl-20 pr-20 m-5 mx-4 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
             onClick={() => handlePreconfiguredSubmit(index)}
             disabled={loading || requestCount >= requestLimit}
           >

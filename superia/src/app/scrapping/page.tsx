@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ScrappingForm  from './scrappingForm.client';
+import ChatbotForm from "../chatbot/ChatbotForm.client";
 import BPIFranceForm  from './BPIFranceForm.client';
 import AXAForm  from './AXAForm.client';
 import OrangeForm  from './OrangeForm.client';
@@ -26,15 +27,12 @@ export default function Scrapping() {
           <p className="text-center py-2.5 mx-40 px-64">Notre outil ScanRH scrute votre site carrière pour en extraire des données précieuses, vous offrant ainsi une vision claire de votre image de marque employeur et de la manière dont elle est perçue par les candidats potentiels.</p>
        <div className="mx-auto py-14 cursor-pointer"><ImageScanRH/></div>
         <div className="mx-auto ">
-        <ScrappingForm />
+        <ChatbotForm />
       </div>
       <h4>Testez notre outil avec un des sites déjà analysé</h4>
       <div className="mx-auto text-sm grid grid-cols-6 gap-4">
         <div className="col-start-1 col-end-3"><BPIFranceForm/> <LaPosteForm/></div> <div className="col-start-3 col-end-5"><AXAForm/> <DecathlonForm/></div> <div className="col-start-5 col-end-7"><OrangeForm/> <GeneraliForm/></div>
     </div>
-   <div className="mx-auto text-2xl">
-   <button className="p-5 pl-20 pr-20 m-10 rounded-md border-0  text-blue-900 ring-1 ring-inset ring-blue-300 2xl:text-2xl 2xl:leading-8"><Link href={"chatbot"}>Pose tes questions à ton site web</Link></button>
-   </div>
     </main>
   );
 }
