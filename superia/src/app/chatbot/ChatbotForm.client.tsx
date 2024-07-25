@@ -280,7 +280,7 @@ const ChatbotForm = () => {
         ))}
       </div>
 
-      {loading && (
+      {loading && !streaming && (
         <div className="flex flex-col items-center py-7">
           <ClipLoader color="#0000ff" loading={loading} size={50} />
           <div className="mt-2">{status}</div>
