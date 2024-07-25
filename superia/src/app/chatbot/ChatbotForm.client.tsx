@@ -122,7 +122,7 @@ const ChatbotForm = () => {
     setStatus('');
     setLog([]);
     requestInProgress.current = true;
-    setStreaming(true);
+    setStreaming(false);
 
     try {
       const response = await fetch('https://superia.northeurope.cloudapp.azure.com/chatbot', {
@@ -155,32 +155,32 @@ const ChatbotForm = () => {
         const { value, done: readerDone } = await reader.read();
         done = readerDone;
         if (value) {
+          setStreaming(true);
           const chunk = decoder.decode(value, { stream: true });
           responseContent += chunk;
 
-          // Update the response state incrementally
           newResponses[lastIndex].response = responseContent;
           setResponses([...newResponses]);
         }
       }
 
       console.log('Final response content:', responseContent);
-    const match = responseContent.match(/assistant_id: (\w+)/);
-    if (match) {
-      setAssistantId(match[1]); // Extract assistant_id from the stream
-    } else {
-      throw new Error('assistant_id not found in the response');
+      const match = responseContent.match(/assistant_id: (\w+)/);
+      if (match) {
+        setAssistantId(match[1]); // Extract assistant_id from the stream
+      } else {
+        throw new Error('assistant_id not found in the response');
+      }
+      setRequestCount((prevCount) => prevCount + 1);
+    } catch (error) {
+      console.error('Error fetching scrape data:', error);
+      setError((error as Error).message);
+    } finally {
+      setLoading(false);
+      requestInProgress.current = false;
+      setStreaming(false);
     }
-    setRequestCount((prevCount) => prevCount + 1);
-  } catch (error) {
-    console.error('Error fetching scrape data:', error);
-    setError((error as Error).message);
-  } finally {
-    setLoading(false);
-    requestInProgress.current = false;
-    setStreaming(false);
-  }
-};
+  };
 
   const handleAsk = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
