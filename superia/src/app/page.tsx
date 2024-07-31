@@ -95,7 +95,7 @@ export default function Home() {
                       <div className='cursor-pointer m-10'><Parsing_video/></div>
                      <div className='cursor-pointer m-10'><Youtube_video/></div>
                      </div>
-                     <h2 className="text-2xl font-semibold text-center py-5">Essayer Maintenant ! </h2>
+                     <h2 className="text-2xl font-semibold text-center py-5">Conversez avec notre agent ! </h2>
                      <div><AgentForm/></div>
                     </div>
                 )}

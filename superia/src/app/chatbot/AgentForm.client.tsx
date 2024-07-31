@@ -1,11 +1,16 @@
-import React, { useState, useEffect, FormEvent, useRef } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import { io, Socket } from 'socket.io-client';
 import ClipLoader from 'react-spinners/ClipLoader';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
     path: '/socket.io',
     transports: ['websocket', 'polling']
 });
+
+const MySwal = withReactContent(Swal);
+
 const AgentComponent: React.FC = () => {
     const [question, setQuestion] = useState<string>('');
     const [responses, setResponses] = useState<{ question: string, response: string }[]>([]);
@@ -15,6 +20,8 @@ const AgentComponent: React.FC = () => {
     const [status, setStatus] = useState<string>('');
     const [currentUrl, setCurrentUrl] = useState<string>('');
     const [streaming, setStreaming] = useState<boolean>(false);
+    const [requestCount, setRequestCount] = useState<number>(0); // State to track number of requests
+    const isLoggedIn = false; // Mock login status, replace with actual login logic
 
     useEffect(() => {
         fetchPDFFilesAndSetFiles();
@@ -58,6 +65,21 @@ const AgentComponent: React.FC = () => {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+
+        if (!isLoggedIn && requestCount >= 2) {
+            MySwal.fire({
+                icon: 'warning',
+                title: 'Login Required',
+                html: (
+                    <div>
+                        You have reached the maximum number of requests allowed without logging in.
+                        Please <a href="/login" style={{ color: 'blue' }}>log in</a> to continue.
+                    </div>
+                ),
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
 
         if (fetchedFiles.length === 0) {
             setResponses([{ question, response: 'No files fetched' }]);
@@ -103,6 +125,9 @@ const AgentComponent: React.FC = () => {
             }
 
             console.log('Final response content:', responseContent);
+            if (!isLoggedIn) {
+                setRequestCount(requestCount + 1); // Increment the request count for non-logged-in users
+            }
         } catch (error) {
             console.error('Error querying assistant:', error);
             setResponses([{ question, response: 'Failed to get a response from the assistant.' }]);
@@ -113,12 +138,21 @@ const AgentComponent: React.FC = () => {
         }
     };
 
+    // Function to parse and replace ** ** with <strong> tags
+    const parseAndStylizeText = (text: string) => {
+        const regex = /\*\*(.*?)\*\*/g;
+        const parts = text.split(regex);
+        return parts.map((part, index) => 
+            index % 2 === 1 ? <strong key={index}>{part}</strong> : part
+        );
+    };
+
     return (
         <div>
             <form onSubmit={handleSubmit}>
                 <div>
                     <input 
-                    placeholder='Entre ta question'
+                    placeholder='Enter your question'
                     className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6"
                     type="text" id="question" value={question} onChange={handleQuestionChange} />
                 </div>
@@ -140,11 +174,11 @@ const AgentComponent: React.FC = () => {
                     </div>
                 </div>
             )}
-            <div>
+            <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                 {responses.map((res, index) => (
                     <div key={index}>
                         <strong>Q: {res.question}</strong>
-                        <p>A: {res.response}</p>
+                        <p>A: {parseAndStylizeText(res.response)}</p>
                     </div>
                 ))}
             </div>
