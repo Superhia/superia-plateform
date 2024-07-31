@@ -47,6 +47,9 @@ const AgentComponent: React.FC = () => {
             const fileUrls = [
                 '/ebookExperienceCandidat_nosummary.pdf',
                 '/Livre_blanc_Ambassadeur_Marque_Employeur.pdf',
+                '/livre_sitecarriere_10_GV.pdf',
+                '/livre_sitecarriere_16.pdf',
+                '/Livre-blanc-neojobs.pdf',
             ];
 
             const fileFetchPromises = fileUrls.map(async (url) => {
