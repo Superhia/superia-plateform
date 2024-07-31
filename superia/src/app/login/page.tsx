@@ -22,13 +22,10 @@ const LoginPage = () => {
       Superia n’est qu’à quelques clics ! Pour accéder aux services proposés par Superia, identifiez-vous ou créez un nouveau compte.
       </p>
       <div className="flex justify-center items-center bg-white">
-        <div className="w-1/2 text-center mx-32">
-          <h2 className="text-2xl font-semibold py-7">Vous avez déjà un compte ? Saisissez votre email et votre mot de passe pour aller sur la plateforme.</h2>
+        <div className="text-center mx-32">
+          <h2 className="text-2xl font-semibold py-7">Saisissez votre email et votre mot de passe pour aller sur la plateforme.</h2>
           <Login />
-        </div>
-        <div className="w-1/2 text-center mx-32">
-          <h2 className="text-2xl font-semibold py-7">Inscrivez-vous et découvrez la pleine puissance de Superia ! </h2>
-          <Register />
+          <p>Vous n'avez pas encore de compte ?</p> <button className='text-sky-700'><a href='/register'>Inscription</a></button>
         </div>
       </div>
     </div>

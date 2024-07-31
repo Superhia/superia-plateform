@@ -8,6 +8,9 @@ const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState(''); // New state for phone number
+  const [name, setName] = useState(''); // New state for name
+  const [surname, setSurname] = useState(''); // New state for surname
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [success, setSuccess] = useState('');
@@ -50,7 +53,7 @@ const Register = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password: hashedPassword, recaptchaToken }),
+      body: JSON.stringify({ email, password: hashedPassword, phone, name, surname, recaptchaToken }),
     });
 
     if (res.ok) {
@@ -70,6 +73,29 @@ const Register = () => {
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Email"
         required
+      />
+      <input
+        className='block w-full mb-5 rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6'
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Name"
+        required
+      />
+      <input
+        className='block w-full mb-5 rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6'
+        type="text"
+        value={surname}
+        onChange={(e) => setSurname(e.target.value)}
+        placeholder="Surname"
+        required
+      />
+      <input
+        className='block w-full mb-5 rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6'
+        type="tel"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        placeholder="Phone (optional)"
       />
       <div className='relative mb-5'>
         <input
