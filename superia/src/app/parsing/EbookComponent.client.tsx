@@ -101,7 +101,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
             console.log('Connected to Socket.IO server');
         });
 
-        socket.on('update_progress', (data: ProgressData) => {
+        socket.on('Préchauffage du transistor de Superia', (data: ProgressData) => {
             console.log('Progress update received', data); // Debug log
             setProgress(data.progress);
             setStatus(data.status);
@@ -123,7 +123,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
         });
 
         return () => {
-            socket.off('update_progress');
+            socket.off('Préchauffage du transistor de Superia');
             socket.off('upload_complete');
         };
     }, []);
@@ -144,7 +144,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
                 console.log('Connected to Socket.IO server');
             });
 
-            socket.on('update_progress', (data: ProgressData) => {
+            socket.on('Préchauffage du transistor de Superia', (data: ProgressData) => {
                 console.log('Progress update received', data); // Debug log
                 setProgress(data.progress);
                 setStatus(data.status);
@@ -166,7 +166,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
             });
 
             return () => {
-                socket.off('update_progress');
+                socket.off('Préchauffage du transistor de Superia');
                 socket.off('response_complete');
             };
         }, []);

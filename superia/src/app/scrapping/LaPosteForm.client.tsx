@@ -27,7 +27,7 @@ const OrangeForm: React.FC = () => {
             console.log('Connected to Socket.IO server');
         });
 
-        socket.on('update_progress', (data: ProgressData) => {
+        socket.on('Préchauffage du transistor de Superia', (data: ProgressData) => {
             console.log('Received progress update:', data);
             setProgress(data.progress);
             setStatus(data.status);
@@ -50,7 +50,7 @@ const OrangeForm: React.FC = () => {
         });
 
         return () => {
-            socket.off('update_progress');
+            socket.off('Préchauffage du transistor de Superia');
             socket.off('crawling_complete');
         };
     }, []);
@@ -135,7 +135,7 @@ const OrangeForm: React.FC = () => {
                 <>
                     <div className="mb-4">
                         <div>Status: {status}</div>
-                        <div>Currently Crawling: {currentUrl}</div>
+                        <div>En cours de process: {currentUrl}</div>
                         <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
                             <div
                                 className="bg-blue-900 h-2.5 rounded-full"

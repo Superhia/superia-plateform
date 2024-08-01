@@ -43,7 +43,7 @@ const FileUploadComponent = () => {
       console.log('Connected to Socket.IO server');
     });
 
-    socket.on('update_progress', (data: ProgressData) => {
+    socket.on('Préchauffage du transistor de Superia', (data: ProgressData) => {
       console.log('Progress update received', data); // Debug log
       setProgress(data.progress);
       setStatus(data.status);
@@ -65,7 +65,7 @@ const FileUploadComponent = () => {
     });
 
     return () => {
-      socket.off('update_progress');
+      socket.off('Préchauffage du transistor de Superia');
       socket.off('upload_complete');
     };
   }, []);
@@ -142,7 +142,7 @@ const FileUploadComponent = () => {
       <div className="flex flex-col items-center py-7">
         <ClipLoader color="#0000ff" loading={loading} size={50} />
         <div className="mt-2">{status}</div>
-        <div>Currently Processing: {currentUrl}</div>
+        <div>En cours de process: {currentUrl}</div>
         <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4">
           <div
             className="bg-blue-900 h-2.5 rounded-full"
@@ -236,7 +236,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
       console.log('Connected to Socket.IO server');
     });
 
-    socket.on('update_progress', (data: ProgressData) => {
+    socket.on('Préchauffage du transistor de Superia', (data: ProgressData) => {
       console.log('Progress update received', data); // Debug log
       setProgress(data.progress);
       setStatus(data.status);
@@ -258,7 +258,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
     });
 
     return () => {
-      socket.off('update_progress');
+      socket.off('Préchauffage du transistor de Superia');
       socket.off('response_complete');
     };
   }, []);

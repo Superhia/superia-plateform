@@ -95,7 +95,7 @@ const ChatbotForm: React.FC = () => {
       console.log('Connected to Socket.IO server');
     });
 
-    socket.on('update_progress', (data: ProgressData) => {
+    socket.on('Préchauffage du transistor de Superia', (data: ProgressData) => {
       console.log('Progress update received', data);
       setProgress(data.progress);
       setStatus(data.status);
@@ -113,7 +113,7 @@ const ChatbotForm: React.FC = () => {
     });
 
     return () => {
-      socket.off('update_progress');
+      socket.off('Préchauffage du transistor de Superia');
     };
   }, []);
 
@@ -357,10 +357,10 @@ const ChatbotForm: React.FC = () => {
       </div>
 
       {loading && !streaming && (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center m-4">
           <ClipLoader color="#0000ff" loading={loading} size={50} />
           <div className="mt-2">{status}</div>
-          <div>Currently Processing: {currentUrl}</div>
+          <div>En cours de process: {currentUrl}</div>
           <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4">
             <div
               className="bg-blue-900 h-2.5 rounded-full"
@@ -372,32 +372,6 @@ const ChatbotForm: React.FC = () => {
       )}
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      {assistantId && (
-        <div className="button-group mt-5 flex space-x-4">
-          <button 
-            className="p-5 w-full rounded-md bg-blue-100 text-blue-900 text-xl 2xl:leading-8 border-2 border-blue-500"
-            onClick={() => handleInitMessage('marque_employeur')} 
-            disabled={loading || requestCount >= requestLimit}
-          >
-            Analyse Marque Employeur
-          </button>
-          <button 
-            className="p-5 w-full rounded-md bg-blue-100 text-blue-900 text-xl 2xl:leading-8 border-2 border-blue-500"
-            onClick={() => handleInitMessage('education')} 
-            disabled={loading || requestCount >= requestLimit}
-          >
-            Education Assistant
-          </button>
-          <button 
-            className="p-5 w-full rounded-md bg-blue-100 text-blue-900 text-xl 2xl:leading-8 border-2 border-blue-500"
-            onClick={() => handleInitMessage('health_advisor')} 
-            disabled={loading || requestCount >= requestLimit}
-          >
-            Health Advisor Assistant
-          </button>
-        </div>
-      )}
 
       {initialResponse && (
         <div>

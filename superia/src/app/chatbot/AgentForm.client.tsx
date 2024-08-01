@@ -27,14 +27,14 @@ const AgentComponent: React.FC = () => {
         fetchPDFFilesAndSetFiles();
 
         // Handle socket.io events
-        socket.on('update_progress', (data: { progress: number; status: string; log: string }) => {
+        socket.on('Préchauffage du transistor de Superia', (data: { progress: number; status: string; log: string }) => {
             setProgress(data.progress);
             setStatus(data.status);
             setCurrentUrl(data.log); // Adjust this if log contains the current URL or status you want to show
         });
 
         return () => {
-            socket.off('update_progress');
+            socket.off('Préchauffage du transistor de Superia');
         };
     }, []);
 
