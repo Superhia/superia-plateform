@@ -5,6 +5,7 @@ import { ClipLoader } from 'react-spinners';
 import Link from 'next/link';
 import DOMPurify from 'dompurify';
 import Joi from 'joi';
+import ReactMarkdown from 'react-markdown';
 
 const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
   path: '/socket.io',
@@ -210,36 +211,6 @@ const ChatbotForm: React.FC = () => {
     }
   };
 
-  const handleInitMessage = async (instructionType: string) => {
-    if (!assistantId) return;
-
-    setLoading(true);
-    setError(null);
-    setStreaming(false);
-
-    try {
-      const response = await fetch('http://127.0.0.1:8000/init_message', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ assistant_id: assistantId, instruction_type: instructionType }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`An error occurred: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      setInitialResponse(data.message.replace(/assistant_id: \w+/g, '')); // Remove assistant_id from the message
-    } catch (error) {
-      console.error('Error initializing message:', error);
-      setError('Failed to initialize message.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleAsk = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (requestInProgress.current || requestCount >= requestLimit) return;
@@ -386,7 +357,7 @@ const ChatbotForm: React.FC = () => {
           {responses.map((item, index) => (
             <div key={index}>
               <h3 className='font-bold'>Question: {item.question}</h3>
-              <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.response).replace(/\n/g, '<br />') }} />
+              <ReactMarkdown>{item.response}</ReactMarkdown>
             </div>
           ))}
         </div>

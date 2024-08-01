@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
+import ReactMarkdown from 'react-markdown';
 
 const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
     path: '/socket.io',
@@ -216,7 +217,7 @@ const YoutubeDataForm = () => {
       {youtubeData && (
         <div>
           <h2 className='font-bold text-2xl my-5'>YouTube Résumé:</h2>
-          <div dangerouslySetInnerHTML={{ __html: youtubeData.replace(/\n/g, '<br />') }} />
+          <ReactMarkdown>{youtubeData}</ReactMarkdown>
         </div>
       )}
 
@@ -226,7 +227,7 @@ const YoutubeDataForm = () => {
           {responses.map((item, index) => (
             <div key={index}>
               <h3 className='font-bold'>Question: {item.question}</h3>
-              <div dangerouslySetInnerHTML={{ __html: item.response.replace(/\n/g, '<br />') }} />
+              <ReactMarkdown>{item.response}</ReactMarkdown>
             </div>
           ))}
         </div>

@@ -13,6 +13,7 @@ import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
+import ReactMarkdown from 'react-markdown';
 
 export interface FileUploadComponentRef {
     handleSubmit: (question: string) => void;
@@ -236,7 +237,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
                     {responses.map((qa, index) => (
                         <div key={index} className="mb-4">
                             <p className="font-bold">Question: {qa.question}</p>
-                            <div dangerouslySetInnerHTML={{ __html: qa.response.replace(/\n/g, '<br />') }} />
+                            <ReactMarkdown>{qa.response}</ReactMarkdown>
                         </div>
                     ))}
                 </div>

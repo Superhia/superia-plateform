@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
+import ReactMarkdown from 'react-markdown';
 
 const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
     transports: ['websocket', 'polling']
@@ -146,7 +147,7 @@ const OrangeForm: React.FC = () => {
                     </div>
                 </>
             )}
-            {renderResponse(response)}
+            <ReactMarkdown>{response}</ReactMarkdown>
         </div>
     );
 };

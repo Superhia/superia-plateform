@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import ClipLoader from 'react-spinners/ClipLoader';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import ReactMarkdown from 'react-markdown';
 
 const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
     path: '/socket.io',
@@ -141,15 +142,6 @@ const AgentComponent: React.FC = () => {
         }
     };
 
-    // Function to parse and replace ** ** with <strong> tags
-    const parseAndStylizeText = (text: string) => {
-        const regex = /\*\*(.*?)\*\*/g;
-        const parts = text.split(regex);
-        return parts.map((part, index) => 
-            index % 2 === 1 ? <strong key={index}>{part}</strong> : part
-        );
-    };
-
     return (
         <div>
             <form onSubmit={handleSubmit}>
@@ -181,7 +173,7 @@ const AgentComponent: React.FC = () => {
                 {responses.map((res, index) => (
                     <div key={index}>
                         <strong>Q: {res.question}</strong>
-                        <p>A: {parseAndStylizeText(res.response)}</p>
+                        <ReactMarkdown>{res.response}</ReactMarkdown>
                     </div>
                 ))}
             </div>
