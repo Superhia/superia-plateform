@@ -132,9 +132,10 @@ const ChatbotForm: React.FC = () => {
       instructions: " 'Définir 3 Employee Value Propositions (EVP)' qui mettent en avant les avantages uniques de travailler pour l'entreprise. Assure-toi de bien Retirer les 【3:0†source]. You are a helpful assistant that answers questions based on the document. If the questions aren\'t linked with the document, you return : Mon rôle est de vous aider sur les solutions RH, je ne suis pas en mesure de répondre à votre question. If it contains inappropriate characters, you return : Je ne peux pas répondre à cette question car elle contient des caractères inappropriés."
     }
   ];
-  const cleanText = (text: string) => {
-    return text.replace(/\[\d+:\d+source\]/g, '').trim();
-  };
+  const cleanText = (text:string) => {
+  const pattern = /【\d+:\d+†source】/g; // Use 'g' for global replacement
+  return text.replace(pattern, '');
+};
 
   const handlePreconfiguredSubmit = (configIndex: number) => {
     const config = preconfiguredAssistants[configIndex];
@@ -194,7 +195,6 @@ const ChatbotForm: React.FC = () => {
           const cleanedText = cleanText(responseContent);
           newResponses[lastIndex].response = cleanedText;
 
-          newResponses[lastIndex].response = responseContent.replace(/assistant_id: \w+/g, ''); // Remove assistant_id from responses
           setResponses([...newResponses]);
         }
       }
@@ -272,7 +272,6 @@ const ChatbotForm: React.FC = () => {
           const cleanedText = cleanText(responseContent);
           newResponses[lastIndex].response = cleanedText;
 
-          newResponses[lastIndex].response = responseContent.replace(/assistant_id: \w+/g, ''); // Remove assistant_id from responses
           setResponses([...newResponses]);
         }
       }

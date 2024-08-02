@@ -264,6 +264,11 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
     };
   }, []);
 
+  const cleanText = (text:string) => {
+    const pattern = /【\d+:\d+†source】/g; // Use 'g' for global replacement
+    return text.replace(pattern, '');
+  };
+
   const handleQuestionSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (requestCount >= requestLimit) return;
@@ -309,8 +314,8 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
           const chunk = decoder.decode(value, { stream: true });
           responseContent += chunk;
 
-          // Update the response state incrementally
-          newResponses[lastIndex].response = responseContent;
+          const cleanedText = cleanText(responseContent);
+          newResponses[lastIndex].response = cleanedText;
           setResponses([...newResponses]);
         }
       }

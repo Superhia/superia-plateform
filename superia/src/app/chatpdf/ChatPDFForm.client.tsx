@@ -67,6 +67,11 @@ const YoutubeDataForm = () => {
     };
   }, []);
 
+  const cleanText = (text:string) => {
+    const pattern = /【\d+:\d+†source】/g; // Use 'g' for global replacement
+    return text.replace(pattern, '');
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (requestCount >= requestLimit) return;
@@ -97,8 +102,8 @@ const YoutubeDataForm = () => {
           const chunk = decoder.decode(value, { stream: true });
           buffer += chunk;
 
-          // Process buffer to update state incrementally
-          setYoutubeData((prev) => (prev ? prev + chunk : chunk));
+          const cleanedData = cleanText(buffer);
+          setYoutubeData(cleanedData);
 
           // Extract assistant ID from the buffer if it's provided
           const assistantIdMatch = buffer.match(/assistant_id:\s*(\w+)/);
@@ -162,8 +167,8 @@ const YoutubeDataForm = () => {
           const chunk = decoder.decode(value, { stream: true });
           responseContent += chunk;
 
-          // Update the response state incrementally
-          newResponses[lastIndex].response = responseContent;
+          const cleanedText = cleanText(responseContent);
+          newResponses[lastIndex].response = cleanedText;
           setResponses([...newResponses]);
         }
       }

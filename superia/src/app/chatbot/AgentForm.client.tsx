@@ -67,6 +67,11 @@ const AgentComponent: React.FC = () => {
         }
     };
 
+    const cleanText = (text:string) => {
+        const pattern = /【\d+:\d+†source】/g; // Use 'g' for global replacement
+        return text.replace(pattern, '');
+      };
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
@@ -122,8 +127,8 @@ const AgentComponent: React.FC = () => {
                     setStreaming(true);
                     const chunk = decoder.decode(value, { stream: true });
                     responseContent += chunk;
-
-                    newResponses[lastIndex].response = responseContent;
+                    const cleanedText = cleanText(responseContent);
+                    newResponses[lastIndex].response = cleanedText;
                     setResponses([...newResponses]);
                 }
             }

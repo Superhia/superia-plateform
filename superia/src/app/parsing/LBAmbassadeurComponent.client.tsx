@@ -172,6 +172,11 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
             };
         }, []);
 
+        const cleanText = (text:string) => {
+            const pattern = /【\d+:\d+†source】/g; // Use 'g' for global replacement
+            return text.replace(pattern, '');
+          };
+
         const handleQuestionSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
             setLoading(true);
@@ -214,8 +219,8 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
                         const chunk = decoder.decode(value, { stream: true });
                         currentResponseRef.current += chunk;
 
-                        // Update the response state incrementally
-                        newResponses[lastIndex].response = currentResponseRef.current;
+                        const cleanedText = cleanText(currentResponseRef.current);
+                        newResponses[lastIndex].response = cleanedText;
                         setResponses([...newResponses]);
                     }
                 }
