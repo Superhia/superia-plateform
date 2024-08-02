@@ -159,7 +159,7 @@ const AgentComponent: React.FC = () => {
                 <div className="flex flex-col items-center py-7">
                     <ClipLoader color="#0000ff" loading={loading} size={50} />
                     <div className="mt-2">{status}</div>
-                    <div>Currently Crawling: {currentUrl}</div>
+                    <div>En cours de process: {currentUrl}</div>
                     <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4">
                         <div
                             className="bg-blue-900 h-2.5 rounded-full"
@@ -169,7 +169,7 @@ const AgentComponent: React.FC = () => {
                     </div>
                 </div>
             )}
-            <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+            <div style={{whiteSpace: 'break-spaces', wordBreak: 'break-word' }}>
                 {responses.map((res, index) => (
                     <div key={index}>
                         <strong>Q: {res.question}</strong>

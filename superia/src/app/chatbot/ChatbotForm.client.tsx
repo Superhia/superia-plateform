@@ -132,6 +132,9 @@ const ChatbotForm: React.FC = () => {
       instructions: " 'Définir 3 Employee Value Propositions (EVP)' qui mettent en avant les avantages uniques de travailler pour l'entreprise. Assure-toi de bien Retirer les 【3:0†source]. You are a helpful assistant that answers questions based on the document. If the questions aren\'t linked with the document, you return : Mon rôle est de vous aider sur les solutions RH, je ne suis pas en mesure de répondre à votre question. If it contains inappropriate characters, you return : Je ne peux pas répondre à cette question car elle contient des caractères inappropriés."
     }
   ];
+  const cleanText = (text: string) => {
+    return text.replace(/\[\d+:\d+source\]/g, '').trim();
+  };
 
   const handlePreconfiguredSubmit = (configIndex: number) => {
     const config = preconfiguredAssistants[configIndex];
@@ -188,6 +191,8 @@ const ChatbotForm: React.FC = () => {
           setStreaming(true);
           const chunk = decoder.decode(value, { stream: true });
           responseContent += chunk;
+          const cleanedText = cleanText(responseContent);
+          newResponses[lastIndex].response = cleanedText;
 
           newResponses[lastIndex].response = responseContent.replace(/assistant_id: \w+/g, ''); // Remove assistant_id from responses
           setResponses([...newResponses]);
@@ -214,12 +219,6 @@ const ChatbotForm: React.FC = () => {
   const handleAsk = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (requestInProgress.current || requestCount >= requestLimit) return;
-
-    const [isValid, validationError] = validateInput({ question });
-    if (!isValid) {
-      setError("Votre question contient des caractères non autorisés ou dépasse la longueur maximale.");
-      return;
-    }
 
     if (containsInappropriateKeywords(question)) {
       setResponses((prevResponses) => [
@@ -270,6 +269,8 @@ const ChatbotForm: React.FC = () => {
           setStreaming(true);
           const chunk = decoder.decode(value, { stream: true });
           responseContent += chunk;
+          const cleanedText = cleanText(responseContent);
+          newResponses[lastIndex].response = cleanedText;
 
           newResponses[lastIndex].response = responseContent.replace(/assistant_id: \w+/g, ''); // Remove assistant_id from responses
           setResponses([...newResponses]);
@@ -345,14 +346,14 @@ const ChatbotForm: React.FC = () => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       {initialResponse && (
-        <div>
+        <div style={{whiteSpace: 'break-spaces', wordBreak: 'break-word' }}>
           <h2 className='font-bold text-2xl my-5'>Résumé Initial:</h2>
-          <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(initialResponse).replace(/\n/g, '<br />') }} />
+          <ReactMarkdown>{initialResponse}</ReactMarkdown>
         </div>
       )}
 
       {responses.length > 0 && (
-        <div>
+        <div style={{whiteSpace: 'break-spaces', wordBreak: 'break-word' }}>
           <h2 className='font-bold text-2xl my-5'>Réponses:</h2>
           {responses.map((item, index) => (
             <div key={index}>
