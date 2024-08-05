@@ -18,13 +18,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       const result = await client.query('UPDATE users SET confirmed = true WHERE confirmation_token = $1 RETURNING *', [token]);
 
       if (result.rowCount === 0) {
-        return res.status(400).json({ message: 'Invalid or expired token' });
+        const message = encodeURIComponent('Invalid or expired token');
+        return res.redirect(`/login?error=${message}`);
       }
 
-      res.status(200).json({ message: 'Email confirmed successfully' });
+      const successMessage = encodeURIComponent('Email confirmed successfully');
+      res.redirect(`/login?success=${successMessage}`);
     } catch (error) {
       console.error('Error confirming email:', error);
-      res.status(500).json({ message: 'Error confirming email', error });
+      const errorMessage = encodeURIComponent('Error confirming email');
+      res.redirect(`/login?error=${errorMessage}`);
     } finally {
       client.release();
     }

@@ -50,7 +50,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const client = await pool.connect();
   const token = crypto.randomBytes(32).toString('hex');
-  const confirmationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/confirm?token=${token}`;
+  const confirmationUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/confirm?token=${token}&redirect=/login`;
+
   
   // Log confirmation URL
   console.log('Generated confirmation URL:', confirmationUrl);
