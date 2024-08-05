@@ -73,7 +73,7 @@ export default function Home() {
                             <div className='text-center'>
                                 <Link href={"chatpdf"}>
                                     <img
-                                        src="YoutubeScan.JPG"
+                                        src="Youtubescan.JPG"
                                         alt="YoutubeScan"
                                         className="scanrh-image w-64 mx-auto"
                                     />
