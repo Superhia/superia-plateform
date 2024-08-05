@@ -156,9 +156,9 @@ const AgentComponent: React.FC = () => {
                     className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6"
                     type="text" id="question" value={question} onChange={handleQuestionChange} />
                 </div>
-                <button 
-                className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
-                type="submit">Submit</button>
+                <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading}>
+            {loading ? 'Processing...' : 'Pose ta question'}
+          </button>
             </form>
             {loading && !streaming &&(
                 <div className="flex flex-col items-center py-7">
