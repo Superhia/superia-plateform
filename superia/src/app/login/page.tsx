@@ -49,6 +49,7 @@ const LoginPage = () => {
       
           <Login />
           <p>Vous n'avez pas encore de compte ?</p> <button className='text-sky-700'><a href='/register'>Inscription</a></button>
+          <p>Vous avez oublié votre mots de passe</p><button className='text-sky-700'><a href='/forgot'>Réinitialiser mon mots de passe</a></button>
         </div>
       </div>
     </div>
