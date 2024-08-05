@@ -1,15 +1,22 @@
 // pages/reset-password.js
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 const ResetPassword = () => {
   const router = useRouter();
-  const { token } = router.query;
+  const [token, setToken] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    if (router.isReady) {
+      const { token } = router.query;
+      setToken(token as string);
+    }
+  }, [router.isReady, router.query]);
 
   const handleResetPassword = async () => {
     if (password !== confirmPassword) {
@@ -25,6 +32,7 @@ const ResetPassword = () => {
         },
         body: JSON.stringify({ token, password }),
       });
+
       const data = await response.json();
       setMessage(data.message);
     } catch (error) {
@@ -41,27 +49,27 @@ const ResetPassword = () => {
         <ul className="flex space-x-5 -mt-5 mr-4" id="menu">
           <li><Link href={"tarif"}>Tarifs</Link></li>
           <li><Link href={"https://inbound.lasuperagence.com/blog"}>Blog</Link></li>
-            <li><Link href={"login"}>Connexion</Link></li>
+          <li><Link href={"login"}>Connexion</Link></li>
         </ul>
       </nav>
-    <div>
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="New Password"
-        required
-      />
-      <input
-        type="password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        placeholder="Confirm Password"
-        required
-      />
-      <button onClick={handleResetPassword}>Reset Password</button>
-      {message && <p>{message}</p>}
-    </div>
+      <div>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="New Password"
+          required
+        />
+        <input
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Confirm Password"
+          required
+        />
+        <button onClick={handleResetPassword}>Reset Password</button>
+        {message && <p>{message}</p>}
+      </div>
     </main>
   );
 };
