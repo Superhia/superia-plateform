@@ -68,8 +68,13 @@ const YoutubeDataForm = () => {
   }, []);
 
   const cleanText = (text:string) => {
-    const pattern = /【\d+:\d+†source】/g; // Use 'g' for global replacement
-    return text.replace(pattern, '');
+    const patterns = [
+      /assistant_id:\s*\w+/gi,
+      /【\d+:\d+†source】/g]; // Use 'g' for global replacement
+      patterns.forEach(pattern => {
+        text = text.replace(pattern, '');
+      });
+      return text;
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
