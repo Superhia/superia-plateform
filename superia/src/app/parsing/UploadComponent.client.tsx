@@ -345,7 +345,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
         <div className="flex flex-col items-center py-7">
           <ClipLoader color="#0000ff" loading={loading} size={50} />
           <div className="mt-2">{status}</div>
-          <div>Currently Processing: {currentUrl}</div>
+          <div>En cours de process: {currentUrl}</div>
           <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-4">
             <div
               className="bg-blue-900 h-2.5 rounded-full"
@@ -363,16 +363,16 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
             name="question"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Ask your question"
+            placeholder="Entre ta question"
           />
           <button disabled={loading} className="p-3 m-1 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">
-            Ask
+            Pose ta question
           </button>
         </form>
       )}
       {requestCount >= requestLimit && (
         <div>
-          <p className="text-red-500 font-bold text-xl">You have reached the maximum number of requests.</p>
+          <p className="text-red-500 font-bold text-xl">Vous avez atteints le nombre maximum de requètes.</p>
         </div>
       )}
       {error && <p style={{ color: 'red' }}>{error}</p>}

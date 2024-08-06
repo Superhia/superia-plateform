@@ -76,7 +76,7 @@ const Login = () => {
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
+            placeholder="Mots de passe"
             required
           />
           <button
@@ -84,7 +84,7 @@ const Login = () => {
             className='absolute inset-y-0 right-0 flex items-center px-4 text-gray-600'
             onClick={() => setShowPassword(!showPassword)}
           >
-            {showPassword ? 'Hide' : 'Show'}
+            {showPassword ? 'Cacher' : 'Montrer'}
           </button>
         </div>
       <button

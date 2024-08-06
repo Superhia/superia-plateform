@@ -81,8 +81,8 @@ const AgentComponent: React.FC = () => {
                 title: 'Login Required',
                 html: (
                     <div>
-                        You have reached the maximum number of requests allowed without logging in.
-                        Please <a href="/login" style={{ color: 'blue' }}>log in</a> to continue.
+                        Vous avez atteint le nombre de requètes maximum, veuillez vous connecter.
+                        Merci  <a href="/login" style={{ color: 'blue' }}>log in</a> 
                     </div>
                 ),
                 confirmButtonText: 'OK'
@@ -91,7 +91,7 @@ const AgentComponent: React.FC = () => {
         }
 
         if (fetchedFiles.length === 0) {
-            setResponses([{ question, response: 'No files fetched' }]);
+            setResponses([{ question, response: 'Pas de fichier envoyé' }]);
             return;
         }
 
@@ -133,7 +133,7 @@ const AgentComponent: React.FC = () => {
                 }
             }
 
-            console.log('Final response content:', responseContent);
+            console.log('Contenu de la réponse finale:', responseContent);
             if (!isLoggedIn) {
                 setRequestCount(requestCount + 1); // Increment the request count for non-logged-in users
             }
@@ -152,12 +152,12 @@ const AgentComponent: React.FC = () => {
             <form onSubmit={handleSubmit}>
                 <div>
                     <input 
-                    placeholder='Enter your question'
+                    placeholder='Entre ta question'
                     className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6"
                     type="text" id="question" value={question} onChange={handleQuestionChange} />
                 </div>
                 <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading}>
-            {loading ? 'Processing...' : 'Pose ta question'}
+            {loading ? 'En cours...' : 'Pose ta question'}
           </button>
             </form>
             {loading && !streaming &&(
