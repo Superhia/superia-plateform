@@ -78,7 +78,7 @@ const AgentComponent: React.FC = () => {
         if (!isLoggedIn && requestCount >= 2) {
             MySwal.fire({
                 icon: 'warning',
-                title: 'Login Required',
+                title: 'Login Requis',
                 html: (
                     <div>
                         Vous avez atteint le nombre de requètes maximum, veuillez vous connecter.
