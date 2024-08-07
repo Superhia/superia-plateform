@@ -22,7 +22,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     const token = crypto.randomBytes(20).toString('hex');
-    const tokenExpire = new Date(Date.now() + 3600); // 1 hour from now
+    const tokenExpire = new Date(Date.now() + 360000); // 1 hour from now
 
     const { rowCount } = await client.query(
       'UPDATE users SET reset_password_token = $1, reset_password_expires = $2 WHERE email = $3 RETURNING *',
