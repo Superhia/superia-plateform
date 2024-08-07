@@ -1,9 +1,7 @@
 'use client'
-import Login from '../components/login/Login';
-import Register from '../components/register/Register';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-
+import SupportForm from '../components/SupportForm';
 
 const LoginPage = () => {
   const [message, setMessage] = useState('');
@@ -31,27 +29,23 @@ const LoginPage = () => {
 			<li><Link href={"tarif"}>Tarifs</Link></li>
 			<li><Link href={"https://inbound.lasuperagence.com/blog"}>Blog</Link></li>
 			<li><Link href={"login"}>Connexion</Link></li>
-      <li><Link href={"support"}>Support</Link></li>
 	  </ul>
 		</nav>
     <div>
-    <h1 className="text-4xl font-semibold text-center py-7"> Découvrez Superia,</h1>
+    <h1 className="text-4xl font-semibold text-center py-7"> Support Superia,</h1>
       <p className="text-xl text-center py-2.5 mx-32 px-32">
-      Superia n’est qu’à quelques clics ! Pour accéder aux services proposés par Superia, identifiez-vous ou créez un nouveau compte.
-      </p>
+      Une erreur vous empèche de continuer de profiter pleinement de Superia ?! Nous sommes ici pour répondre à vos question.</p>
       <div className="flex justify-center items-center bg-white">
         <div className="text-center mx-32">
-          <h2 className="text-2xl font-semibold py-7">Saisissez votre email et votre mot de passe pour aller sur la plateforme.</h2>
+          <h2 className="text-2xl font-semibold py-7">Saisissez votre email et votre commentaire pour nous envoyer votre besoins </h2>
           {message && (
         <div style={{ color: message.startsWith('Error') ? 'red' : 'green' }}>
           {message}
         </div>
       )}
-      
-          <Login />
-          <p>Vous n'avez pas encore de compte ?</p> <button className='text-sky-700'><a href='/register'>Inscription</a></button>
-          <p>Vous avez oublié votre mots de passe</p><button className='text-sky-700'><a href='/forgot'>Réinitialiser mon mots de passe</a></button>
-        </div>
+      <SupportForm />
+        
+     </div>
       </div>
     </div>
     </main>
