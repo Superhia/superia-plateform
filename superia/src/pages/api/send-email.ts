@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Set up email options
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: process.env.ADMIN_EMAIL,
+      to: 'dl.lasuperagence@gmail.com',
       subject: `Support request from ${name}`,
       text: `You have received a new message from:\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
     };
