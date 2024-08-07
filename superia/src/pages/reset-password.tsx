@@ -41,15 +41,15 @@ const ResetPassword = () => {
   };
 
   return (
-    <main className="flex text-black min-h-screen flex-col h-screen items-left p-14 bg-white">
-      <Link href={"/"}>
-        <img src="LaSuperAgence.png" alt="icon" className="h-8" />
+    <main style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#f7f7f7' }}>
+      <Link href="/">
+        <img src="LaSuperAgence.png" alt="icon" style={{ height: '40px' }} />
       </Link>
-      <nav className="flex justify-end">
-        <ul className="flex space-x-5 -mt-5 mr-4" id="menu">
-          <li><Link href={"tarif"}>Tarifs</Link></li>
-          <li><Link href={"https://inbound.lasuperagence.com/blog"}>Blog</Link></li>
-          <li><Link href={"login"}>Connexion</Link></li>
+      <nav style={{ display: 'flex', justifyContent: 'center',margin:'1%', width: '100%' }}>
+        <ul style={{ listStyleType: 'none', margin: '0', padding: '0', display: 'flex', justifyContent: 'flex-end' }}>
+          <li style={{ marginRight: '20px' }}><Link href="tarif" style={{ textDecoration: 'none', color: '#0056b3' }}>Tarifs</Link></li>
+          <li style={{ marginRight: '20px' }}><Link href="https://inbound.lasuperagence.com/blog" style={{ textDecoration: 'none', color: '#0056b3' }}>Blog</Link></li>
+          <li><Link href="login" style={{ textDecoration: 'none', color: '#0056b3' }}>Connexion</Link></li>
         </ul>
       </nav>
       <div>
@@ -59,6 +59,7 @@ const ResetPassword = () => {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="New Password"
           required
+          style={{ padding: '8px', margin: '5px', border: '2px solid #ddd', borderRadius: '4px', width: '300px' }}
         />
         <input
           type="password"
@@ -66,12 +67,16 @@ const ResetPassword = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
           placeholder="Confirm Password"
           required
+          style={{ padding: '8px', margin: '5px', border: '2px solid #ddd', borderRadius: '4px', width: '300px' }}
         />
-        <button onClick={handleResetPassword}>Reset Password</button>
-        {message && <p>{message}</p>}
+        <button onClick={handleResetPassword} style={{ padding: '10px 20px', backgroundColor: '#0056b3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', width: '320px', marginTop: '10px' }}>
+          Reset Password
+        </button>
+        {message && <p style={{ color: 'black', fontSize: '14px' }}>{message}</p>}
       </div>
     </main>
   );
 };
+
 
 export default ResetPassword;

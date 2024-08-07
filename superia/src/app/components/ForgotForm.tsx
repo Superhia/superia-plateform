@@ -29,13 +29,16 @@ const ForgotPassword = () => {
   return (
     <div>
       <input
+      className='block w-full mb-5 rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6'
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="Enter your email"
+        placeholder="Entre ton email"
         required
       />
-      <button onClick={handleForgotPassword}>Send Reset Link</button>
+      <button onClick={handleForgotPassword}
+      className='p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8'
+      >Envoi le lien pour réinitialiser</button>
       {message && <p>{message}</p>}
     </div>
   );
