@@ -1,7 +1,10 @@
 // components/SupportForm.tsx
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Joi from 'joi';
+import { useRouter } from 'next/navigation';
+
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
 interface FormState {
   name: string;
@@ -15,8 +18,11 @@ const SupportForm: React.FC = () => {
     email: '',
     message: '',
   });
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [responseMessage, setResponseMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const schema = Joi.object({
     name: Joi.string().required().messages({
@@ -31,17 +37,42 @@ const SupportForm: React.FC = () => {
     }),
   });
 
+  useEffect(() => {
+    const loadRecaptchaScript = () => {
+      const script = document.createElement('script');
+      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+      script.async = true;
+      script.onload = () => {
+        if (window.grecaptcha) {
+          window.grecaptcha.ready(() => {
+            window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'support_form' }).then((token: string) => {
+              setRecaptchaToken(token);
+            });
+          });
+        }
+      };
+      document.body.appendChild(script);
+    };
+
+    loadRecaptchaScript();
+  }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
     // Validate form inputs
     const { error } = schema.validate(formState, { abortEarly: false });
     if (error) {
       setResponseMessage(error.details.map(detail => detail.message).join('. '));
+      return;
+    }
+
+    if (!recaptchaToken) {
+      setError('reCAPTCHA verification failed. Please try again.');
       return;
     }
 
@@ -54,11 +85,12 @@ const SupportForm: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formState),
+        body: JSON.stringify({ ...formState, recaptchaToken }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send email');
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to send email');
       }
 
       setResponseMessage('Your message has been sent successfully!');
