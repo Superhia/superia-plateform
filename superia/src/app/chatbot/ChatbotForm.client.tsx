@@ -382,7 +382,7 @@ const ChatbotForm: React.FC = () => {
             disabled={requestCount >= requestLimit}
           />
           <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading || requestCount >= requestLimit}>
-            {loading ? 'Processing...' : 'Pose ta question'}
+            {loading ? 'En cours...' : 'Pose ta question'}
           </button>
         </form>
       )}
