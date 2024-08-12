@@ -12,6 +12,7 @@ const RegisterPage = () => {
 			<li><Link href={"tarif"}>Tarifs</Link></li>
 			<li><Link href={"https://inbound.lasuperagence.com/blog"}>Blog</Link></li>
 			<li><Link href={"login"}>Connexion</Link></li>
+      <li><Link href={"support"}>Support</Link></li>
 	  </ul>
 		</nav>
     <div>

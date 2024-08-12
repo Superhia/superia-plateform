@@ -40,6 +40,7 @@ export default function Home() {
           ) : (
             <li><Link href={"login"}>Connexion</Link></li>
           )}
+          <li><Link href={"support"}>Support</Link></li>
         </ul>
       </nav>
       <div className="mx-auto">
