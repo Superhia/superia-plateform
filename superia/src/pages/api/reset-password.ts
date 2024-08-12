@@ -14,13 +14,13 @@ const pool = new Pool({
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ message: 'Method non permise' });
   }
 
   const { token, password } = req.body;
 
   if (!token || !password) {
-    return res.status(400).json({ message: 'Missing token or password' });
+    return res.status(400).json({ message: 'Token ou mots de passe manquant' });
   }
 
   const client = await pool.connect();
@@ -32,7 +32,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     );
 
     if (result.rowCount === 0) {
-      return res.status(400).json({ message: 'Invalid or expired token' });
+      return res.status(400).json({ message: 'Invalid ou token expiré' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -42,10 +42,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       [hashedPassword, result.rows[0].id]
     );
 
-    res.status(200).json({ message: 'Password reset successfully' });
+    res.status(200).json({ message: 'Mots de passe réinitialisé avec succès' });
   } catch (error) {
     console.error('Error resetting password:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: 'Erreur Interne' });
   } finally {
     client.release();
   }

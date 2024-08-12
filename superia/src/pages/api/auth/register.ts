@@ -37,7 +37,7 @@ const transporter = nodemailer.createTransport({
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ message: 'Method non permise' });
   }
 
   const { email, password, phone, name, surname, recaptchaToken } = req.body;
@@ -45,7 +45,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   // Validate required fields
   if (!email || !password || !name || !surname) {
-    return res.status(400).json({ message: 'Missing required fields' });
+    return res.status(400).json({ message: 'Champs requis manquants' });
   }
 
   const client = await pool.connect();
@@ -68,11 +68,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     console.log('reCAPTCHA response:', recaptchaResponse.data);
 
     if (!recaptchaResponse.data.success) {
-      return res.status(400).json({ message: 'reCAPTCHA verification failed. Please try again.' });
+      return res.status(400).json({ message: 'Erreur de vérification du reCAPTCHA, Merci de rafraichir la page' });
     }
   } catch (error) {
     console.error('Error verifying reCAPTCHA:', error);
-    return res.status(500).json({ message: 'Internal server error during reCAPTCHA verification.' });
+    return res.status(500).json({ message: 'Erreur interne dans la vérification du reCAPTCHA.' });
   }
 
   try {
@@ -86,7 +86,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       from: process.env.EMAIL_USER,
       to: email,
       subject: 'Email Confirmation',
-      html: `<p>Please confirm your email by clicking the following link: <a href="${confirmationUrl}">${confirmationUrl}</a></p>`,
+      html: `<p>Merci de confirmer votre email en cliquant sur ce lien: <a href="${confirmationUrl}">${confirmationUrl}</a></p>`,
     });
 
     // Send registration details email to the admin
@@ -94,24 +94,24 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: adminEmail,
-      subject: 'New User Registration',
-      html: `<p>A new user has registered. Here are the details:</p>
+      subject: 'Nouvelle inscription',
+      html: `<p>Un nouvelle utilisateur s'est inscrit. Ici sont les détails:</p>
              <ul>
-               <li>Name: ${name}</li>
-               <li>Surname: ${surname}</li>
+               <li>Nom: ${name}</li>
+               <li>Prénom: ${surname}</li>
                <li>Email: ${email}</li>
-               <li>Phone: ${phone}</li>
+               <li>TéléPhone: ${phone}</li>
              </ul>`,
     });
 
-    res.status(200).json({ message: 'User registered successfully. Please check your email to confirm your registration.' });
+    res.status(200).json({ message: 'Utilisateur inscrit avec succès. Merci de vérifier vos email pour confirmer votre inscription.' });
   } catch (err) {
     const error = err as PgError;
     if (error.code === '23505') {
-      res.status(400).json({ message: 'Email already exists' });
+      res.status(400).json({ message: 'Email exist déjà' });
     } else {
       console.error('Error registering user:', error);
-      res.status(500).json({ message: 'Error registering user', error });
+      res.status(500).json({ message: 'Erreur dinscription', error });
     }
   } finally {
     client.release();

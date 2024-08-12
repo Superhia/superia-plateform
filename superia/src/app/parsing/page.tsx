@@ -52,7 +52,7 @@ export default function Parsing() {
           <li><Link href="chatpdf">YoutubeScan</Link></li>
         </ul>
       </nav>
-      <h1 className="text-4xl font-semibold text-center py-7">Pose des questions à ton Fichier</h1>
+      <h1 className="text-4xl font-semibold text-center py-7">Posez des questions à votre Fichier</h1>
       <p className="text-center mx-40 px-64">Superia simplifie la gestion documentaire grâce à son outil de parsing intelligent, capable de traiter et d’organiser efficacement tous types de documents, vous permettant de gagner du temps et d’améliorer votre efficacité opérationnelle.</p>
       <div className='flex flex-col items-center py-14 cursor-pointer'><Parsing_video/></div>
       <div className="flex justify-center py-14" onClick={handleFileUploadClick}>

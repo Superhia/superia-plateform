@@ -174,19 +174,19 @@ const ChatbotForm: React.FC = () => {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || `An error occurred: ${response.statusText}`);
+        throw new Error(data.error || `Une erreur survient: ${response.statusText}`);
       }
 
       const reader = response.body?.getReader();
       if (!reader) {
-        throw new Error('Reader not available');
+        throw new Error('Reader nest pas disponible');
       }
 
       const decoder = new TextDecoder('utf-8');
       let done = false;
       let responseContent = '';
 
-      const newResponses = [...responses, { question: 'Scraping in progress', response: '' }];
+      const newResponses = [...responses, { question: 'Etude en cours', response: '' }];
       const lastIndex = newResponses.length - 1;
       setResponses(newResponses);
 
@@ -208,7 +208,7 @@ const ChatbotForm: React.FC = () => {
       if (match) {
         setAssistantId(match[1]); // Extract assistant_id from the stream but do not display it
       } else {
-        throw new Error('assistant_id not found in the response');
+        throw new Error('L assistantid nest pas dans la réponse');
       }
 
       setRequestCount((prevCount) => prevCount + 1);
@@ -251,12 +251,12 @@ const ChatbotForm: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`An error occurred: ${response.statusText}`);
+        throw new Error(`Une erreur survient: ${response.statusText}`);
       }
 
       const reader = response.body?.getReader();
       if (!reader) {
-        throw new Error('Reader not available');
+        throw new Error('Reader nest pas disponible');
       }
 
       const decoder = new TextDecoder('utf-8');
@@ -289,7 +289,7 @@ const ChatbotForm: React.FC = () => {
       }
     } catch (error) {
       console.error('Error querying assistant:', error);
-      setError('Failed to get a response from the assistant.');
+      setError('L assistant ne répond pas.');
     } finally {
       setLoading(false);
       requestInProgress.current = false;
@@ -382,7 +382,7 @@ const ChatbotForm: React.FC = () => {
             disabled={requestCount >= requestLimit}
           />
           <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading || requestCount >= requestLimit}>
-            {loading ? 'En cours...' : 'Pose ta question'}
+            {loading ? 'En cours...' : 'Posez votre question'}
           </button>
         </form>
       )}

@@ -55,7 +55,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
             return url;
         } catch (error) {
             console.error('Error fetching the file:', error);
-            alert('Failed to fetch the file.');
+            alert('Erreur denvoie du fichier');
         }
     };
 
@@ -80,14 +80,14 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
             const result = await response.json();
             if (response.ok) {
                 setAssistantId(result.assistant_id);
-                setUploadStatus('File uploaded successfully.');
+                setUploadStatus('Fichier chargé avec succès.');
                 setShowPdf(true);
             } else {
-                setUploadStatus(result.error || 'Failed to upload the file.');
+                setUploadStatus(result.error || 'Erreur de chargement du fichier.');
             }
         } catch (error) {
             console.error('Error uploading file:', error);
-            setUploadStatus('Failed to upload the file.');
+            setUploadStatus('Erreur de chargement du fichier');
         } finally {
             setLoading(false);
         }
@@ -200,12 +200,12 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
                 });
 
                 if (!askRes.ok) {
-                    throw new Error(`An error occurred: ${askRes.statusText}`);
+                    throw new Error(`Une erreur est survenue: ${askRes.statusText}`);
                 }
 
                 const reader = askRes.body?.getReader();
                 if (!reader) {
-                    throw new Error('Reader not available');
+                    throw new Error('Reader nest pas disponible');
                 }
 
                 const decoder = new TextDecoder('utf-8');
@@ -228,7 +228,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
                 console.log('Final response content:', currentResponseRef.current);
             } catch (error) {
                 console.error('Error querying assistant:', error);
-                setError('Failed to get a response from the assistant.');
+                setError('L assistant ne répond pas.');
             } finally {
                 setLoading(false);
                 setQuestion(''); // Clear the question input after submission
@@ -267,10 +267,10 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
                         name="question"
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
-                        placeholder="Entre ta question"
+                        placeholder="Entrez votre question"
                     />
                     <button disabled={loading} className="p-3 m-1 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">
-                        Pose ta question
+                        Posez votre question
                     </button>
                 </form>
                 {error && <p style={{ color: 'red' }}>{error}</p>}

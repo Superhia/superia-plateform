@@ -16,7 +16,7 @@ export default function ForgotForm() {
           <li><Link href={"login"}>Connexion</Link></li>
         </ul>
       </nav>
-    <h1 className="text-4xl font-semibold text-center py-7">Pose tes questions à ton site web</h1>
+    <h1 className="text-4xl font-semibold text-center py-7">Vous avez oublié votre mots de passe</h1>
     <p className="text-center py-2.5 mx-32 px-32">La première application qui utiliser lIA générative pour lanalyse de marque employeur. Grâce à Superia, vous pouvez désormais exploiter pleinement le potentiel de votre site carrière, en analysant et optimisant leur contenu pour attirer les meilleurs talents.</p>
     <div className="mx-auto py-14 bg-white"><ForgotPassword/></div>
     </main>

@@ -30,33 +30,33 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       });
 
       if (!recaptchaResponse.data.success) {
-        return res.status(400).json({ message: 'reCAPTCHA verification failed. Please try again.' });
+        return res.status(400).json({ message: 'Erreur de vérification du reCAPTCHA. Merci de rafraichir la page' });
       }
     } catch (error) {
       console.error('Error verifying reCAPTCHA:', error);
-      return res.status(500).json({ message: 'Internal server error during reCAPTCHA verification.' });
+      return res.status(500).json({ message: 'Erreur interne dans la vérification du reCAPTCHA.' });
     }
 
     try {
       const result = await client.query('SELECT * FROM users WHERE email = $1', [email]);
       if (result.rows.length === 0) {
-        return res.status(401).json({ message: 'Invalid email or password' });
+        return res.status(401).json({ message: 'Email ou mots de passe invalid' });
       }
 
       const user = result.rows[0];
 
       if (!user.confirmed && user.role !== 'admin') {
-        return res.status(400).json({ message: 'Please confirm your email before logging in' });
+        return res.status(400).json({ message: 'Merci de confirmer votre email avant de vous connecter' });
       }
 
       const isValidPassword = await bcrypt.compare(password, user.password);
 
       if (!isValidPassword) {
-        return res.status(401).json({ message: 'Invalid email or password' });
+        return res.status(401).json({ message: 'Email ou mots de passe invalid' });
       }
 
       if (!process.env.JWT_SECRET) {
-        throw new Error('JWT_SECRET is not defined');
+        throw new Error('JWT_SECRET nest pas défini');
       }
 
       const token = sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, {
@@ -71,15 +71,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         path: '/',
       }));
 
-      return res.status(200).json({ message: 'Login successful' });
+      return res.status(200).json({ message: 'Connexion réussit !' });
     } catch (error) {
       const err = error as Error;
       console.error('Error during login:', err.message);
-      return res.status(500).json({ message: 'Internal server error', error: err.message });
+      return res.status(500).json({ message: 'Erreur serveur interne', error: err.message });
     } finally {
       client.release();
     }
   } else {
-    res.status(405).json({ message: 'Method not allowed' });
+    res.status(405).json({ message: 'Method non permise' });
   }
 };

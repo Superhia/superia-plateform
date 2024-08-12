@@ -43,7 +43,7 @@ const Register = () => {
     setSuccess('');
 
     if (!recaptchaToken) {
-      setError('reCAPTCHA verification failed. Please try again.');
+      setError('Erreur reCAPTCHA verification. Merci de rafraichir la page.');
       return;
     }
 
@@ -57,7 +57,7 @@ const Register = () => {
     });
 
     if (res.ok) {
-      setSuccess('Registration successful! Please check your email to confirm your registration.');
+      setSuccess('Inscription avec succès ! Merci de vérifier vos mails pour confirmer votre inscription.');
     } else {
       const result = await res.json();
       setError(result.message);
@@ -71,7 +71,7 @@ const Register = () => {
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
+        placeholder="Email*"
         required
       />
       <input
@@ -79,7 +79,7 @@ const Register = () => {
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder="Name"
+        placeholder="Nom*"
         required
       />
       <input
@@ -87,7 +87,7 @@ const Register = () => {
         type="text"
         value={surname}
         onChange={(e) => setSurname(e.target.value)}
-        placeholder="Surname"
+        placeholder="Prénom *"
         required
       />
       <input
@@ -95,7 +95,7 @@ const Register = () => {
         type="tel"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
-        placeholder="Phone (optional)"
+        placeholder="Téléphone"
       />
       <div className='relative mb-5'>
         <input
@@ -103,7 +103,7 @@ const Register = () => {
           type={showPassword ? "text" : "password"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
+          placeholder="Mots de passe *"
           required
         />
         <button
@@ -111,7 +111,7 @@ const Register = () => {
           className='absolute inset-y-0 right-0 flex items-center px-4 text-gray-600'
           onClick={() => setShowPassword(!showPassword)}
         >
-          {showPassword ? 'Hide' : 'Show'}
+          {showPassword ? 'Cacher' : 'Montrer'}
         </button>
       </div>
       {success && <p style={{ color: 'green' }}>{success}</p>}

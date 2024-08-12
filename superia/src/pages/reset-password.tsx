@@ -20,7 +20,7 @@ const ResetPassword = () => {
 
   const handleResetPassword = async () => {
     if (password !== confirmPassword) {
-      setMessage('Passwords do not match.');
+      setMessage('Mots de passe différent.');
       return;
     }
 
@@ -36,7 +36,7 @@ const ResetPassword = () => {
       const data = await response.json();
       setMessage(data.message);
     } catch (error) {
-      setMessage('Failed to reset password.');
+      setMessage('Erreur dans la réinitialisation du mots de passe.');
     }
   };
 
@@ -57,7 +57,7 @@ const ResetPassword = () => {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="New Password"
+          placeholder="Nouveau mots de passe"
           required
           style={{ padding: '8px', margin: '5px', border: '2px solid #ddd', borderRadius: '4px', width: '300px' }}
         />
@@ -65,12 +65,12 @@ const ResetPassword = () => {
           type="password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="Confirm Password"
+          placeholder="Confirmez le mots de passe"
           required
           style={{ padding: '8px', margin: '5px', border: '2px solid #ddd', borderRadius: '4px', width: '300px' }}
         />
         <button onClick={handleResetPassword} style={{ padding: '10px 20px', backgroundColor: '#0056b3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', width: '320px', marginTop: '10px' }}>
-          Reset Password
+          Réinitialiser le mots de passe
         </button>
         {message && <p style={{ color: 'black', fontSize: '14px' }}>{message}</p>}
       </div>

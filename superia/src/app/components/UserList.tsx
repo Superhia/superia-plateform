@@ -17,7 +17,7 @@ const UserList = () => {
       try {
         const res = await fetch('/api/users');
         if (!res.ok) {
-          throw new Error('Failed to fetch users');
+          throw new Error('Erreur de récéption de lutilisateur');
         }
         const data: User[] = await res.json();
         setUsers(data);
@@ -39,7 +39,7 @@ const UserList = () => {
       });
 
       if (!res.ok) {
-        throw new Error('Failed to delete user');
+        throw new Error('Erreur de suppression de lutilisateur');
       }
 
       setUsers(users.filter(user => user.id !== id));
@@ -50,23 +50,23 @@ const UserList = () => {
   };
 
   if (loading) {
-    return <p>Loading users...</p>;
+    return <p>Chargement de lutilisateur...</p>;
   }
 
   if (error) {
-    return <p>Error: {error}</p>;
+    return <p>Erreur: {error}</p>;
   }
 
   return (
     <div>
-      <h2 className='text-2xl font-semibold py-5'>Users List</h2>
+      <h2 className='text-2xl font-semibold py-5'>Listes des utilisateurs</h2>
       <ul>
         {users.map((user) => (
           <li key={user.id}>
             {user.email} (créé le : {new Date(user.created_at).toLocaleString()})
             <button 
             className='px-2 m-1 rounded-md border-0 text-red-700 ring-1 ring-inset ring-red-300 text-xl 2xl:leading-8'
-            onClick={() => handleDelete(user.id)}>Delete</button>
+            onClick={() => handleDelete(user.id)}>Suprimer</button>
           </li>
         ))}
       </ul>

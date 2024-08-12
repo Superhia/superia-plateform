@@ -23,7 +23,7 @@ export default function Scrapping() {
 			<li><Link href={"chatpdf"}>YoutubeScan</Link></li>
 	  </ul>
 		</nav>
-    <h1 className="text-4xl font-semibold text-center py-7">Etudie tes données marques employeurs grace à SUPERIA</h1>
+    <h1 className="text-4xl font-semibold text-center py-7">Etudiez vos données marques employeurs grace à SUPERIA</h1>
           <p className="text-center py-2.5 mx-40 px-64">Notre outil ScanRH scrute votre site carrière pour en extraire des données précieuses, vous offrant ainsi une vision claire de votre image de marque employeur et de la manière dont elle est perçue par les candidats potentiels.</p>
        <div className="mx-auto py-14 cursor-pointer"><ImageScanRH/></div>
         <div className="mx-auto ">

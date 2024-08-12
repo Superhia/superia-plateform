@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const validateRecaptcha = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ message: 'Method non permise' });
   }
 
   const { recaptchaToken } = req.body;
@@ -20,13 +20,13 @@ const validateRecaptcha = async (req: NextApiRequest, res: NextApiResponse) => {
     const { success } = response.data;
 
     if (!success) {
-      return res.status(400).json({ message: 'reCAPTCHA validation failed' });
+      return res.status(400).json({ message: 'Erreur dans la validation du reCAPTCHA' });
     }
 
-    res.status(200).json({ message: 'reCAPTCHA validated successfully' });
+    res.status(200).json({ message: 'reCAPTCHA validé avec succès' });
   } catch (error) {
     console.error('Error validating reCAPTCHA:', error);
-    res.status(500).json({ message: 'Error validating reCAPTCHA', error });
+    res.status(500).json({ message: 'Erreur dans la validation du reCAPTCHA', error });
   }
 };
 

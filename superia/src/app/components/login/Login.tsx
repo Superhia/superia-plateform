@@ -36,7 +36,7 @@ const Login = () => {
     event.preventDefault();
 
     if (!recaptchaToken) {
-      setError('reCAPTCHA verification failed. Please try again.');
+      setError('Erreur reCAPTCHA verification. Merci de rééssayer.');
       return;
     }
 
@@ -56,7 +56,7 @@ const Login = () => {
         setError(data.message);
       }
     } catch (error) {
-      setError('Something went wrong');
+      setError('Quelque chose ne va pas');
     }
   };
 

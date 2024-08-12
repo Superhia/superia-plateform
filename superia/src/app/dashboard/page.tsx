@@ -20,7 +20,7 @@ export default function Home() {
       <UserList />
     </div>
     <div>
-      <h2 className='text-2xl font-semibold py-7'>Créé ton administrateur</h2>
+      <h2 className='text-2xl font-semibold py-7'>Créez votre administrateur</h2>
       <AdminRegister/></div>
     </main>
   );

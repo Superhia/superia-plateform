@@ -18,20 +18,20 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       const result = await client.query('UPDATE users SET confirmed = true WHERE confirmation_token = $1 RETURNING *', [token]);
 
       if (result.rowCount === 0) {
-        const message = encodeURIComponent('Invalid or expired token');
+        const message = encodeURIComponent('Token invalid ou expiré');
         return res.redirect(`/login?error=${message}`);
       }
 
-      const successMessage = encodeURIComponent('Email confirmed successfully');
+      const successMessage = encodeURIComponent('Email confirmé avec succès !');
       res.redirect(`/login?success=${successMessage}`);
     } catch (error) {
       console.error('Error confirming email:', error);
-      const errorMessage = encodeURIComponent('Error confirming email');
+      const errorMessage = encodeURIComponent('Erreur de confirmation du mail');
       res.redirect(`/login?error=${errorMessage}`);
     } finally {
       client.release();
     }
   } else {
-    res.status(405).json({ message: 'Method not allowed' });
+    res.status(405).json({ message: 'Method non permise' });
   }
 };

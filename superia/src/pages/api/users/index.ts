@@ -22,12 +22,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     } catch (err) {
       const error = err as PgError;
       console.error('Error fetching users:', error);
-      res.status(500).json({ message: 'Error fetching users', error });
+      res.status(500).json({ message: 'Erreur utilisateur', error });
     } finally {
       client.release();
     }
   } else {
-    res.status(405).json({ message: 'Method not allowed' });
+    res.status(405).json({ message: 'Method non permise' });
   }
 };
 

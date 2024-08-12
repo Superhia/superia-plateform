@@ -7,14 +7,14 @@ const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ message: 'Method non permise' });
   }
 
   const { name, email, message, recaptchaToken } = req.body;
 
   if (!name || !email || !message || !recaptchaToken) {
     console.error('Missing fields:', { name, email, message, recaptchaToken });
-    return res.status(400).json({ message: 'All fields are required' });
+    return res.status(400).json({ message: 'Tout les champs sont requis' });
   }
 
   // Verify reCAPTCHA token
@@ -31,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (!recaptchaData.success || recaptchaData.score < 0.5) {
     console.error('reCAPTCHA verification failed');
-    return res.status(400).json({ message: 'reCAPTCHA verification failed. Please try again.' });
+    return res.status(400).json({ message: 'Erreur de vérification du reCAPTCHA, merci de rafraichir la page' });
   }
 
   try {
@@ -50,16 +50,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: 'dl.lasuperagence@gmail.com',
-      subject: `Support request from ${name}`,
-      text: `You have received a new message from:\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+      subject: `Support requète venant de ${name}`,
+      text: `Vous avez reçu un nouveau message venant de :\nNom: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
     };
 
     // Send email
     await transporter.sendMail(mailOptions);
 
-    res.status(200).json({ message: 'Email sent successfully' });
+    res.status(200).json({ message: 'Email envoyé avec succès' });
   } catch (error) {
     console.error('Error sending email:', error);
-    res.status(500).json({ message: 'Error sending email' });
+    res.status(500).json({ message: 'Erreur en envoyant le mail' });
   }
 }

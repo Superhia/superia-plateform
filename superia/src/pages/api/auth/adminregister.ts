@@ -23,13 +23,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (!email || !password || !adminSecret) {
     console.log('Validation failed: Missing required fields');
-    return res.status(400).json({ message: 'Email, password, and admin secret are required' });
+    return res.status(400).json({ message: 'Email, mots de passe, et admin secret sont requis' });
   }
 
   // Ensure the admin secret is correct
   if (adminSecret !== process.env.ADMIN_SECRET) {
     console.log('Validation failed: Invalid admin secret');
-    return res.status(403).json({ message: 'Invalid admin secret' });
+    return res.status(403).json({ message: 'Admin secret invalide' });
   }
 
   try {
@@ -40,17 +40,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     if (result.rows.length > 0) {
       console.log('Validation failed: Email already exists');
-      return res.status(400).json({ message: 'Email already exists' });
+      return res.status(400).json({ message: 'Email existe déjà' });
     }
 
     await client.query('INSERT INTO users (email, password, role) VALUES ($1, $2, $3)', [email, hashedPassword, 'admin']);
     client.release();
 
     console.log('Admin user created successfully');
-    return res.status(201).json({ message: 'Admin user created successfully' });
+    return res.status(201).json({ message: 'Utilisateur Admin enregistrer avec succès !' });
   } catch (error) {
     const err = error as Error;
     console.error('Error registering admin user:', err.message);
-    return res.status(500).json({ message: 'Error registering admin user', error: err.message });
+    return res.status(500).json({ message: "Erreur denregistrement de l'admin", error: err.message });
   }
 };

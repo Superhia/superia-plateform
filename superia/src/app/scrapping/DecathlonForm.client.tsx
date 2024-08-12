@@ -75,7 +75,7 @@ const OrangeForm: React.FC = () => {
             });
 
             if (!res.body) {
-                throw new Error('ReadableStream not yet supported in this browser.');
+                throw new Error('ReadableStream nest pas supporté dans ce navigateur.');
             }
 
             const reader = res.body.getReader();
@@ -92,7 +92,7 @@ const OrangeForm: React.FC = () => {
 
         } catch (error) {
             console.error('Failed to submit:', error);
-            setStatus('Failed to submit');
+            setStatus('Erreur denvoie');
         } finally {
             setLoading(false);
         }

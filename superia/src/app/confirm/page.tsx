@@ -39,20 +39,20 @@ const ConfirmPageContent = () => {
     <div className="container mx-auto text-center mt-10">
       {status === 'success' && (
         <div>
-          <h1 className="text-2xl font-bold mb-4">Email Confirmed</h1>
-          <p>Your email has been confirmed successfully. You can now log in.</p>
+          <h1 className="text-2xl font-bold mb-4">Email Confirmé</h1>
+          <p>Votre email à été confirmé avec succès. Vous pouvez vous connecter.</p>
           <button
             className="mt-4 p-2 bg-blue-500 text-white rounded"
             onClick={() => router.push('/login')}
           >
-            Go to Login
+            Connexion
           </button>
         </div>
       )}
       {status === 'error' && (
         <div>
-          <h1 className="text-2xl font-bold mb-4">Error</h1>
-          <p>There was an error confirming your email. Please try again or contact support.</p>
+          <h1 className="text-2xl font-bold mb-4">Erreur</h1>
+          <p>Il y a eu une erreur dans la confirmation de lemail. merci de rééssayer ou de contactez le support.</p>
         </div>
       )}
     </div>
@@ -61,7 +61,7 @@ const ConfirmPageContent = () => {
 
 const ConfirmPage = () => {
   return (
-    <Suspense fallback={<p>Loading...</p>}>
+    <Suspense fallback={<p>Chargement...</p>}>
       <ConfirmPageContent />
     </Suspense>
   );

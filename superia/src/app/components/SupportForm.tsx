@@ -26,14 +26,14 @@ const SupportForm: React.FC = () => {
 
   const schema = Joi.object({
     name: Joi.string().required().messages({
-      'string.empty': 'Name is required',
+      'string.empty': 'Nom est requis',
     }),
     email: Joi.string().email({ tlds: { allow: false } }).required().messages({
-      'string.email': 'Valid email is required',
-      'string.empty': 'Email is required',
+      'string.email': 'Un email valide est requis',
+      'string.empty': 'Email requis',
     }),
     message: Joi.string().required().messages({
-      'string.empty': 'Message is required',
+      'string.empty': 'Message requis',
     }),
   });
 
@@ -72,7 +72,7 @@ const SupportForm: React.FC = () => {
     }
 
     if (!recaptchaToken) {
-      setError('reCAPTCHA verification failed. Please try again.');
+      setError('Erreur reCAPTCHA verification. Merci de rafraichir la page.');
       return;
     }
 
@@ -90,14 +90,14 @@ const SupportForm: React.FC = () => {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.message || 'Failed to send email');
+        throw new Error(data.message || 'Erreur denvoie de lemail');
       }
 
-      setResponseMessage('Your message has been sent successfully!');
+      setResponseMessage('Votre message à bien été envoyé!');
       setFormState({ name: '', email: '', message: '' });
     } catch (error) {
-      console.error('Error sending message:', error);
-      setResponseMessage('Failed to send message. Please try again later.');
+      console.error('Erreur denvoie du message:', error);
+      setResponseMessage('Erreur denvoie du message. Merci de rééssayer ultérieurment.');
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +114,7 @@ const SupportForm: React.FC = () => {
           value={formState.name}
           onChange={handleInputChange}
           required
-          placeholder='Nom'
+          placeholder='Nom*'
         />
       </div>
       <div>
@@ -126,7 +126,7 @@ const SupportForm: React.FC = () => {
           value={formState.email}
           onChange={handleInputChange}
           required
-          placeholder='Email'
+          placeholder='Email*'
         />
       </div>
       <div>
@@ -136,13 +136,13 @@ const SupportForm: React.FC = () => {
           name="message"
           value={formState.message}
           onChange={handleInputChange}
-          placeholder='Message'
+          placeholder='Message*'
           required
         />
       </div>
       <button type="submit" disabled={isLoading}
       className='p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8'>
-        {isLoading ? 'Sending...' : 'Send Message'}
+        {isLoading ? 'Envoie en cours...' : 'Envoyer'}
       </button>
       {responseMessage && <p>{responseMessage}</p>}
     </form>

@@ -80,9 +80,9 @@ const AgentComponent: React.FC = () => {
         if (data.isLoggedIn) {
           setRequestLimit(1000);
         }
-        console.log('Logged In Status:', data.isLoggedIn);
+        console.log('Status de connexion:', data.isLoggedIn);
       } catch (error) {
-        console.error('Error validating session:', error);
+        console.error('Erreur session invalide:', error);
         setIsLoggedIn(false);
       }
     };
@@ -113,8 +113,8 @@ const AgentComponent: React.FC = () => {
       const files = await Promise.all(fileFetchPromises);
       setFetchedFiles(files);
     } catch (error) {
-      console.error('Error fetching the files:', error);
-      alert('Failed to fetch the files.');
+      console.error('Erreur denvoie du document:', error);
+      alert('Document non envoyer.');
     }
   };
 
@@ -169,7 +169,7 @@ const AgentComponent: React.FC = () => {
       });
 
       if (!response.body) {
-        throw new Error('ReadableStream not supported in this browser.');
+        throw new Error('ReadableStream nest pas supporté dans ce navigateur');
       }
 
       const reader = response.body.getReader();
@@ -200,7 +200,7 @@ const AgentComponent: React.FC = () => {
       }
     } catch (error) {
       console.error('Error querying assistant:', error);
-      setResponses([{ question, response: 'Failed to get a response from the assistant.' }]);
+      setResponses([{ question, response: ' L assistant ne répond pas.' }]);
     } finally {
       setLoading(false);
       setStreaming(false);
@@ -212,8 +212,16 @@ const AgentComponent: React.FC = () => {
     <div>
       <form onSubmit={handleSubmit}>
         <div>
+        <div style={{ whiteSpace: 'break-spaces', wordBreak: 'break-word' }}>
+        {responses.map((res, index) => (
+          <div key={index}>
+            <strong>Q: {res.question}</strong>
+            <ReactMarkdown>{sanitizeHtml(res.response)}</ReactMarkdown>
+          </div>
+        ))}
+      </div>
           <input 
-            placeholder='Entre ta question'
+            placeholder='Entrez votre question'
             className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6"
             type="text"
             id="question"
@@ -222,7 +230,7 @@ const AgentComponent: React.FC = () => {
           />
         </div>
         <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading}>
-          {loading ? 'En cours...' : 'Pose ta question'}
+          {loading ? 'En cours...' : 'Posez votre question'}
         </button>
       </form>
       {loading && !streaming && (
@@ -239,14 +247,6 @@ const AgentComponent: React.FC = () => {
           </div>
         </div>
       )}
-      <div style={{ whiteSpace: 'break-spaces', wordBreak: 'break-word' }}>
-        {responses.map((res, index) => (
-          <div key={index}>
-            <strong>Q: {res.question}</strong>
-            <ReactMarkdown>{sanitizeHtml(res.response)}</ReactMarkdown>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };

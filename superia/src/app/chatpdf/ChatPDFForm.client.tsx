@@ -89,12 +89,12 @@ const YoutubeDataForm = () => {
     try {
       const response = await fetch(`https://superia.northeurope.cloudapp.azure.com/youtube_data?url=${encodeURIComponent(url)}`);
       if (!response.ok) {
-        throw new Error(`An error occurred: ${response.statusText}`);
+        throw new Error(`Une erreur survient: ${response.statusText}`);
       }
 
       const reader = response.body?.getReader();
       if (!reader) {
-        throw new Error('ReadableStream not supported or body is null.');
+        throw new Error('ReadableStream nest pas supporté ou le contenu du corp est null.');
       }
       const decoder = new TextDecoder('utf-8');
       let done = false;
@@ -148,12 +148,12 @@ const YoutubeDataForm = () => {
       });
 
       if (!askRes.ok) {
-        throw new Error(`An error occurred: ${askRes.statusText}`);
+        throw new Error(`Une erreur survient: ${askRes.statusText}`);
       }
 
       const reader = askRes.body?.getReader();
       if (!reader) {
-        throw new Error('Reader not available');
+        throw new Error('Reader nest pas disponible');
       }
 
       const decoder = new TextDecoder('utf-8');
@@ -182,7 +182,7 @@ const YoutubeDataForm = () => {
       setRequestCount((prevCount) => prevCount + 1); // Increment request count
     } catch (error) {
       console.error('Error querying assistant:', error);
-      setError('Failed to get a response from the assistant.');
+      setError('L assistant ne répond pas.');
     } finally {
       setLoading(false);
       setQuestion(''); // Clear the question input after submission
@@ -203,7 +203,7 @@ const YoutubeDataForm = () => {
           disabled={requestCount >= requestLimit}
         />
         <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading || requestCount >= requestLimit}>
-          {loading ? 'Processing...' : 'Envoyer'}
+          {loading ? 'En cours...' : 'Envoyer'}
         </button>
       </form>
 
@@ -256,14 +256,14 @@ const YoutubeDataForm = () => {
             disabled={requestCount >= requestLimit}
           />
           <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading || requestCount >= requestLimit}>
-            {loading ? 'Processing...' : 'Pose ta question'}
+            {loading ? 'En cours...' : 'Posez votre question'}
           </button>
         </form>
       )}
 
       {requestCount >= requestLimit && (
         <div>
-          <p className="text-red-500 font-bold text-xl">You have reached the maximum number of requests.</p>
+          <p className="text-red-500 font-bold text-xl">Vous avez utilisé le maximum de requêtes.</p>
         </div>
       )}
     </div>

@@ -35,7 +35,7 @@ const AdminRegister = () => {
       }
     } catch (err) {
       const error = err as Error;
-      setError('Something went wrong: ' + error.message);
+      setError('Quelque chose ne va pas: ' + error.message);
       setMessage('');
     }
   };
@@ -47,7 +47,7 @@ const AdminRegister = () => {
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
+        placeholder="Email*"
         required
       />
       <input
@@ -55,7 +55,7 @@ const AdminRegister = () => {
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
+        placeholder="Mots de passe*"
         required
       />
       <input
@@ -63,14 +63,14 @@ const AdminRegister = () => {
         type="text"
         value={adminSecret}
         onChange={(e) => setAdminSecret(e.target.value)}
-        placeholder="Admin Secret"
+        placeholder="Secret Dadministrateur"
         required
       />
       <button
         className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
         type="submit"
       >
-        Register Admin
+        Inscription Administrateur
       </button>
       {message && <p style={{ color: 'green' }}>{message}</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}

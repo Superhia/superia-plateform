@@ -21,7 +21,7 @@ export default NextAuth({
       },
       authorize: async (credentials) => {
         if (!credentials) {
-          throw new Error('No credentials provided');
+          throw new Error('Vous netes pas authorisé');
         }
 
         const client = await pool.connect();

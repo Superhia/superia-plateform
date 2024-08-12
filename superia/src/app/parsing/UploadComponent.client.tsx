@@ -107,7 +107,7 @@ const FileUploadComponent = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!file || requestCount >= requestLimit) {
-      alert('Please select a file or you have reached the request limit.');
+      alert('Merci de séléctioner un fichier ou vous avez atteint la limite.');
       return;
     }
     setLoading(true);
@@ -124,15 +124,15 @@ const FileUploadComponent = () => {
       const result = await response.json();
       if (response.ok) {
         setAssistantId(result.assistant_id);
-        setUploadStatus('File uploaded successfully.');
+        setUploadStatus('Fichier chargé avec succès.');
         setShowPdf(true);
         setRequestCount((prevCount) => prevCount + 1); // Increment request count
       } else {
-        setUploadStatus(result.error || 'Failed to upload the file.');
+        setUploadStatus(result.error || 'Erreur de chargement du fichier.');
       }
     } catch (error) {
       console.error('Error uploading file:', error);
-      setUploadStatus('Failed to upload the file.');
+      setUploadStatus('Erreur de chargement du fichier.');
     } finally {
       setLoading(false);
     }
@@ -168,7 +168,7 @@ const FileUploadComponent = () => {
           {file ? (
             <p>{file.name}</p>
           ) : (
-            <p>Drag & drop your file here or click to select</p>
+            <p>Drag & drop votre fichier ici ou cliquez pour chargé votre fichier</p>
           )}
           <input
             type="file"
@@ -182,13 +182,13 @@ const FileUploadComponent = () => {
           className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
           type="submit" disabled={loading || requestCount >= requestLimit}
         >
-          {loading ? 'Processing...' : 'Envoyer'}
+          {loading ? 'En cours...' : 'Envoyer'}
         </button>
       </form>
       {uploadStatus && <p>{uploadStatus}</p>}
       {requestCount >= requestLimit && (
         <div>
-          <p className="text-red-500 font-bold text-xl">You have reached the maximum number of requests.</p>
+          <p className="text-red-500 font-bold text-xl">Vous avez atteints le nombre maximum de requêtes.</p>
         </div>
       )}
       {showPdf && assistantId && pdfUrl && (
@@ -290,12 +290,12 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
       });
 
       if (!askRes.ok) {
-        throw new Error(`An error occurred: ${askRes.statusText}`);
+        throw new Error(`Une erreur est survenue: ${askRes.statusText}`);
       }
 
       const reader = askRes.body?.getReader();
       if (!reader) {
-        throw new Error('Reader not available');
+        throw new Error('Reader nest pas disponible');
       }
 
       const decoder = new TextDecoder('utf-8');
@@ -324,7 +324,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
       setRequestCount((prevCount) => prevCount + 1); // Increment request count
     } catch (error) {
       console.error('Error querying assistant:', error);
-      setError('Failed to get a response from the assistant.');
+      setError('L assistant ne répond pas.');
     } finally {
       setLoading(false);
       setQuestion(''); // Clear the question input after submission
@@ -363,10 +363,10 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
             name="question"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Entre ta question"
+            placeholder="Entrez votre question"
           />
           <button disabled={loading} className="p-3 m-1 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit">
-            Pose ta question
+            Posez votre question
           </button>
         </form>
       )}

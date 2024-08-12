@@ -17,12 +17,12 @@ const ForgotPassword = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        setMessage('Please check your email to reset your password.');
+        setMessage('Merci de vérifier vos mails pour réinitialiser votre mots de passe.');
       } else {
-        setMessage(data.message || 'An error occurred. Please try again.');
+        setMessage(data.message || 'Une erreur est survenue. Merci de rééssayer.');
       }
     } catch (error) {
-      setMessage('Failed to send password reset email.');
+      setMessage('Erreur denvoie du mots de passe.');
     }
   };
 
@@ -33,12 +33,12 @@ const ForgotPassword = () => {
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="Entre ton email"
+        placeholder="Entrez votre email"
         required
       />
       <button onClick={handleForgotPassword}
       className='p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8'
-      >Envoi le lien pour réinitialiser</button>
+      >Envoyez le lien pour réinitialiser</button>
       {message && <p>{message}</p>}
     </div>
   );

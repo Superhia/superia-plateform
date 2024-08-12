@@ -76,7 +76,7 @@ const ScrappingForm: React.FC = () => {
             });
 
             if (!res.body) {
-                throw new Error('ReadableStream not yet supported in this browser.');
+                throw new Error('ReadableStream nest pas supporté dans ce navigateur.');
             }
 
             const reader = res.body.getReader();
@@ -94,7 +94,7 @@ const ScrappingForm: React.FC = () => {
         } catch (error) {
             console.error('Failed to submit:', error);
             setLoading(false);
-            setStatus('Failed to submit');
+            setStatus('Erreur denvoie');
         }
     };
 
@@ -150,7 +150,7 @@ const ScrappingForm: React.FC = () => {
                 <>
                     <div className="mb-4">
                         <div>Status: {status}</div>
-                        <div>Currently Crawling: {currentUrl}</div>
+                        <div>En cours de process: {currentUrl}</div>
                         <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
                             <div
                                 className="bg-blue-900 h-2.5 rounded-full"

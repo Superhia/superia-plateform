@@ -15,5 +15,5 @@ export default function logoutHandler(req: NextApiRequest, res: NextApiResponse)
   });
 
   res.setHeader('Set-Cookie', serialized);
-  res.status(200).json({ message: 'Logout successful' });
+  res.status(200).json({ message: 'Deconnection réussit !' });
 }

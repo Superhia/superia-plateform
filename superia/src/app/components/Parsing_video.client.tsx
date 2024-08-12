@@ -23,7 +23,7 @@ const ScanRH = () => {
             {showVideo && (
                 <video id="scanRHVideo" width="1080" controls autoPlay muted>
                     <source src="video_scanrh.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
+                    Votre navigateur ne supporte pas cette vidéo.
                 </video>
             )}
         </div>

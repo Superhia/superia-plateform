@@ -25,7 +25,7 @@ export default function Chatpdf() {
 			<li><Link href={"chatpdf"}>YoutubeScan</Link></li>
 	  </ul>
 		</nav>
-    <h1 className="text-4xl font-semibold text-center py-7">Etudie tes vidéos</h1>
+    <h1 className="text-4xl font-semibold text-center py-7">Etudiez vos vidéos</h1>
     <p className="text-center mx-40 px-64">Unique en son genre, notre fonctionnalité d analyse de sentiments de vos vidéos youtube permet une interaction directe. Obtenez des résumés et discutez avec le contenu de vos vidéos comme jamais auparavant.</p>
       <div className="flex flex-col items-center py-14 cursor-pointer"><Youtube_video/></div>
       <div className=" items-center mx-auto py-14 bg-white">

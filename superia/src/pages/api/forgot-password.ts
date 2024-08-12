@@ -14,7 +14,7 @@ const pool = new Pool({
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ message: 'Method non permise' });
   }
 
   const { email } = req.body;
@@ -30,7 +30,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     );
 
     if (rowCount === 0) {
-      return res.status(404).json({ message: 'No user found with that email address.' });
+      return res.status(404).json({ message: 'Pas dutilisateur trouvé avec cette adresse email.' });
     }
     const EMAIL_HOST = process.env.EMAIL_HOST || 'smtp.hostinger.com';
     const EMAIL_PORT = parseInt(process.env.EMAIL_PORT || '587', 10);
@@ -53,19 +53,19 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const mailOptions = {
       from: 'accueil@thewildseeds.net',
       to: email,
-      subject: 'Password Reset',
-      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
-        Please click on the following link, or paste this into your browser to complete the process:\n\n
+      subject: 'Réinitialisation du mots de passe',
+      text: `Vous recevez ce message parce que vous (ou quelqun dautre) a demandé à réinitialiser le mots de passe de votre compte.\n\n
+        Merci de cliquer sur le lien suivant, ou coller le lien dans votre navigateur:\n\n
         https://${req.headers.host}/reset-password?token=${token}\n\n
-        If you did not request this, please ignore this email and your password will remain unchanged.\n`
+        Si vous en avez pas fait la demande, merci d'ignorer cette email et votre mots de passe restera inchangé.\n`
     };
 
     await transporter.sendMail(mailOptions);
 
-    res.status(200).json({ message: 'An e-mail has been sent to ' + email + ' with further instructions.' });
+    res.status(200).json({ message: 'Un email a été envoyé à' + email + ' avec davantage instructions.' });
   } catch (error) {
     console.error('Error in forgot-password:', error);
-    res.status(500).json({ message: 'Error on sending password reset email.' });
+    res.status(500).json({ message: 'Erreur en envoyant le mots de passe.' });
   } finally {
     client.release();
   }
