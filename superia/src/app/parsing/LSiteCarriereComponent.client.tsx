@@ -301,7 +301,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
                 className="p-5 pl-20 pr-20 m-5 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"
                 onClick={handleSubmit}
             >
-                <img src="LSiteCarriere.png" alt="Ebook Experience Candidat" className="h-32 w-24 mx-auto" />
+                <img src="LSIteCarriere.png" alt="Ebook Experience Candidat" className="h-32 w-24 mx-auto" />
                 Livre Site Carrière
             </button>
             {uploadStatus && <p>{uploadStatus}</p>}
