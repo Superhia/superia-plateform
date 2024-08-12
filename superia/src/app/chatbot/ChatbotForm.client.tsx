@@ -26,7 +26,7 @@ interface ProgressData {
 const ChatbotForm: React.FC = () => {
   const [domain, setDomain] = useState<string>('');
   const [assistantName, setAssistantName] = useState<string>('Custom Assistant');
-  const [instructions, setInstructions] = useState<string>('You are a helpful assistant that answers questions based on the document. If the questions aren\'t linked with the document, you return "Mon rôle est de vous aider sur les solutions RH, je ne suis pas en mesure de répondre à votre question." If it contains inappropriate characters, you return "Je ne peux pas répondre à cette question car elle contient des caractères inappropriés."');
+  const [instructions, setInstructions] = useState<string>('You are a helpful assistant that answers questions based on the document. " If it contains inappropriate characters, you return "Je ne peux pas répondre à cette question car elle contient des caractères inappropriés."');
   const [question, setQuestion] = useState<string>('');
   const [assistantId, setAssistantId] = useState<string>('');
   const [responses, setResponses] = useState<QAResponse[]>([]);
@@ -121,15 +121,15 @@ const ChatbotForm: React.FC = () => {
   const preconfiguredAssistants = [
     {
       name: 'Analyse Marque Employeur',
-      instructions: " 'Analyse générale de la marque employeur' avec les sous-rubriques Proposition de valeur et Culture d'entreprise. Assure-toi de bien Retirer les 【3:0†source].You are a helpful assistant that answers questions based on the document. If the questions aren\'t linked with the document, you return :Mon rôle est de vous aider sur les solutions RH, je ne suis pas en mesure de répondre à votre question. If it contains inappropriate characters, you return : Je ne peux pas répondre à cette question car elle contient des caractères inappropriés. "
+      instructions: " 'Analyse générale de la marque employeur' avec les rubriques Proposition de valeur et Culture d'entreprise. If it contains inappropriate characters, you return : Je ne peux pas répondre à cette question car elle contient des caractères inappropriés. "
     },
     {
       name: 'Candidate persona',
-      instructions: " 'Proposer un candidate persona' principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels. Assure-toi de bien Retirer les 【3:0†source]. You are a helpful assistant that answers questions based on the document. If the questions aren\'t linked with the document, you return : Mon rôle est de vous aider sur les solutions RH, je ne suis pas en mesure de répondre à votre question. If it contains inappropriate characters, you return : Je ne peux pas répondre à cette question car elle contient des caractères inappropriés."
+      instructions: " 'Proposer un candidate persona' principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels. If it contains inappropriate characters, you return : Je ne peux pas répondre à cette question car elle contient des caractères inappropriés."
     },
     {
       name: 'Employee Value Propositions',
-      instructions: " 'Définir 3 Employee Value Propositions (EVP)' qui mettent en avant les avantages uniques de travailler pour l'entreprise. Assure-toi de bien Retirer les 【3:0†source]. You are a helpful assistant that answers questions based on the document. If the questions aren\'t linked with the document, you return : Mon rôle est de vous aider sur les solutions RH, je ne suis pas en mesure de répondre à votre question. If it contains inappropriate characters, you return : Je ne peux pas répondre à cette question car elle contient des caractères inappropriés."
+      instructions: " 'Définir 3 Employee Value Propositions (EVP)' qui mettent en avant les avantages uniques de travailler pour l'entreprise. If it contains inappropriate characters, you return : Je ne peux pas répondre à cette question car elle contient des caractères inappropriés."
     }
   ];
   const cleanText = (text:string) => {
