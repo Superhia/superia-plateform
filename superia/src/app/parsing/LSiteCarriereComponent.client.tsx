@@ -69,7 +69,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
         }
 
         const formData = new FormData();
-        formData.append('file', new File([fileUrl], 'ebookExperienceCandidat_nosummary.pdf', { type: 'application/pdf' }));
+        formData.append('file', new File([fileUrl], 'livre_sitecarriere_10_GV.pdf', { type: 'application/pdf' }));
 
         try {
             const response = await fetch('https://superia.northeurope.cloudapp.azure.com/chatdoc', {

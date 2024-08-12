@@ -48,7 +48,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
 
     const fetchPDFAndSetFile = async () => {
         try {
-            const response = await fetch('/ebookExperienceCandidat_nosummary.pdf');
+            const response = await fetch('/Livre_blanc_Ambassadeur_Marque_Employeur.pdf');
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
             setFileUrl(url);
