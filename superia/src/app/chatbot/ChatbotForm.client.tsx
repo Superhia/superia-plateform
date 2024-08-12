@@ -121,15 +121,15 @@ const ChatbotForm: React.FC = () => {
   const preconfiguredAssistants = [
     {
       name: 'Analyse Marque Employeur',
-      instructions: " 'Analyse générale de la marque employeur' avec les rubriques Proposition de valeur et Culture d'entreprise. If it contains inappropriate characters, you return : Je ne peux pas répondre à cette question car elle contient des caractères inappropriés. "
+      instructions: " 'Analyse générale de la marque employeur' avec les rubriques Proposition de valeur et Culture d'entreprise. "
     },
     {
       name: 'Candidate persona',
-      instructions: " 'Proposer un candidate persona' principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels. If it contains inappropriate characters, you return : Je ne peux pas répondre à cette question car elle contient des caractères inappropriés."
+      instructions: " 'Proposer un candidate persona' principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels. "
     },
     {
       name: 'Employee Value Propositions',
-      instructions: " 'Définir 3 Employee Value Propositions (EVP)' qui mettent en avant les avantages uniques de travailler pour l'entreprise. If it contains inappropriate characters, you return : Je ne peux pas répondre à cette question car elle contient des caractères inappropriés."
+      instructions: " 'Définir 3 Employee Value Propositions (EVP)' qui mettent en avant les avantages uniques de travailler pour l'entreprise."
     }
   ];
   const cleanText = (text:string) => {
