@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import Chatbot from './ChatbotForm.client';
-
+import Sentiment from "./SentimentForm.client";
 export default function Chatbotpage() {
   return (
     
@@ -14,12 +13,12 @@ export default function Chatbotpage() {
 			<li><Link href={"scrapping"}>ScanRH</Link></li>
 			<li><Link href={"parsing"}>DocuParse</Link></li>
 			<li><Link href={"chatpdf"}>YoutubeScan</Link></li>
-      <li><Link href={"analysis"}>Sentiment</Link></li>
+            <li><Link href={"sentiment"}>Sentiment</Link></li>
 	  </ul>
 		</nav>
     <h1 className="text-4xl font-semibold text-center py-7">Posez vos questions à votre site web</h1>
     <p className="text-center py-2.5 mx-32 px-32">La première application qui utiliser lIA générative pour lanalyse de marque employeur. Grâce à Superia, vous pouvez désormais exploiter pleinement le potentiel de votre site carrière, en analysant et optimisant leur contenu pour attirer les meilleurs talents.</p>
-    <div className="mx-auto py-14 bg-white"><Chatbot/></div>
+    <div className="mx-auto py-14 bg-white"><Sentiment/></div>
     </main>
     
   );

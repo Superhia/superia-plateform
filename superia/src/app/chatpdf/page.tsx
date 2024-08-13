@@ -23,6 +23,7 @@ export default function Chatpdf() {
 			<li><Link href={"scrapping"}>ScanRH</Link></li>
 			<li><Link href={"parsing"}>DocuParse</Link></li>
 			<li><Link href={"chatpdf"}>YoutubeScan</Link></li>
+      <li><Link href={"analysis"}>Sentiment</Link></li>
 	  </ul>
 		</nav>
     <h1 className="text-4xl font-semibold text-center py-7">Etudiez vos vidéos</h1>
