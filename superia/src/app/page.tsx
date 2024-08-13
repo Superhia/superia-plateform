@@ -9,6 +9,8 @@ import Youtube_video from './components/Youtube_video.client';
 
 export default function Home() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userName, setUserName] = useState('');
+    const [userSurname, setUserSurname] = useState('');
 
     useEffect(() => {
         // Call the API to validate session
@@ -16,7 +18,11 @@ export default function Home() {
             try {
                 const response = await fetch('/api/auth/validate-session');
                 const data = await response.json();
-                setIsLoggedIn(data.isLoggedIn); // Set based on the response from the server
+                setIsLoggedIn(data.isLoggedIn);
+                if (data.isLoggedIn) {
+                  setUserName(data.user.name); // Set user's name if logged in
+                  setUserSurname(data.user.surname);
+                } // Set based on the response from the server
                 console.log('Logged In Status:', data.isLoggedIn);
             } catch (error) {
                 console.error('Error validating session:', error);
@@ -46,7 +52,9 @@ export default function Home() {
       <div className="mx-auto">
                 {isLoggedIn ? (
                     <>
-                    <div><h1 className="text-4xl font-semibold text-center py-7">Bienvenue dans votre espace personnel Superia ! </h1>
+                    <div><h1 className="text-4xl font-semibold text-center py-7">
+                Bienvenue {userSurname} {userName}, dans votre espace personnel Superia!
+              </h1>
       <p className="text-xl text-center py-2.5 mx-40 px-64">
       Découvrez Superia, la première plateforme pour la Marque Employeur utilisant l’IA générative
       </p></div>
