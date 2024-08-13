@@ -1,4 +1,4 @@
-'use client';
+'use client'
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
@@ -121,34 +121,39 @@ const ChatbotForm: React.FC = () => {
   const preconfiguredAssistants = [
     {
       name: 'Analyse Marque Employeur',
-      instructions: " Résume en une centaine de mots le contenu de la page, puis fait une Analyse générale de la marque employeur avec les rubriques Proposition de valeur et Culture d'entreprise."
+      instructions: "Résume en une centaine de mots le contenu de la page, puis fait une Analyse générale de la marque employeur avec les rubriques Proposition de valeur et Culture d'entreprise."
     },
     {
       name: 'Candidate persona',
-      instructions: " Résume en une centaine de mots le contenu de la page, puis Propose un candidate persona principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels. "
+      instructions: "Résume en une centaine de mots le contenu de la page, puis Propose un candidate persona principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels."
     },
     {
       name: 'Employee Value Propositions',
-      instructions: " Résume en une centaine de mots le contenu de la page, puis Définis 3 Employee Value Propositions (EVP) qui mettent en avant les avantages uniques de travailler pour l'entreprise."
+      instructions: "Résume en une centaine de mots le contenu de la page, puis Définis 3 Employee Value Propositions (EVP) qui mettent en avant les avantages uniques de travailler pour l'entreprise."
     }
   ];
+
   const cleanText = (text:string) => {
-  const patterns = [
-    /assistant_id:\s*\w+/gi,
-    /【\d+:\d+†source】/g]; // Use 'g' for global replacement
-    patterns.forEach(pattern => {
-      text = text.replace(pattern, '');
-    });
-    return text;
-};
+    const patterns = [
+      /assistant_id:\s*\w+/gi,
+      /【\d+:\d+†source】/g]; // Use 'g' for global replacement
+      patterns.forEach(pattern => {
+        text = text.replace(pattern, '');
+      });
+      return text;
+  };
+
+  // This useEffect triggers the submission when the instructions change
+  useEffect(() => {
+    if (assistantName !== 'Custom Assistant') {
+      handleScrapeSubmit();
+    }
+  }, [instructions]); // Depend on instructions to trigger
 
   const handlePreconfiguredSubmit = (configIndex: number) => {
     const config = preconfiguredAssistants[configIndex];
     setAssistantName(config.name);
-    setInstructions(config.instructions);
-    setTimeout(() => {
-      handleScrapeSubmit();
-    }, 0);
+    setInstructions(config.instructions); // This triggers the effect
   };
 
   const handleScrapeSubmit = async (event?: React.FormEvent<HTMLFormElement>) => {
@@ -164,6 +169,7 @@ const ChatbotForm: React.FC = () => {
     setLog([]);
     requestInProgress.current = true;
     setStreaming(false);
+
     console.log("Submitting with instructions:", instructions);
 
     try {
