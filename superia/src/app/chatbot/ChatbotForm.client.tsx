@@ -26,7 +26,7 @@ interface ProgressData {
 const ChatbotForm: React.FC = () => {
   const [domain, setDomain] = useState<string>('');
   const [assistantName, setAssistantName] = useState<string>('Custom Assistant');
-  const [instructions, setInstructions] = useState<string>('Résume en une centaine de mots le contenu de la page, puis fait une Analyse générale de la marque employeur avec les rubriques Proposition de valeur et Culture dentreprise.');
+  const [instructions, setInstructions] = useState<string>('Résume en une centaine de mots le contenu de la page, puis fait une Analyse générale de la marque employeur avec les rubriques Proposition de valeur et Culture dentreprise.Enfin réponds aux questions posés.');
   const [question, setQuestion] = useState<string>('');
   const [assistantId, setAssistantId] = useState<string>('');
   const [responses, setResponses] = useState<QAResponse[]>([]);
@@ -280,7 +280,7 @@ const ChatbotForm: React.FC = () => {
           setResponses([...newResponses]);
         }
       }
-      
+
     } catch (error) {
       console.error('Error querying assistant:', error);
       setError('L assistant ne répond pas.');
