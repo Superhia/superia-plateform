@@ -280,13 +280,7 @@ const ChatbotForm: React.FC = () => {
           setResponses([...newResponses]);
         }
       }
-
-      if (!checkResponseRelevance(responseContent)) {
-        newResponses[lastIndex].response = 'Mon rôle est de vous aider pour les solutions RH, je ne suis pas en mesure de répondre à votre question.';
-        setResponses([...newResponses]);
-      } else {
-        setRequestCount((prevCount) => prevCount + 1);
-      }
+      
     } catch (error) {
       console.error('Error querying assistant:', error);
       setError('L assistant ne répond pas.');
