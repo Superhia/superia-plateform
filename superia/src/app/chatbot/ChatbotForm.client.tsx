@@ -26,7 +26,7 @@ interface ProgressData {
 const ChatbotForm: React.FC = () => {
   const [domain, setDomain] = useState<string>('');
   const [assistantName, setAssistantName] = useState<string>('Custom Assistant');
-  const [instructions, setInstructions] = useState<string>('Résume en une centaine de mots le contenu de la page, puis fait une Analyse générale de la marque employeur avec les rubriques Proposition de valeur et Culture dentreprise.Enfin réponds aux questions posés.');
+  const [instructions, setInstructions] = useState<string>('Résume en une centaine de mots le contenu de la page, puis fait une Analyse générale de la marque employeur avec les rubriques Proposition de valeur et Culture dentreprise.');
   const [question, setQuestion] = useState<string>('');
   const [assistantId, setAssistantId] = useState<string>('');
   const [responses, setResponses] = useState<QAResponse[]>([]);
@@ -121,15 +121,15 @@ const ChatbotForm: React.FC = () => {
   const preconfiguredAssistants = [
     {
       name: 'Analyse Marque Employeur',
-      instructions: " Résume en une centaine de mots le contenu de la page, puis fait une Analyse générale de la marque employeur avec les rubriques Proposition de valeur et Culture d'entreprise. Enfin réponds aux question posé."
+      instructions: " Résume en une centaine de mots le contenu de la page, puis fait une Analyse générale de la marque employeur avec les rubriques Proposition de valeur et Culture d'entreprise."
     },
     {
       name: 'Candidate persona',
-      instructions: " Résume en une centaine de mots le contenu de la page, puis Propose un candidate persona principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels. Enfin réponds aux question posé."
+      instructions: " Résume en une centaine de mots le contenu de la page, puis Propose un candidate persona principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels. "
     },
     {
       name: 'Employee Value Propositions',
-      instructions: " Résume en une centaine de mots le contenu de la page, puis Définis 3 Employee Value Propositions (EVP) qui mettent en avant les avantages uniques de travailler pour l'entreprise.Enfin réponds aux question posé."
+      instructions: " Résume en une centaine de mots le contenu de la page, puis Définis 3 Employee Value Propositions (EVP) qui mettent en avant les avantages uniques de travailler pour l'entreprise."
     }
   ];
   const cleanText = (text:string) => {
