@@ -146,7 +146,9 @@ const ChatbotForm: React.FC = () => {
     const config = preconfiguredAssistants[configIndex];
     setAssistantName(config.name);
     setInstructions(config.instructions);
-    handleScrapeSubmit();
+    setTimeout(() => {
+      handleScrapeSubmit();
+    }, 0);
   };
 
   const handleScrapeSubmit = async (event?: React.FormEvent<HTMLFormElement>) => {
@@ -162,6 +164,7 @@ const ChatbotForm: React.FC = () => {
     setLog([]);
     requestInProgress.current = true;
     setStreaming(false);
+    console.log("Submitting with instructions:", instructions);
 
     try {
       const response = await fetch('https://superia.northeurope.cloudapp.azure.com/chatbot', {
