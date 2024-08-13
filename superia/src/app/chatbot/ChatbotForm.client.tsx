@@ -26,7 +26,7 @@ interface ProgressData {
 const ChatbotForm: React.FC = () => {
   const [domain, setDomain] = useState<string>('');
   const [assistantName, setAssistantName] = useState<string>('Custom Assistant');
-  const [instructions, setInstructions] = useState<string>('You are a helpful assistant that answers questions based on the document. " If it contains inappropriate characters, you return "Je ne peux pas répondre à cette question car elle contient des caractères inappropriés."');
+  const [instructions, setInstructions] = useState<string>('Résume en une centaine de mots le contenu de la page, puis fait une Analyse générale de la marque employeur avec les rubriques Proposition de valeur et Culture dentreprise.');
   const [question, setQuestion] = useState<string>('');
   const [assistantId, setAssistantId] = useState<string>('');
   const [responses, setResponses] = useState<QAResponse[]>([]);
