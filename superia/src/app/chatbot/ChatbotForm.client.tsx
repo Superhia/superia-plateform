@@ -121,15 +121,15 @@ const ChatbotForm: React.FC = () => {
   const preconfiguredAssistants = [
     {
       name: 'Analyse Marque Employeur',
-      instructions: " 'Analyse générale de la marque employeur' avec les rubriques Proposition de valeur et Culture d'entreprise. "
+      instructions: " Résume en une centaine de mots le contenu de la page, puis fait une Analyse générale de la marque employeur avec les rubriques Proposition de valeur et Culture d'entreprise."
     },
     {
       name: 'Candidate persona',
-      instructions: " 'Proposer un candidate persona' principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels. "
+      instructions: " Résume en une centaine de mots le contenu de la page, puis Propose un candidate persona principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels. "
     },
     {
       name: 'Employee Value Propositions',
-      instructions: " 'Définir 3 Employee Value Propositions (EVP)' qui mettent en avant les avantages uniques de travailler pour l'entreprise."
+      instructions: " Résume en une centaine de mots le contenu de la page, puis Définis 3 Employee Value Propositions (EVP) qui mettent en avant les avantages uniques de travailler pour l'entreprise."
     }
   ];
   const cleanText = (text:string) => {
