@@ -1,5 +1,6 @@
 "use client"
 import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 // Define a type for the API response
 interface SentimentAnalysisResponse {
@@ -50,11 +51,11 @@ const SentimentAnalysisForm = () => {
           type="text"
           value={entreprise}
           onChange={(e) => setEntreprise(e.target.value)}
-          placeholder="Enter company name"
+          placeholder="Entre le nom de l'entreprise"
           required
         />
         <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"type="submit" disabled={loading}>
-          {loading ? 'Loading...' : 'Analyze'}
+          {loading ? 'Chargement...' : 'Analyse'}
         </button>
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -62,7 +63,7 @@ const SentimentAnalysisForm = () => {
         <div>
           <h2>Analysis Result</h2>
           <p>Status: {response.status}</p>
-          <p>Response: {response.response}</p>
+          <p>Response: <ReactMarkdown>{response.response}</ReactMarkdown></p>
         </div>
       )}
     </div>
