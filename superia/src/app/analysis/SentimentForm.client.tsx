@@ -44,14 +44,13 @@ const SentimentAnalysisForm = () => {
 
   return (
     <div>
-      <h1>Sentiment Analysis</h1>
       <form onSubmit={handleSubmit}>
         <input
         className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6"
           type="text"
           value={entreprise}
           onChange={(e) => setEntreprise(e.target.value)}
-          placeholder="Entre le nom de l'entreprise"
+          placeholder="Entrez le nom de l'entreprise"
           required
         />
         <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8"type="submit" disabled={loading}>
@@ -61,8 +60,7 @@ const SentimentAnalysisForm = () => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {response && (
         <div>
-          <h2>Analysis Result</h2>
-          <p>Status: {response.status}</p>
+          <h2>Résultat d'analyse</h2>
           <p>Response: <ReactMarkdown>{response.response}</ReactMarkdown></p>
         </div>
       )}

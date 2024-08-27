@@ -20,7 +20,7 @@ const Logout = () => {
     <button
       onClick={handleLogout}
     >
-      Deconnection
+      Deconnexion
     </button>
   );
 };
