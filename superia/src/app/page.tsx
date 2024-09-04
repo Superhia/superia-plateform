@@ -16,15 +16,13 @@ export default function Home() {
       const storedIsLoggedIn = localStorage.getItem('isLoggedIn');
       const storedUserName = localStorage.getItem('userName');
       const storedUserSurname = localStorage.getItem('userSurname');
-
-      // Validate session if session data is found in localStorage
+  
       if (storedIsLoggedIn && storedUserName && storedUserSurname) {
         setIsLoggedIn(JSON.parse(storedIsLoggedIn));
         setUserName(storedUserName);
         setUserSurname(storedUserSurname);
         setLoading(false); // End loading if session found in localStorage
       } else {
-        // Validate session via API if not found in localStorage
         const validateSession = async () => {
           try {
             const response = await fetch('/api/auth/validate-session');
@@ -38,7 +36,7 @@ export default function Home() {
               localStorage.setItem('userName', data.user.name);
               localStorage.setItem('userSurname', data.user.surname);
             } else {
-              // Clear localStorage if session is invalid or expired
+              // Clear localStorage if the session is invalid or expired
               localStorage.removeItem('isLoggedIn');
               localStorage.removeItem('userName');
               localStorage.removeItem('userSurname');

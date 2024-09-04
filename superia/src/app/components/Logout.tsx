@@ -6,25 +6,28 @@ const Logout = () => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    // Clear the auth token cookie
-    document.cookie = 'auth-token=; Max-Age=0; path=/;';
+    // Make an API call to clear the auth-token on the server
+    const response = await fetch('/api/auth/logout', { method: 'POST' });
 
-    // Optionally, you can make an API call to handle server-side logout logic
-    // await fetch('/api/auth/logout', { method: 'POST' });
+    if (response.ok) {
+      // Clear session data from localStorage
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userSurname');
 
-    // Redirect to login page
-    router.push('/login');
+      // Redirect to the login page
+      router.push('/login');
+    } else {
+      console.error('Logout failed');
+    }
   };
 
   return (
-    <button
-      onClick={handleLogout}
-    >
+    <button onClick={handleLogout}>
       Deconnexion
     </button>
   );
 };
 
 export default Logout;
-
 
