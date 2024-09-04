@@ -33,29 +33,51 @@ export default function Parsing() {
     }
   };
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userName, setUserName] = useState('');
-    const [userSurname, setUserSurname] = useState('');
+  const [userName, setUserName] = useState('');
+  const [userSurname, setUserSurname] = useState('');
+  const [loading, setLoading] = useState(true); // Add a loading state
 
+  // Custom hook to validate session and use localStorage
+  const useSessionValidation = () => {
     useEffect(() => {
-        // Call the API to validate session
-        const validateSession = async () => {
-            try {
-                const response = await fetch('/api/auth/validate-session');
-                const data = await response.json();
-                setIsLoggedIn(data.isLoggedIn);
-                if (data.isLoggedIn) {
-                  setUserName(data.user.name); // Set user's name if logged in
-                  setUserSurname(data.user.surname);
-                } // Set based on the response from the server
-                console.log('Logged In Status:', data.isLoggedIn);
-            } catch (error) {
-                console.error('Error validating session:', error);
-                setIsLoggedIn(false);
-            }
-        };
+      const storedIsLoggedIn = localStorage.getItem('isLoggedIn');
+      const storedUserName = localStorage.getItem('userName');
+      const storedUserSurname = localStorage.getItem('userSurname');
 
+      if (storedIsLoggedIn && storedUserName && storedUserSurname) {
+        setIsLoggedIn(JSON.parse(storedIsLoggedIn));
+        setUserName(storedUserName);
+        setUserSurname(storedUserSurname);
+        setLoading(false); // Session found in localStorage, no need to fetch
+      } else {
+        const validateSession = async () => {
+          try {
+            const response = await fetch('/api/auth/validate-session');
+            const data = await response.json();
+            if (data.isLoggedIn) {
+              setIsLoggedIn(true);
+              setUserName(data.user.name);
+              setUserSurname(data.user.surname);
+              localStorage.setItem('isLoggedIn', JSON.stringify(data.isLoggedIn));
+              localStorage.setItem('userName', data.user.name);
+              localStorage.setItem('userSurname', data.user.surname);
+            } else {
+              setIsLoggedIn(false);
+            }
+          } catch (error) {
+            console.error('Error validating session:', error);
+            setIsLoggedIn(false);
+          } finally {
+            setLoading(false); // End loading regardless of success/failure
+          }
+        };
         validateSession();
+      }
     }, []);
+  };
+
+  // Call the session validation hook
+  useSessionValidation();
 
   interface NavbarProps {
     isLoggedIn: boolean;

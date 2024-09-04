@@ -8,6 +8,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
   const [userSurname, setUserSurname] = useState('');
+  const [loading, setLoading] = useState(true); // Add loading state
 
   // Custom hook to validate session
   function useSessionValidation() {
@@ -20,25 +21,29 @@ export default function Home() {
         setIsLoggedIn(JSON.parse(storedIsLoggedIn));
         setUserName(storedUserName);
         setUserSurname(storedUserSurname);
+        setLoading(false); // End loading if session found
       } else {
         const validateSession = async () => {
           try {
             const response = await fetch('/api/auth/validate-session');
             const data = await response.json();
-            setIsLoggedIn(data.isLoggedIn);
             if (data.isLoggedIn) {
+              setIsLoggedIn(true);
               setUserName(data.user.name);
               setUserSurname(data.user.surname);
               localStorage.setItem('isLoggedIn', JSON.stringify(data.isLoggedIn));
               localStorage.setItem('userName', data.user.name);
               localStorage.setItem('userSurname', data.user.surname);
+            } else {
+              setIsLoggedIn(false);
             }
           } catch (error) {
             console.error('Error validating session:', error);
             setIsLoggedIn(false);
+          } finally {
+            setLoading(false); // End loading regardless of success/failure
           }
         };
-
         validateSession();
       }
     }, []);
@@ -102,8 +107,8 @@ export default function Home() {
                   <Link href="analysis">Sentiment</Link>
                 </li>
                 <li className="px-4 py-2 hover:bg-gray-100">
-                <Link href="offreemploi">Offre Emploi</Link>
-              </li>
+                  <Link href="offreemploi">Offre Emploi</Link>
+                </li>
               </ul>
             )}
           </li>
@@ -116,6 +121,11 @@ export default function Home() {
       </nav>
     );
   };
+
+  // Handle loading state before displaying content
+  if (loading) {
+    return <p>Loading session...</p>; // Show loading message
+  }
 
   return (
     <main className="flex text-black min-h-screen flex-col h-screen items-left p-14 bg-white">
