@@ -111,6 +111,9 @@ export default function Parsing() {
               <li className="px-4 py-2 hover:bg-gray-100">
                 <Link href="analysis">Sentiment</Link>
               </li>
+              <li className="px-4 py-2 hover:bg-gray-100">
+                <Link href="offreemploi">Offre Emploi</Link>
+              </li>
             </ul>
           )}
           </li>
