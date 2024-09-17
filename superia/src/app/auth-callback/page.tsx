@@ -1,4 +1,5 @@
-'use client'
+'use client';
+
 import { useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useRouter } from 'next/router';
@@ -8,11 +9,17 @@ const AuthCallback = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      // Redirect to the home page or dashboard after login
-      router.push('/');
+    // Ensure this code only runs on the client side
+    if (typeof window !== 'undefined') {
+      if (!isLoading) {
+        if (isAuthenticated) {
+          router.push('/');
+        } else {
+          router.push('/api/auth/login');
+        }
+      }
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isLoading, router]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -22,3 +29,4 @@ const AuthCallback = () => {
 };
 
 export default AuthCallback;
+
