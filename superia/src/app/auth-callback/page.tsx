@@ -9,14 +9,13 @@ const AuthCallback = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Ensure this code only runs on the client side
-    if (typeof window !== 'undefined') {
-      if (!isLoading) {
-        if (isAuthenticated) {
-          router.push('/');
-        } else {
-          router.push('/api/auth/login');
-        }
+    if (!isLoading) {
+      if (isAuthenticated) {
+        // Redirect to the home page or dashboard after login
+        router.push('/');
+      } else {
+        // Optionally handle the case where authentication fails
+        router.push('/api/auth/login');
       }
     }
   }, [isAuthenticated, isLoading, router]);
@@ -28,5 +27,13 @@ const AuthCallback = () => {
   return <div>Login successful! Redirecting...</div>;
 };
 
+// Use getServerSideProps to disable static generation for this page
+export async function getServerSideProps() {
+  return {
+    props: {}, // No additional props needed
+  };
+}
+
 export default AuthCallback;
+
 
