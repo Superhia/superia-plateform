@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation'; // Use 'next/navigation' for App Router
 
 const AuthCallback = () => {
   const { isAuthenticated, isLoading } = useAuth0();
@@ -27,13 +27,5 @@ const AuthCallback = () => {
   return <div>Login successful! Redirecting...</div>;
 };
 
-// Use getServerSideProps to disable static generation for this page
-export async function getServerSideProps() {
-  return {
-    props: {}, // No additional props needed
-  };
-}
-
 export default AuthCallback;
-
 

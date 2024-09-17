@@ -133,7 +133,7 @@ const AgentComponent: React.FC = () => {
         html: (
           <div>
             Vous avez atteint le nombre de requêtes maximum, veuillez vous connecter.
-            Merci <a href="/login" style={{ color: 'blue' }}>log in</a>
+            Merci <a href="/api/auth/login" style={{ color: 'blue' }}>log in</a>
           </div>
         ),
         confirmButtonText: 'OK'
