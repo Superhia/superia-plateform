@@ -1,7 +1,6 @@
 'use client'
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
-import SupportForm from '../components/SupportForm';
 
 const LoginPage = () => {
   const [message, setMessage] = useState('');
@@ -43,7 +42,7 @@ const LoginPage = () => {
           {message}
         </div>
       )}
-      <SupportForm />
+      
         
      </div>
       </div>
