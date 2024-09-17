@@ -1,6 +1,6 @@
 'use client';
+import { useEffect, useState, useRef } from 'react';
 import Link from "next/link";
-import ScrappingForm from './scrappingForm.client';
 import ChatbotForm from "../chatbot/ChatbotForm.client";
 import BPIFranceForm from './BPIFranceForm.client';
 import AXAForm from './AXAForm.client';
@@ -9,48 +9,22 @@ import LaPosteForm from './LaPosteForm.client';
 import DecathlonForm from './DecathlonForm.client';
 import GeneraliForm from './GeneraliForm.client';
 import ImageScanRH from '../components/ScanRH_video.client';
-import Logout from "../components/Logout";
-import { useState, useEffect, useRef } from 'react';
+import { useUser } from "@auth0/nextjs-auth0/client";
+import LogoutButton from '../components/Logout';
 
 export default function Scrapping() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState('');
-  const [userSurname, setUserSurname] = useState('');
+  const { user, error, isLoading } = useUser();
+  const [userName, setUserName] = useState<string>('');
+  const [userSurname, setUserSurname] = useState<string>('');
 
   useEffect(() => {
-    // Check localStorage first to avoid unnecessary session validation
-    const storedSession = localStorage.getItem('session');
-
-    if (storedSession) {
-      const sessionData = JSON.parse(storedSession);
-      setIsLoggedIn(true);
-      setUserName(sessionData.name);
-      setUserSurname(sessionData.surname);
-    } else {
-      // Validate session if not found in localStorage
-      const validateSession = async () => {
-        try {
-          const response = await fetch('/api/auth/validate-session');
-          const data = await response.json();
-          if (data.isLoggedIn) {
-            setIsLoggedIn(true);
-            setUserName(data.user.name);
-            setUserSurname(data.user.surname);
-
-            // Store session in localStorage to prevent repeated validation
-            localStorage.setItem('session', JSON.stringify(data.user));
-          } else {
-            setIsLoggedIn(false);
-          }
-        } catch (error) {
-          console.error('Error validating session:', error);
-          setIsLoggedIn(false);
-        }
-      };
-
-      validateSession();
+    if (user) {
+      const givenName = typeof user.given_name === 'string' ? user.given_name : '';
+      const familyName = typeof user.family_name === 'string' ? user.family_name : '';
+      setUserName(givenName);
+      setUserSurname(familyName);
     }
-  }, []);
+  }, [user]);
 
   interface NavbarProps {
     isLoggedIn: boolean;
@@ -113,9 +87,9 @@ export default function Scrapping() {
             )}
           </li>
           {isLoggedIn ? (
-            <li><Logout /></li>
+            <li><LogoutButton /></li>
           ) : (
-            <li><Link href="login">Connexion</Link></li>
+            <li><Link href="/api/auth/login">Connexion</Link></li>
           )}
         </ul>
       </nav>
@@ -127,25 +101,50 @@ export default function Scrapping() {
       <Link href={"/"}>
         <img src="LaSuperAgence.png" alt="icon" className="h-8" />
       </Link>
-      <Navbar isLoggedIn={isLoggedIn} />
-      <h1 className="text-4xl font-semibold text-center py-7">
-        Etudiez vos données marques employeurs grâce à SUPERIA
-      </h1>
-      <p className="text-center py-2.5 mx-40 px-64">
-        Notre outil ScanRH scrute votre site carrière pour en extraire des données précieuses,
-        vous offrant ainsi une vision claire de votre image de marque employeur et de la manière
-        dont elle est perçue par les candidats potentiels.
-      </p>
-      <div className="mx-auto py-14 cursor-pointer"><ImageScanRH /></div>
-      <div className="mx-auto ">
-        <ChatbotForm />
-      </div>
-      <h4>Testez notre outil avec un des sites déjà analysé</h4>
-      <div className="mx-auto text-sm grid grid-cols-6 gap-4">
-        <div className="col-start-1 col-end-3"><BPIFranceForm /> <LaPosteForm /></div>
-        <div className="col-start-3 col-end-5"><AXAForm /> <DecathlonForm /></div>
-        <div className="col-start-5 col-end-7"><OrangeForm /> <GeneraliForm /></div>
-      </div>
+      <Navbar isLoggedIn={!!user} />
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : error ? (
+        <div>Error loading session</div>
+      ) : (
+        <>
+          {user ? (
+            <>
+              <h1 className="text-4xl font-semibold text-center py-7">
+                Etudiez vos données marques employeurs grâce à SUPERIA
+              </h1>
+              <p className="text-center py-2.5 mx-40 px-64">
+                Notre outil ScanRH scrute votre site carrière pour en extraire des données précieuses,
+                vous offrant ainsi une vision claire de votre image de marque employeur et de la manière
+                dont elle est perçue par les candidats potentiels.
+              </p>
+              <div className="mx-auto py-14 cursor-pointer"><ImageScanRH /></div>
+              <div className="mx-auto">
+                <ChatbotForm />
+              </div>
+              <h4 className="text-center py-5">Testez notre outil avec un des sites déjà analysé</h4>
+              <div className="mx-auto text-sm grid grid-cols-6 gap-4">
+                <div className="col-start-1 col-end-3"><BPIFranceForm /> <LaPosteForm /></div>
+                <div className="col-start-3 col-end-5"><AXAForm /> <DecathlonForm /></div>
+                <div className="col-start-5 col-end-7"><OrangeForm /> <GeneraliForm /></div>
+              </div>
+            </>
+          ) : (
+            <>
+              <h1 className="text-4xl font-semibold text-center py-7">
+                Veuillez vous connecter pour analyser vos données
+              </h1>
+              <div className="flex justify-center">
+                <Link href="/api/auth/login">
+                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Se connecter
+                  </button>
+                </Link>
+              </div>
+            </>
+          )}
+        </>
+      )}
     </main>
   );
 }

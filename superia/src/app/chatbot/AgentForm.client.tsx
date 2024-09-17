@@ -7,11 +7,6 @@ import ReactMarkdown from 'react-markdown';
 import DOMPurify from 'dompurify';
 import Joi from 'joi';
 
-const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
-  path: '/socket.io',
-  transports: ['websocket', 'polling']
-});
-
 const MySwal = withReactContent(Swal);
 
 interface QAResponse {
@@ -42,11 +37,7 @@ const AgentComponent: React.FC = () => {
 
   const validateInput = (data: { question: string }) => {
     const { error, value } = schema.validate(data);
-    if (error) {
-      return [false, error];
-    } else {
-      return [true, value];
-    }
+    return error ? [false, error] : [true, value];
   };
 
   const containsInappropriateKeywords = (text: string) => {
@@ -58,36 +49,24 @@ const AgentComponent: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchPDFFilesAndSetFiles();
+    if (typeof window !== 'undefined') {
+      fetchPDFFilesAndSetFiles();
 
-    socket.on('Préchauffage du transistor de Superia', (data: { progress: number; status: string; log: string }) => {
-      setProgress(data.progress);
-      setStatus(data.status);
-      setCurrentUrl(data.log);
-    });
+      const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
+        path: '/socket.io',
+        transports: ['websocket', 'polling']
+      });
 
-    return () => {
-      socket.off('Préchauffage du transistor de Superia');
-    };
-  }, []);
+      socket.on('Préchauffage du transistor de Superia', (data) => {
+        setProgress(data.progress);
+        setStatus(data.status);
+        setCurrentUrl(data.log);
+      });
 
-  useEffect(() => {
-    const validateSession = async () => {
-      try {
-        const response = await fetch('/api/auth/validate-session');
-        const data = await response.json();
-        setIsLoggedIn(data.isLoggedIn);
-        if (data.isLoggedIn) {
-          setRequestLimit(1000);
-        }
-        console.log('Status de connexion:', data.isLoggedIn);
-      } catch (error) {
-        console.error('Erreur session invalide:', error);
-        setIsLoggedIn(false);
-      }
-    };
-
-    validateSession();
+      return () => {
+        socket.off('Préchauffage du transistor de Superia');
+      };
+    }
   }, []);
 
   const handleQuestionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,36 +74,48 @@ const AgentComponent: React.FC = () => {
   };
 
   const fetchPDFFilesAndSetFiles = async () => {
-    try {
-      const fileUrls = [
-        '/ebookExperienceCandidat_nosummary.pdf',
-        '/Livre_blanc_Ambassadeur_Marque_Employeur.pdf',
-        '/livre_sitecarriere_10_GV.pdf',
-        '/livre_sitecarriere_16.pdf',
-        '/Livre-blanc-neojobs.pdf',
-      ];
+    if (typeof window !== "undefined") {
+      try {
+        const fileUrls = [
+          '/ebookExperienceCandidat_nosummary.pdf',
+          '/Livre_blanc_Ambassadeur_Marque_Employeur.pdf',
+          '/livre_sitecarriere_10_GV.pdf',
+          '/livre_sitecarriere_16.pdf',
+          '/Livre-blanc-neojobs.pdf',
+        ];
 
-      const fileFetchPromises = fileUrls.map(async (url) => {
-        const response = await fetch(url);
-        const blob = await response.blob();
-        return new File([blob], url.split('/').pop()!, { type: blob.type });
-      });
+        const fileFetchPromises = fileUrls.map(async (url) => {
+          const response = await fetch(url);
+          const blob = await response.blob();
+          return new File([blob], url.split('/').pop()!, { type: blob.type });
+        });
 
-      const files = await Promise.all(fileFetchPromises);
-      setFetchedFiles(files);
-    } catch (error) {
-      console.error('Erreur denvoie du document:', error);
-      alert('Document non envoyer.');
+        const files = await Promise.all(fileFetchPromises);
+        setFetchedFiles(files);
+      } catch (error) {
+        console.error('Erreur denvoie du document:', error);
+        alert('Document non envoyé.');
+      }
     }
   };
 
   const cleanText = (text: string) => {
-    const pattern = /【\d+:\d+†source】/g; // Use 'g' for global replacement
+    const pattern = /【\d+:\d+†source】/g; 
     return text.replace(pattern, '');
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    const [isValid, validationError] = validateInput({ question });
+    if (!isValid) {
+      setResponses((prevResponses) => [
+        ...prevResponses,
+        { question, response: validationError.details[0].message }
+      ]);
+      setQuestion('');
+      return;
+    }
 
     if (containsInappropriateKeywords(question)) {
       setResponses((prevResponses) => [
@@ -142,7 +133,7 @@ const AgentComponent: React.FC = () => {
         html: (
           <div>
             Vous avez atteint le nombre de requêtes maximum, veuillez vous connecter.
-            Merci  <a href="/login" style={{ color: 'blue' }}>log in</a> 
+            Merci <a href="/login" style={{ color: 'blue' }}>log in</a>
           </div>
         ),
         confirmButtonText: 'OK'
@@ -194,7 +185,6 @@ const AgentComponent: React.FC = () => {
         }
       }
 
-      console.log('Contenu de la réponse finale:', responseContent);
       if (!isLoggedIn) {
         setRequestCount(requestCount + 1);
       }

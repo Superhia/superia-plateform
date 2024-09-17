@@ -1,33 +1,12 @@
-'use client';
+import { useAuth0 } from "@auth0/auth0-react";
+import Link from "next/link";
 
-import { useRouter } from 'next/navigation';
+function LogoutButton() {
+    const {logout} = useAuth0();
 
-const Logout = () => {
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    // Make an API call to clear the auth-token on the server
-    const response = await fetch('/api/auth/logout', { method: 'POST' });
-
-    if (response.ok) {
-      // Clear session data from localStorage
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('userName');
-      localStorage.removeItem('userSurname');
-
-      // Redirect to the login page
-      router.push('/login');
-    } else {
-      console.error('Logout failed');
-    }
-  };
-
-  return (
-    <button onClick={handleLogout}>
-      Deconnexion
-    </button>
-  );
+    return (
+      <button><Link href="/api/auth/logout">Deconnexion</Link></button>
+    )
 };
 
-export default Logout;
-
+export default LogoutButton

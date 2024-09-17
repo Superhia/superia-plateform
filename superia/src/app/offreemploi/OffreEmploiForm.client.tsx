@@ -71,25 +71,6 @@ const AgentComponent: React.FC = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const validateSession = async () => {
-      try {
-        const response = await fetch('/api/auth/validate-session');
-        const data = await response.json();
-        setIsLoggedIn(data.isLoggedIn);
-        if (data.isLoggedIn) {
-          setRequestLimit(1000);
-        }
-        console.log('Status de connexion:', data.isLoggedIn);
-      } catch (error) {
-        console.error('Erreur session invalide:', error);
-        setIsLoggedIn(false);
-      }
-    };
-
-    validateSession();
-  }, []);
-
   const handleQuestionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestion(e.target.value);
   };

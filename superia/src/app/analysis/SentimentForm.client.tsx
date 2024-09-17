@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import ReactMarkdown from 'react-markdown';
 import ClipLoader from 'react-spinners/ClipLoader';
 
-const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
+const socket = io('http://127.0.0.1:8000', {
   path: '/socket.io',
   transports: ['websocket', 'polling']
 });
@@ -68,7 +68,7 @@ const SentimentAnalysisForm = () => {
     setProgress(0); // Reset progress
 
     try {
-      const res = await fetch('https://superia.northeurope.cloudapp.azure.com/sentiment_analysis', {
+      const res = await fetch('http://127.0.0.1:8000/sentiment_analysis', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

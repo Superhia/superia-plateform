@@ -1,6 +1,4 @@
 'use client'
-import Login from '../components/login/Login';
-import Register from '../components/register/Register';
 import Link from 'next/link';
 import React, { useEffect, useState, useRef } from 'react';
 import Logout from "../components/Logout";
@@ -109,7 +107,7 @@ const LoginPage = () => {
             {isLoggedIn ? (
               <li><Logout /></li>
             ) : (
-              <li><Link href="login">Connexion</Link></li>
+              <li><Link href="/api/auth/login">Connexion</Link></li>
             )}
           </ul>
         </nav>
@@ -134,8 +132,6 @@ const LoginPage = () => {
           {message}
         </div>
       )}
-      
-          <Login />
           <p>Vous n'avez pas encore de compte ?</p> <button className='text-sky-700'><a href='/register'>Inscription</a></button>
           <p>Vous avez oublié votre mots de passe</p><button className='text-sky-700'><a href='/forgot'>Réinitialiser mon mots de passe</a></button>
         </div>

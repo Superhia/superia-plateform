@@ -8,30 +8,7 @@ import Youtube_video from '../components/Youtube_video.client';
 import Logout from "../components/Logout";
 
 export default function Tarif() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userName, setUserName] = useState('');
-    const [userSurname, setUserSurname] = useState('');
-
-    useEffect(() => {
-        // Call the API to validate session
-        const validateSession = async () => {
-            try {
-                const response = await fetch('/api/auth/validate-session');
-                const data = await response.json();
-                setIsLoggedIn(data.isLoggedIn);
-                if (data.isLoggedIn) {
-                  setUserName(data.user.name); // Set user's name if logged in
-                  setUserSurname(data.user.surname);
-                } // Set based on the response from the server
-                console.log('Logged In Status:', data.isLoggedIn);
-            } catch (error) {
-                console.error('Error validating session:', error);
-                setIsLoggedIn(false);
-            }
-        };
-
-        validateSession();
-    }, []);
+    
     interface NavbarProps {
         isLoggedIn: boolean;
       }
@@ -107,7 +84,6 @@ export default function Tarif() {
       <Link href={"/"}>
         <img src="LaSuperAgence.png" alt="icon" className="h-8" />
       </Link>
-      <Navbar isLoggedIn={isLoggedIn} />
       <h1 className="text-4xl font-semibold text-center py-7"> Nos solutions,</h1>
       <p className="text-center py-2.5 mx-32 px-32">
       </p>

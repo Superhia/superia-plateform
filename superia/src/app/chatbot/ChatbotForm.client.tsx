@@ -73,28 +73,6 @@ const ChatbotForm: React.FC = () => {
   };
 
   useEffect(() => {
-    const validateSession = async () => {
-      try {
-        const response = await fetch('/api/auth/validate-session');
-        const data = await response.json();
-        setIsLoggedIn(data.isLoggedIn);
-        if (data.isLoggedIn) {
-          setRequestLimit(1000);
-        }
-        console.log('Logged In Status:', data.isLoggedIn);
-      } catch (error) {
-        console.error('Error validating session:', error);
-        setIsLoggedIn(false);
-      }
-    };
-
-    validateSession();
-  }, []);
-
-  useEffect(() => {
-    socket.on('connect', () => {
-      console.log('Connected to Socket.IO server');
-    });
 
     socket.on('Préchauffage du transistor de Superia', (data: ProgressData) => {
       console.log('Progress update received', data);
