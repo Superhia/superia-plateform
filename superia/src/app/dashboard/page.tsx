@@ -1,4 +1,3 @@
-import AdminRegister from '../components/AdminRegister';
 import UserList from '../components/UserList';
 import Link from "next/link";
 
@@ -21,7 +20,7 @@ export default function Home() {
     </div>
     <div>
       <h2 className='text-2xl font-semibold py-7'>Créez votre administrateur</h2>
-      <AdminRegister/></div>
+      </div>
     </main>
   );
 }
