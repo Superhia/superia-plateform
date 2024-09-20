@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useUser } from '@auth0/nextjs-auth0/client'; // Assuming you use auth0's client-side hook
 import AgentForm from './chatbot/AgentForm.client';
 import LogoutButton from './components/Logout';
+import LoginButton from './components/LoginButton';
 
 export default function Home() {
   const { user, error, isLoading } = useUser(); // Use client-side session hook
@@ -90,7 +91,7 @@ export default function Home() {
           )}
           {!user && (
             <>
-              <Link href="/api/auth/login">Connexion</Link>
+              <LoginButton/>
             </>
           )}
         </ul>
