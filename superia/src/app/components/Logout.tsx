@@ -1,12 +1,9 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import Link from "next/link";
+import React from 'react';
 
-function LogoutButton() {
-    const {logout} = useAuth0();
+const LogoutButton = () => (
+  <button onClick={() => (window.location.href = '/api/auth/logout')}>
+    Deconnexion
+  </button>
+);
 
-    return (
-      <button><Link href="/api/auth/logout">Deconnexion</Link></button>
-    )
-};
-
-export default LogoutButton
+export default LogoutButton;

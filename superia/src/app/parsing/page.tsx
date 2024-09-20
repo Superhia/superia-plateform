@@ -10,6 +10,7 @@ import FileUploadComponent from './UploadComponent.client';
 import Parsing_video from '../components/Parsing_video.client';
 import LogoutButton from '../components/Logout';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import LoginButton from '../components/LoginButton';
 
 export default function Parsing() {
   const { user, error, isLoading } = useUser(); // Use client-side session hook
@@ -91,7 +92,7 @@ export default function Parsing() {
           {isLoggedIn ? (
             <li><LogoutButton /></li>
           ) : (
-            <li><Link href="/api/auth/login">Connexion</Link></li>
+            <li><LoginButton/></li>
           )}
         </ul>
       </nav>

@@ -6,6 +6,7 @@ import Offre_Emploi from './OffreEmploiForm.client';
 import { useState, useEffect, useRef } from 'react';
 import Logout from '../components/Logout';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import LoginButton from '../components/LoginButton';
 
 export default function Offre_Emploipage() {
   const { user, error, isLoading } = useUser();
@@ -84,7 +85,7 @@ export default function Offre_Emploipage() {
           {isLoggedIn ? (
             <li><Logout /></li>
           ) : (
-            <li><Link href="/api/auth/login">Connexion</Link></li>
+            <li><LoginButton/></li>
           )}
         </ul>
       </nav>

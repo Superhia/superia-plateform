@@ -11,6 +11,7 @@ import GeneraliForm from './GeneraliForm.client';
 import ImageScanRH from '../components/ScanRH_video.client';
 import { useUser } from "@auth0/nextjs-auth0/client";
 import LogoutButton from '../components/Logout';
+import LoginButton from '../components/LoginButton';
 
 export default function Scrapping() {
   const { user, error, isLoading } = useUser();
@@ -89,7 +90,7 @@ export default function Scrapping() {
           {isLoggedIn ? (
             <li><LogoutButton /></li>
           ) : (
-            <li><Link href="/api/auth/login">Connexion</Link></li>
+            <li><LoginButton/></li>
           )}
         </ul>
       </nav>

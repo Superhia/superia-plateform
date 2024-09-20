@@ -6,6 +6,7 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import LogoutButton from "../components/Logout";
 import ChatPDFForm from "./ChatPDFForm.client";
 import Youtube_video from '../components/Youtube_video.client';
+import LoginButton from "../components/LoginButton";
 
 export default function Chatpdf() {
   const { user, error, isLoading } = useUser();
@@ -85,7 +86,7 @@ export default function Chatpdf() {
           {isLoggedIn ? (
             <li><LogoutButton /></li>
           ) : (
-            <li><Link href="/api/auth/login">Connexion</Link></li>
+            <li><LoginButton/></li>
           )}
         </ul>
       </nav>

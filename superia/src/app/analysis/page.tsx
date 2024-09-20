@@ -6,6 +6,7 @@ import Sentiment from './SentimentForm.client';
 import { useState, useEffect, useRef } from 'react';
 import Logout from '../components/Logout';
 import { useUser } from '@auth0/nextjs-auth0/client'; // Import the Auth0 client hook for session
+import LoginButton from '../components/LoginButton';
 
 export default function Sentimentpage() {
   const { user, error, isLoading } = useUser(); // Use the auth0 client hook to get the user session
@@ -85,7 +86,7 @@ export default function Sentimentpage() {
           {isLoggedIn ? (
             <li><Logout /></li>
           ) : (
-            <li><Link href="/api/auth/login">Connexion</Link></li>
+            <li><LoginButton/></li>
           )}
         </ul>
       </nav>
