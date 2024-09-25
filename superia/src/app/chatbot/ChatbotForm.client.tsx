@@ -47,7 +47,7 @@ const ChatbotForm: React.FC = () => {
   const inappropriateKeywords = ["carte bancaire", "numéro de sécurité sociale", "DROP TABLE", "script", "mot de passe"];
 
   const schema = Joi.object({
-    question: Joi.string().max(200).pattern(/^[a-zA-Z0-9 .,!?]+$/).required()
+    question: Joi.string().max(200).pattern(/^[a-zA-ZÀ-ÖØ-öø-ÿ0-9 .,!?'’]+$/).required()
   });
 
   const validateInput = (data: { question: string }) => {

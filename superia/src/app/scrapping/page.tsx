@@ -136,11 +136,9 @@ export default function Scrapping() {
                 Veuillez vous connecter pour analyser vos données
               </h1>
               <div className="flex justify-center">
-                <Link href="/api/auth/login">
-                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Se connecter
-                  </button>
-                </Link>
+                  <div className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    <LoginButton/>
+                  </div>
               </div>
             </>
           )}

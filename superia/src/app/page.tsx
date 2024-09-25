@@ -6,6 +6,7 @@ import { useUser } from '@auth0/nextjs-auth0/client'; // Assuming you use auth0'
 import AgentForm from './chatbot/AgentForm.client';
 import LogoutButton from './components/Logout';
 import LoginButton from './components/LoginButton';
+import AgentO1mini from './components/O1-mini.client';
 
 export default function Home() {
   const { user, error, isLoading } = useUser(); // Use client-side session hook
@@ -162,7 +163,7 @@ export default function Home() {
                 </div>
                 <div className="flex flex-col items-center py-7 mx-auto">
                   <h2 className="text-2xl font-semibold text-center py-5">Converser avec notre agent !</h2>
-                  <AgentForm />
+                  <AgentO1mini/>
                 </div>
               </>
             ) : (
@@ -173,7 +174,7 @@ export default function Home() {
                 </p>
                 <h2 className="text-2xl font-semibold text-center py-5">Conversez avec notre agent !</h2>
                 <div>
-                  <AgentForm />
+                <AgentO1mini/>
                 </div>
               </div>
             )}

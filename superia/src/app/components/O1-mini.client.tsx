@@ -14,11 +14,10 @@ interface QAResponse {
   response: string;
 }
 
-const AgentComponent: React.FC = () => {
+const AgentO1mini: React.FC = () => {
   const [question, setQuestion] = useState<string>('');
   const [responses, setResponses] = useState<QAResponse[]>([]);
   const [progress, setProgress] = useState<number>(0);
-  const [fetchedFiles, setFetchedFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<string>('');
   const [currentUrl, setCurrentUrl] = useState<string>('');
@@ -50,7 +49,6 @@ const AgentComponent: React.FC = () => {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      fetchPDFFilesAndSetFiles();
 
       const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
         path: '/socket.io',
@@ -71,32 +69,6 @@ const AgentComponent: React.FC = () => {
 
   const handleQuestionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestion(e.target.value);
-  };
-
-  const fetchPDFFilesAndSetFiles = async () => {
-    if (typeof window !== "undefined") {
-      try {
-        const fileUrls = [
-          '/ebookExperienceCandidat_nosummary.pdf',
-          '/Livre_blanc_Ambassadeur_Marque_Employeur.pdf',
-          '/livre_sitecarriere_10_GV.pdf',
-          '/livre_sitecarriere_16.pdf',
-          '/Livre-blanc-neojobs.pdf',
-        ];
-
-        const fileFetchPromises = fileUrls.map(async (url) => {
-          const response = await fetch(url);
-          const blob = await response.blob();
-          return new File([blob], url.split('/').pop()!, { type: blob.type });
-        });
-
-        const files = await Promise.all(fileFetchPromises);
-        setFetchedFiles(files);
-      } catch (error) {
-        console.error('Erreur denvoie du document:', error);
-        alert('Document non envoyé.');
-      }
-    }
   };
 
   const cleanText = (text: string) => {
@@ -141,20 +113,14 @@ const AgentComponent: React.FC = () => {
       return;
     }
 
-    if (fetchedFiles.length === 0) {
-      setResponses([{ question, response: 'Pas de fichier envoyé' }]);
-      return;
-    }
-
     const formData = new FormData();
-    fetchedFiles.forEach((file) => formData.append('file', file));
     formData.append('question', question);
 
     setLoading(true);
     setStreaming(false);
 
     try {
-      const response = await fetch('https://superia.northeurope.cloudapp.azure.com/agent', {
+      const response = await fetch('https://superia.northeurope.cloudapp.azure.com/agentbis', {
         method: 'POST',
         body: formData,
       });
@@ -241,4 +207,4 @@ const AgentComponent: React.FC = () => {
   );
 };
 
-export default AgentComponent;
+export default AgentO1mini;
