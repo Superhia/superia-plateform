@@ -62,8 +62,8 @@ export default function Parsing() {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <div onClick={handleClick} className="flex items-center">
-              <Link href="produit">Produit</Link>
+            <div className="flex items-center">
+              Produit
             </div>
             {isDropdownOpen && (
               <ul
@@ -76,9 +76,6 @@ export default function Parsing() {
                 </li>
                 <li className="px-4 py-2 hover:bg-gray-100">
                   <Link href="parsing">DocuParse</Link>
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100">
-                  <Link href="chatpdf">YoutubeScan</Link>
                 </li>
                 <li className="px-4 py-2 hover:bg-gray-100">
                   <Link href="analysis">Sentiment</Link>

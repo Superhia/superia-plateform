@@ -56,8 +56,8 @@ export default function Sentimentpage() {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <div onClick={handleClick} className="flex items-center">
-              <Link href="produit">Produit</Link>
+            <div className="flex items-center">
+              Produit
             </div>
             {isDropdownOpen && (
               <ul
