@@ -14,6 +14,12 @@ interface QAResponse {
   response: string;
 }
 
+interface ProgressData {
+  progress: number;
+  status: string;
+  log?: string;
+}
+
 const AgentO1mini: React.FC = () => {
   const [question, setQuestion] = useState<string>('');
   const [responses, setResponses] = useState<QAResponse[]>([]);
@@ -28,7 +34,7 @@ const AgentO1mini: React.FC = () => {
 
   const requestInProgress = useRef(false);
 
-  // Predefined questions
+  // Questions prédéfinies
   const predefinedQuestions = [
     "Explique moi la marque employeur",
     "Quels sont les étapes de la marque employeur ?",
@@ -41,31 +47,33 @@ const AgentO1mini: React.FC = () => {
     question: Joi.string().max(200).pattern(/^[a-zA-ZÀ-ÖØ-öø-ÿ0-9 .,!?'’]+$/).required()
   });
 
-  const validateInput = (data: { question: string }) => {
+  const validateInput = (data: { question: string }): [boolean, Joi.ValidationError | null] => {
     const { error, value } = schema.validate(data);
-    return error ? [false, error] : [true, value];
+    return [!error, error || null];
   };
 
-  const containsInappropriateKeywords = (text: string) => {
+  const containsInappropriateKeywords = (text: string): boolean => {
     return inappropriateKeywords.some(keyword => text.toLowerCase().includes(keyword.toLowerCase()));
   };
 
-  const sanitizeHtml = (inputHtml: string) => {
-    return DOMPurify.sanitize(inputHtml, { ALLOWED_TAGS: ['b', 'i', 'u', 'a', 'p', 'strong', 'em'], ALLOWED_ATTR: ['href', 'title', 'rel'] });
+  const sanitizeHtml = (inputHtml: string): string => {
+    return DOMPurify.sanitize(inputHtml, { 
+      ALLOWED_TAGS: ['b', 'i', 'u', 'a', 'p', 'strong', 'em'], 
+      ALLOWED_ATTR: ['href', 'title', 'rel'] 
+    });
   };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-
       const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
         path: '/socket.io',
         transports: ['websocket', 'polling']
       });
 
-      socket.on('Préchauffage du transistor de Superia', (data) => {
+      socket.on('Préchauffage du transistor de Superia', (data: ProgressData) => {
         setProgress(data.progress);
         setStatus(data.status);
-        setCurrentUrl(data.log);
+        setCurrentUrl(data.log || '');
       });
 
       return () => {
@@ -78,30 +86,27 @@ const AgentO1mini: React.FC = () => {
     setQuestion(e.target.value);
   };
 
-  const cleanText = (text: string) => {
+  const cleanText = (text: string): string => {
     const pattern = /【\d+:\d+†source】/g; 
     return text.replace(pattern, '');
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    const [isValid, validationError] = validateInput({ question });
-    if (!isValid) {
+  // Fonction de soumission des questions
+  const submitQuestion = async (submittedQuestion: string) => {
+    const [isValid, validationError] = validateInput({ question: submittedQuestion });
+    if (!isValid && validationError) {
       setResponses((prevResponses) => [
         ...prevResponses,
-        { question, response: validationError.details[0].message }
+        { question: submittedQuestion, response: validationError.details[0].message }
       ]);
-      setQuestion('');
       return;
     }
 
-    if (containsInappropriateKeywords(question)) {
+    if (containsInappropriateKeywords(submittedQuestion)) {
       setResponses((prevResponses) => [
         ...prevResponses,
-        { question, response: "Je ne peux pas répondre à cette question car elle contient des caractères inappropriés." }
+        { question: submittedQuestion, response: "Je ne peux pas répondre à cette question car elle contient des caractères inappropriés." }
       ]);
-      setQuestion('');
       return;
     }
 
@@ -121,7 +126,7 @@ const AgentO1mini: React.FC = () => {
     }
 
     const formData = new FormData();
-    formData.append('question', question);
+    formData.append('question', submittedQuestion);
 
     setLoading(true);
     setStreaming(false);
@@ -133,7 +138,7 @@ const AgentO1mini: React.FC = () => {
       });
 
       if (!response.body) {
-        throw new Error('ReadableStream nest pas supporté dans ce navigateur');
+        throw new Error('ReadableStream n\'est pas supporté dans ce navigateur');
       }
 
       const reader = response.body.getReader();
@@ -141,7 +146,7 @@ const AgentO1mini: React.FC = () => {
       let done = false;
       let responseContent = '';
 
-      const newResponses = [...responses, { question, response: '' }];
+      const newResponses = [...responses, { question: submittedQuestion, response: '' }];
       const lastIndex = newResponses.length - 1;
       setResponses(newResponses);
 
@@ -159,11 +164,14 @@ const AgentO1mini: React.FC = () => {
       }
 
       if (!isLoggedIn) {
-        setRequestCount(requestCount + 1);
+        setRequestCount(prevCount => prevCount + 1);
       }
     } catch (error) {
       console.error('Error querying assistant:', error);
-      setResponses([{ question, response: ' L assistant ne répond pas.' }]);
+      setResponses((prevResponses) => [
+        ...prevResponses,
+        { question: submittedQuestion, response: 'L\'assistant ne répond pas.' }
+      ]);
     } finally {
       setLoading(false);
       setStreaming(false);
@@ -171,8 +179,13 @@ const AgentO1mini: React.FC = () => {
     }
   };
 
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    submitQuestion(question);
+  };
+
   const handleTryQuestion = (predefinedQuestion: string) => {
-    setQuestion(predefinedQuestion); // Set the selected predefined question to the input field
+    submitQuestion(predefinedQuestion);
   };
 
   return (
@@ -181,22 +194,22 @@ const AgentO1mini: React.FC = () => {
         <p>Nombre de requêtes: {requestCount} / {requestLimit}</p>
       </div>
 
-      {/* Predefined Questions Section */}
+      {/* Section des Questions Prédéfinies */}
       <div className="predefined-questions">
         <h3>Essayez une de ces questions :</h3>
         {predefinedQuestions.map((predefQuestion, index) => (
           <div key={index} className="flex justify-between items-center my-3">
-            <span>{predefQuestion}</span>
             <button
               className="p-2 px-4 ml-3 bg-blue-500 text-white rounded hover:bg-blue-700"
               onClick={() => handleTryQuestion(predefQuestion)}
             >
-              Essayer
+              {predefQuestion}
             </button>
           </div>
         ))}
       </div>
 
+      {/* Formulaire de Soumission de Question */}
       <form onSubmit={handleSubmit}>
         <div>
           <div>
@@ -216,11 +229,16 @@ const AgentO1mini: React.FC = () => {
             onChange={handleQuestionChange}
           />
         </div>
-        <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading}>
+        <button 
+          className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" 
+          type="submit" 
+          disabled={loading}
+        >
           {loading ? 'En cours...' : 'Posez votre question'}
         </button>
       </form>
       
+      {/* Indicateur de Chargement */}
       {loading && !streaming && (
         <div className="flex flex-col items-center py-7">
           <ClipLoader color="#0000ff" loading={loading} size={50} />
