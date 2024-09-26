@@ -6,6 +6,8 @@ import Link from 'next/link';
 import DOMPurify from 'dompurify';
 import Joi from 'joi';
 import ReactMarkdown from 'react-markdown';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 const socket = io('wss://superia.northeurope.cloudapp.azure.com', {
   path: '/socket.io',
@@ -23,12 +25,25 @@ interface ProgressData {
   log?: string;
 }
 
+const preconfiguredAssistants = [
+  {
+    name: 'Analyse Marque Employeur',
+    instructions: "Résume en une centaine de mots le contenu de la page, puis fait une Analyse générale de la marque employeur avec les rubriques Proposition de valeur et Culture d'entreprise."
+  },
+  {
+    name: 'Candidate persona',
+    instructions: "Résume en une centaine de mots le contenu de la page, puis Propose un candidate persona principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels."
+  },
+  {
+    name: 'Employee Value Propositions',
+    instructions: "Résume en une centaine de mots le contenu de la page, puis Définis 3 Employee Value Propositions (EVP) qui mettent en avant les avantages uniques de travailler pour l'entreprise."
+  }
+];
+
 const ChatbotForm: React.FC = () => {
   const [domain, setDomain] = useState<string>('');
   const [assistantName, setAssistantName] = useState<string>('Custom Assistant');
-  const [instructions, setInstructions] = useState<string>('Résume en une centaine de mots le contenu de la page, puis fait une Analyse générale de la marque employeur avec les rubriques Proposition de valeur et Culture dentreprise.');
-  const [question, setQuestion] = useState<string>('');
-  const [assistantId, setAssistantId] = useState<string>('');
+  const [instructions, setInstructions] = useState<string>('');
   const [responses, setResponses] = useState<QAResponse[]>([]);
   const [initialResponse, setInitialResponse] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -38,7 +53,6 @@ const ChatbotForm: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState('');
   const [currentUrl, setCurrentUrl] = useState('');
-  const [streaming, setStreaming] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [log, setLog] = useState<string[]>([]);
 
@@ -47,10 +61,10 @@ const ChatbotForm: React.FC = () => {
   const inappropriateKeywords = ["carte bancaire", "numéro de sécurité sociale", "DROP TABLE", "script", "mot de passe"];
 
   const schema = Joi.object({
-    question: Joi.string().max(200).pattern(/^[a-zA-ZÀ-ÖØ-öø-ÿ0-9 .,!?'’]+$/).required()
+    domain: Joi.string().uri({ scheme: ['http', 'https'] }).required()
   });
 
-  const validateInput = (data: { question: string }) => {
+  const validateInput = (data: { domain: string }) => {
     const { error, value } = schema.validate(data);
     if (error) {
       return [false, error];
@@ -59,21 +73,14 @@ const ChatbotForm: React.FC = () => {
     }
   };
 
-  const containsInappropriateKeywords = (text: string) => {
-    return inappropriateKeywords.some(keyword => text.toLowerCase().includes(keyword.toLowerCase()));
-  };
+  const MySwal = withReactContent(Swal);
 
-  const sanitizeHtml = (inputHtml: string) => {
-    return DOMPurify.sanitize(inputHtml, { ALLOWED_TAGS: ['b', 'i', 'u', 'a', 'p', 'strong', 'em'], ALLOWED_ATTR: ['href', 'title', 'rel'] });
-  };
-
-  const checkResponseRelevance = (response: string) => {
-    // Check if response contains relevant content
-    return response.toLowerCase().includes("site carrière") || response.toLowerCase().includes("recrutement");
+  const validateDomain = (domain: string) => {
+    const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+    return urlPattern.test(domain);
   };
 
   useEffect(() => {
-
     socket.on('Préchauffage du transistor de Superia', (data: ProgressData) => {
       console.log('Progress update received', data);
       setProgress(data.progress);
@@ -96,47 +103,24 @@ const ChatbotForm: React.FC = () => {
     };
   }, []);
 
-  const preconfiguredAssistants = [
-    {
-      name: 'Analyse Marque Employeur',
-      instructions: "Résume en une centaine de mots le contenu de la page, puis fait une Analyse générale de la marque employeur avec les rubriques Proposition de valeur et Culture d'entreprise."
-    },
-    {
-      name: 'Candidate persona',
-      instructions: "Résume en une centaine de mots le contenu de la page, puis Propose un candidate persona principal basé sur une analyse rapide des besoins et objectifs des utilisateurs potentiels."
-    },
-    {
-      name: 'Employee Value Propositions',
-      instructions: "Résume en une centaine de mots le contenu de la page, puis Définis 3 Employee Value Propositions (EVP) qui mettent en avant les avantages uniques de travailler pour l'entreprise."
-    }
-  ];
-
-  const cleanText = (text:string) => {
-    const patterns = [
-      /assistant_id:\s*\w+/gi,
-      /【\d+:\d+†source】/g]; // Use 'g' for global replacement
-      patterns.forEach(pattern => {
-        text = text.replace(pattern, '');
-      });
-      return text;
-  };
-
-  // This useEffect triggers the submission when the instructions change
-  useEffect(() => {
-    if (assistantName !== 'Custom Assistant') {
-      handleScrapeSubmit();
-    }
-  }, [instructions]); // Depend on instructions to trigger
-
-  const handlePreconfiguredSubmit = (configIndex: number) => {
+  const handlePreconfiguredSubmit = async (configIndex: number) => {
     const config = preconfiguredAssistants[configIndex];
     setAssistantName(config.name);
-    setInstructions(config.instructions); // This triggers the effect
+    setInstructions(config.instructions);
+
+    // Automatically submit after selecting an assistant
+    await handleScrapeSubmit(config.instructions);
   };
 
-  const handleScrapeSubmit = async (event?: React.FormEvent<HTMLFormElement>) => {
-    if (event) {
-      event.preventDefault();
+  const handleScrapeSubmit = async (selectedInstructions: string) => {
+    if (!validateDomain(domain)) {
+      MySwal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        html: `<span style="color: red;">Veuillez entrer une URL valide au format https://lasuperagence.com</span>`,
+        confirmButtonText: 'OK',
+      });
+      return;
     }
     if (requestInProgress.current || requestCount >= requestLimit) return;
 
@@ -146,17 +130,16 @@ const ChatbotForm: React.FC = () => {
     setStatus('');
     setLog([]);
     requestInProgress.current = true;
-    setStreaming(false);
 
-    console.log("Submitting with instructions:", instructions);
+    console.log("Submitting with entreprise:", domain, "and instructions:", selectedInstructions);
 
     try {
-      const response = await fetch('https://superia.northeurope.cloudapp.azure.com/chatbot', {
+      const response = await fetch('https://superia.northeurope.cloudapp.azure.com/scanrh', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ domain, assistant_name: assistantName, instructions }),
+        body: JSON.stringify({ entreprise: domain, instructions: selectedInstructions }),
       });
 
       if (!response.ok) {
@@ -164,117 +147,16 @@ const ChatbotForm: React.FC = () => {
         throw new Error(data.error || `Une erreur survient: ${response.statusText}`);
       }
 
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('Reader nest pas disponible');
-      }
+      const data = await response.json();
+      setInitialResponse(data.response);
+      setRequestCount(prevCount => prevCount + 1);
 
-      const decoder = new TextDecoder('utf-8');
-      let done = false;
-      let responseContent = '';
-
-      const newResponses = [...responses, { question: 'Etude en cours', response: '' }];
-      const lastIndex = newResponses.length - 1;
-      setResponses(newResponses);
-
-      while (!done) {
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
-        if (value) {
-          setStreaming(true);
-          const chunk = decoder.decode(value, { stream: true });
-          responseContent += chunk;
-          const cleanedText = cleanText(responseContent);
-          newResponses[lastIndex].response = cleanedText;
-
-          setResponses([...newResponses]);
-        }
-      }
-
-      const match = responseContent.match(/assistant_id: (\w+)/);
-      if (match) {
-        setAssistantId(match[1]); // Extract assistant_id from the stream but do not display it
-      } else {
-        throw new Error('L assistantid nest pas dans la réponse');
-      }
-
-      setRequestCount((prevCount) => prevCount + 1);
     } catch (error) {
       console.error('Error:', error);
       setError((error as Error).message);
     } finally {
       setLoading(false);
       requestInProgress.current = false;
-    }
-  };
-
-  const handleAsk = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (requestInProgress.current || requestCount >= requestLimit) return;
-
-    if (containsInappropriateKeywords(question)) {
-      setResponses((prevResponses) => [
-        ...prevResponses,
-        { question, response: "Je ne peux pas répondre à cette question car elle contient des caractères inappropriés." }
-      ]);
-      setQuestion('');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    setStreaming(false);
-
-    try {
-      const response = await fetch('https://superia.northeurope.cloudapp.azure.com/ask', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          question,
-          assistant_id: assistantId,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Une erreur survient: ${response.statusText}`);
-      }
-
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('Reader nest pas disponible');
-      }
-
-      const decoder = new TextDecoder('utf-8');
-      let done = false;
-      let responseContent = '';
-
-      const newResponses = [...responses, { question, response: '' }];
-      const lastIndex = newResponses.length - 1;
-      setResponses(newResponses);
-
-      while (!done) {
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
-        if (value) {
-          setStreaming(true);
-          const chunk = decoder.decode(value, { stream: true });
-          responseContent += chunk;
-          const cleanedText = cleanText(responseContent);
-          newResponses[lastIndex].response = cleanedText;
-
-          setResponses([...newResponses]);
-        }
-      }
-
-    } catch (error) {
-      console.error('Error querying assistant:', error);
-      setError('L assistant ne répond pas.');
-    } finally {
-      setLoading(false);
-      requestInProgress.current = false;
-      setQuestion('');
     }
   };
 
@@ -286,7 +168,7 @@ const ChatbotForm: React.FC = () => {
 
   return (
     <div className="container">
-      <form onSubmit={handleScrapeSubmit}>
+      <form onSubmit={(e) => e.preventDefault()}>
         <label htmlFor="domain">Site Carrières URL:</label>
         <input
           className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6"
@@ -313,7 +195,7 @@ const ChatbotForm: React.FC = () => {
         ))}
       </div>
 
-      {loading && !streaming && (
+      {loading && !initialResponse && (
         <div className="flex flex-col items-center m-4">
           <ClipLoader color="#0000ff" loading={loading} size={50} />
           <div className="mt-2">{status}</div>
@@ -331,41 +213,10 @@ const ChatbotForm: React.FC = () => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
       {initialResponse && (
-        <div style={{whiteSpace: 'break-spaces', wordBreak: 'break-word' }}>
+        <div>
           <h2 className='font-bold text-2xl my-5'>Résumé Initial:</h2>
-          <ReactMarkdown>{initialResponse}</ReactMarkdown>
+          <ReactMarkdown className="markdown-content">{initialResponse}</ReactMarkdown>
         </div>
-      )}
-
-      {responses.length > 0 && (
-        <div style={{whiteSpace: 'break-spaces', wordBreak: 'break-word' }}>
-          <h2 className='font-bold text-2xl my-5'>Réponses:</h2>
-          {responses.map((item, index) => (
-            <div key={index}>
-              <h3 className='font-bold'>Question: {item.question}</h3>
-              <ReactMarkdown>{item.response}</ReactMarkdown>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {assistantId && requestCount < requestLimit && (
-        <form onSubmit={handleAsk} className="ask-form">
-          <label htmlFor="question">Question:</label>
-          <input
-            className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6"
-            type="text"
-            id="question"
-            placeholder='Dis moi en plus sur : '
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            required
-            disabled={requestCount >= requestLimit}
-          />
-          <button className="p-5 pl-20 pr-20 m-5 mx-40 rounded-md border-0 text-blue-900 ring-1 ring-inset ring-blue-300 text-xl 2xl:leading-8" type="submit" disabled={loading || requestCount >= requestLimit}>
-            {loading ? 'En cours...' : 'Posez votre question'}
-          </button>
-        </form>
       )}
 
       {requestCount >= requestLimit && (
@@ -385,4 +236,3 @@ const ChatbotForm: React.FC = () => {
 };
 
 export default ChatbotForm;
-

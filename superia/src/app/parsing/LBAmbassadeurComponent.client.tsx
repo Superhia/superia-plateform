@@ -1,19 +1,16 @@
 'use client';
 
-import React, {
-    useState,
-    useRef,
-    FC,
-    useImperativeHandle,
-    forwardRef,
-    ForwardRefRenderFunction,
-    useEffect,
-} from 'react';
+import React, {useState,useRef,FC,useImperativeHandle,forwardRef,ForwardRefRenderFunction,useEffect,} from 'react';
 import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import ReactMarkdown from 'react-markdown';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import DOMPurify from 'dompurify';
+import Joi from 'joi';
+const MySwal = withReactContent(Swal);
 
 export interface FileUploadComponentRef {
     handleSubmit: (question: string) => void;
@@ -134,106 +131,162 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
         const [loading, setLoading] = useState(false);
         const [error, setError] = useState<string | null>(null);
         const [responses, setResponses] = useState<QAResponse[]>([]);
+        const [streaming, setStreaming] = useState(false);
         const [progress, setProgress] = useState(0);
         const [status, setStatus] = useState('');
         const [currentUrl, setCurrentUrl] = useState('');
-        const [streaming, setStreaming] = useState(false);
-        const currentResponseRef = useRef('');
-
+      
+        const inappropriateKeywords = ["carte bancaire", "numéro de sécurité sociale", "DROP TABLE", "script", "mot de passe"];
+      
+        // Define Joi schema for question validation
+        const schema = Joi.object({
+          question: Joi.string().max(200).pattern(/^[a-zA-ZÀ-ÖØ-öø-ÿ0-9 .,!?'’]+$/).required(),
+        });
+      
+        // Validate input using Joi
+        const validateInput = (data: { question: string }) => {
+          const { error, value } = schema.validate(data);
+          return error ? [false, error] : [true, value];
+        };
+      
+        // Check for inappropriate keywords
+        const containsInappropriateKeywords = (text: string): boolean => {
+          return inappropriateKeywords.some(keyword => text.toLowerCase().includes(keyword.toLowerCase()));
+        };
+      
+        // Sanitize HTML output
+        const sanitizeHtml = (inputHtml: string): string => {
+          return DOMPurify.sanitize(inputHtml, {
+            ALLOWED_TAGS: ['b', 'i', 'u', 'a', 'p', 'strong', 'em'],
+            ALLOWED_ATTR: ['href', 'title', 'rel'],
+          });
+        };
+      
         useEffect(() => {
-            socket.on('connect', () => {
-                console.log('Connected to Socket.IO server');
+          socket.on('connect', () => {
+            console.log('Connected to Socket.IO server');
+          });
+      
+          socket.on('Préchauffage du transistor de Superia', (data: ProgressData) => {
+            console.log('Progress update received', data); // Debug log
+            setProgress(data.progress);
+            setStatus(data.status);
+            if (data.log) {
+              setCurrentUrl(data.log); // Update the current URL being processed
+            }
+            if (data.progress === 100) {
+              setLoading(false);
+            }
+          });
+      
+          socket.on('response_complete', (data: string) => {
+            setResponses((prev) => [...prev, { question: 'Response complete', response: data }]);
+            setLoading(false);
+            MySwal.fire({
+              icon: 'success',
+              title: 'Réponse reçue',
+              text: 'Votre question a été traitée avec succès.',
             });
-
-            socket.on('Préchauffage du transistor de Superia', (data: ProgressData) => {
-                console.log('Progress update received', data); // Debug log
-                setProgress(data.progress);
-                setStatus(data.status);
-                if (data.log) {
-                    setCurrentUrl(data.log); // Update the current URL being processed
-                }
-                if (data.progress === 100) {
-                    setLoading(false);
-                }
-            });
-
-            socket.on('response_complete', (data: string) => {
-                setResponses((prev) => [...prev, { question: 'Response complete', response: data }]);
-                setLoading(false);
-            });
-
-            socket.on('disconnect', () => {
-                console.log('Disconnected from Socket.IO server');
-            });
-
-            return () => {
-                socket.off('Préchauffage du transistor de Superia');
-                socket.off('response_complete');
-            };
-        }, []);
-
-        const cleanText = (text:string) => {
-            const pattern = /【\d+:\d+†source】/g; // Use 'g' for global replacement
-            return text.replace(pattern, '');
+          });
+      
+          socket.on('disconnect', () => {
+            console.log('Disconnected from Socket.IO server');
+          });
+      
+          return () => {
+            socket.off('Préchauffage du transistor de Superia');
+            socket.off('response_complete');
           };
-
+        }, []);
+      
+        const cleanText = (text:string) => {
+          const pattern = /【\d+:\d+†source】/g; // Use 'g' for global replacement
+          return text.replace(pattern, '');
+        };
+      
         const handleQuestionSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            setLoading(true);
-            setError(null);
-            setStreaming(false);
-
+          event.preventDefault();
+          const [isValid, validationError] = validateInput({ question });
+          if (!isValid) {
+            MySwal.fire({
+              icon: 'error',
+              title: 'Entrée invalide',
+              text: validationError?.details[0].message || 'Erreur de validation',
+            });
+            return;
+          }
+      
+          // Check for inappropriate keywords
+          if (containsInappropriateKeywords(question)) {
+            MySwal.fire({
+              icon: 'warning',
+              title: 'Contenu inapproprié',
+              text: 'Votre question contient des termes inappropriés.',
+            });
+            return;
+          }
+      
+          setLoading(true);
+          setError(null);
+          setStreaming(false);
+      
+          try {
+            const askRes = await fetch('https://superia.northeurope.cloudapp.azure.com/ask', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                question: question,
+                assistant_id: assistantId,
+              }),
+            });
+      
+            if (!askRes.ok) {
+              throw new Error(`Une erreur est survenue: ${askRes.statusText}`);
+            }
+      
+            const reader = askRes.body?.getReader();
+            if (!reader) {
+              throw new Error('Reader nest pas disponible');
+            }
+      
+            const decoder = new TextDecoder('utf-8');
+            let done = false;
+            let responseContent = '';
+      
             const newResponses = [...responses, { question, response: '' }];
             const lastIndex = newResponses.length - 1;
             setResponses(newResponses);
-
-            try {
-                const askRes = await fetch('https://superia.northeurope.cloudapp.azure.com/ask', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        question: question,
-                        assistant_id: assistantId,
-                    }),
-                });
-
-                if (!askRes.ok) {
-                    throw new Error(`Une erreur est survenue: ${askRes.statusText}`);
-                }
-
-                const reader = askRes.body?.getReader();
-                if (!reader) {
-                    throw new Error('Reader nest pas disponible');
-                }
-
-                const decoder = new TextDecoder('utf-8');
-                let done = false;
-
-                while (!done) {
-                    const { value, done: readerDone } = await reader.read();
-                    done = readerDone;
-                    if (value) {
-                        setStreaming(true);
-                        const chunk = decoder.decode(value, { stream: true });
-                        currentResponseRef.current += chunk;
-
-                        const cleanedText = cleanText(currentResponseRef.current);
-                        newResponses[lastIndex].response = cleanedText;
-                        setResponses([...newResponses]);
-                    }
-                }
-
-                console.log('Final response content:', currentResponseRef.current);
-            } catch (error) {
-                console.error('Error querying assistant:', error);
-                setError('L assistant ne répond pas.');
-            } finally {
-                setLoading(false);
-                setQuestion(''); // Clear the question input after submission
-                currentResponseRef.current = ''; // Reset the ref for the next question
+      
+            while (!done) {
+              const { value, done: readerDone } = await reader.read();
+              done = readerDone;
+              if (value) {
+                setStreaming(true);
+                const chunk = decoder.decode(value, { stream: true });
+                responseContent += chunk;
+      
+                const cleanedText = cleanText(responseContent);
+                newResponses[lastIndex].response = cleanedText;
+                setResponses([...newResponses]);
+              }
             }
+      
+            console.log('Final response content:', responseContent); // Increment request count
+          } catch (error) {
+            console.error('Error querying assistant:', error);
+            setError('L assistant ne répond pas.');
+          } finally {
+            setLoading(false);
+            setQuestion(''); // Clear the question input after submission
+          }
+        };
+        const sanitizedMarkdown = (text: string): string => {
+          return DOMPurify.sanitize(text, {
+            ALLOWED_TAGS: ['b', 'i', 'u', 'a', 'p', 'strong', 'em'],
+            ALLOWED_ATTR: ['href', 'title', 'rel'],
+          });
         };
 
         return (
@@ -242,7 +295,7 @@ const Ebook: ForwardRefRenderFunction<FileUploadComponentRef> = (props, ref) => 
                     {responses.map((qa, index) => (
                         <div key={index} className="mb-4">
                             <p className="font-bold">Question: {qa.question}</p>
-                            <ReactMarkdown>{qa.response}</ReactMarkdown>
+                            <ReactMarkdown className="markdown-content">{sanitizeHtml(qa.response)}</ReactMarkdown>
                         </div>
                     ))}
                 </div>

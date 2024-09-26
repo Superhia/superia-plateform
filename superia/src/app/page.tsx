@@ -74,9 +74,6 @@ export default function Home() {
                   <Link href="parsing">DocuParse</Link>
                 </li>
                 <li className="px-4 py-2 hover:bg-gray-100">
-                  <Link href="chatpdf">YoutubeScan</Link>
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-100">
                   <Link href="analysis">Sentiment</Link>
                 </li>
                 <li className="px-4 py-2 hover:bg-gray-100">
@@ -123,7 +120,7 @@ export default function Home() {
                     Découvrez Superia, la première plateforme pour la Marque Employeur utilisant l’IA générative
                   </p>
                 </div>
-                <div className="grid grid-cols-3 gap-10 my-10">
+                <div className="grid grid-cols-4 gap-10 my-10">
                   <div className="text-center">
                     <Link href={'scrapping'}>
                       <img
@@ -149,15 +146,27 @@ export default function Home() {
                     </p>
                   </div>
                   <div className="text-center">
-                    <Link href={'chatpdf'}>
+                    <Link href={'analysis'}>
                       <img
-                        src="Youtubescan.JPG"
-                        alt="YoutubeScan"
+                        src="Sentiment.webp"
+                        alt="Sentiment"
                         className="scanrh-image w-64 mx-auto"
                       />
                     </Link>
                     <p className="mt-4">
-                      Importez vos vidéos Youtube de marque employeur et découvrez ce qu’en pensent vos futurs candidats
+                    Notre technologie vous offre une vision claire de ce que vos équipes ressentent.
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <Link href={'offreemploi'}>
+                      <img
+                        src="Sentiment.webp"
+                        alt="Offre Emploi"
+                        className="scanrh-image w-64 mx-auto"
+                      />
+                    </Link>
+                    <p className="mt-4">
+                    Générez des offres d'emploi simplement et personnalisez-les
                     </p>
                   </div>
                 </div>

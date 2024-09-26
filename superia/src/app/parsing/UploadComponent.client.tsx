@@ -1,11 +1,16 @@
 'use client'
-import React, { useState, useRef, useEffect, FC } from 'react';
+import React, { useState, useRef, useEffect, FC, FormEvent } from 'react';
 import io from 'socket.io-client';
 import { ClipLoader } from 'react-spinners';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import ReactMarkdown from 'react-markdown';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import DOMPurify from 'dompurify';
+import Joi from 'joi';
 
+const MySwal = withReactContent(Swal);
 interface QAResponse {
   question: string;
   response: string;
@@ -36,8 +41,26 @@ const FileUploadComponent = () => {
   const [status, setStatus] = useState('');
   const [currentUrl, setCurrentUrl] = useState('');
   const [streaming, setStreaming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const inappropriateKeywords = ["carte bancaire", "numéro de sécurité sociale", "DROP TABLE", "script", "mot de passe"];
+
+  // Define Joi schema for file validation
+  const fileSchema = Joi.object({
+    file: Joi.object({
+      name: Joi.string().max(100).required(),
+      size: Joi.number().max(5 * 1024 * 1024).required(), // Max 5MB
+      type: Joi.string().valid('application/pdf').required(),
+    }).required(),
+  });
+
+  // Validate file using Joi
+  const validateFile = (file: File): [boolean, Joi.ValidationError | null] => {
+    const { error } = fileSchema.validate({ file });
+    return [!error, error || null];
+  };
 
   useEffect(() => {
     socket.on('connect', () => {
@@ -59,6 +82,10 @@ const FileUploadComponent = () => {
     socket.on('upload_complete', (data: string) => {
       setUploadStatus(data);
       setLoading(false);
+      MySwal.fire({
+        icon: 'success',
+        title: 'Téléchargement réussi',
+        text: data,});
     });
 
     socket.on('disconnect', () => {
@@ -106,8 +133,30 @@ const FileUploadComponent = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!file || requestCount >= requestLimit) {
-      alert('Merci de séléctioner un fichier ou vous avez atteint la limite.');
+    if (!file) {
+      MySwal.fire({
+        icon: 'warning',
+        title: 'Aucun fichier sélectionné',
+        text: 'Veuillez sélectionner un fichier à télécharger.',
+      });
+      return;
+    }
+
+    if (requestCount >= requestLimit) {
+      MySwal.fire({
+        icon: 'warning',
+        title: 'Limite atteinte',
+        html: (
+          <div>
+            Vous avez atteint le nombre de requêtes maximum. Veuillez vous{' '}
+            <a href="/api/auth/login" style={{ color: 'blue' }}>
+              connecter
+            </a>
+            .
+          </div>
+        ),
+        confirmButtonText: 'OK',
+      });
       return;
     }
     setLoading(true);
@@ -127,8 +176,18 @@ const FileUploadComponent = () => {
         setUploadStatus('Fichier chargé avec succès.');
         setShowPdf(true);
         setRequestCount((prevCount) => prevCount + 1); // Increment request count
+        MySwal.fire({
+          icon: 'success',
+          title: 'Téléchargement réussi',
+          text: 'Votre fichier a été téléchargé avec succès.',
+        });
       } else {
         setUploadStatus(result.error || 'Erreur de chargement du fichier.');
+        MySwal.fire({
+          icon: 'error',
+          title: 'Erreur de téléchargement',
+          text: result.error || 'Une erreur est survenue lors du téléchargement du fichier.',
+        });
       }
     } catch (error) {
       console.error('Error uploading file:', error);
@@ -232,6 +291,32 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
   const [status, setStatus] = useState('');
   const [currentUrl, setCurrentUrl] = useState('');
 
+  const inappropriateKeywords = ["carte bancaire", "numéro de sécurité sociale", "DROP TABLE", "script", "mot de passe"];
+
+  // Define Joi schema for question validation
+  const schema = Joi.object({
+    question: Joi.string().max(200).pattern(/^[a-zA-ZÀ-ÖØ-öø-ÿ0-9 .,!?'’]+$/).required(),
+  });
+
+  // Validate input using Joi
+  const validateInput = (data: { question: string }) => {
+    const { error, value } = schema.validate(data);
+    return error ? [false, error] : [true, value];
+  };
+
+  // Check for inappropriate keywords
+  const containsInappropriateKeywords = (text: string): boolean => {
+    return inappropriateKeywords.some(keyword => text.toLowerCase().includes(keyword.toLowerCase()));
+  };
+
+  // Sanitize HTML output
+  const sanitizeHtml = (inputHtml: string): string => {
+    return DOMPurify.sanitize(inputHtml, {
+      ALLOWED_TAGS: ['b', 'i', 'u', 'a', 'p', 'strong', 'em'],
+      ALLOWED_ATTR: ['href', 'title', 'rel'],
+    });
+  };
+
   useEffect(() => {
     socket.on('connect', () => {
       console.log('Connected to Socket.IO server');
@@ -252,6 +337,11 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
     socket.on('response_complete', (data: string) => {
       setResponses((prev) => [...prev, { question: 'Response complete', response: data }]);
       setLoading(false);
+      MySwal.fire({
+        icon: 'success',
+        title: 'Réponse reçue',
+        text: 'Votre question a été traitée avec succès.',
+      });
     });
 
     socket.on('disconnect', () => {
@@ -271,7 +361,44 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
 
   const handleQuestionSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (requestCount >= requestLimit) return;
+    const [isValid, validationError] = validateInput({ question });
+    if (!isValid) {
+      MySwal.fire({
+        icon: 'error',
+        title: 'Entrée invalide',
+        text: validationError?.details[0].message || 'Erreur de validation',
+      });
+      return;
+    }
+
+    // Check for inappropriate keywords
+    if (containsInappropriateKeywords(question)) {
+      MySwal.fire({
+        icon: 'warning',
+        title: 'Contenu inapproprié',
+        text: 'Votre question contient des termes inappropriés.',
+      });
+      return;
+    }
+
+    // Request limiting
+    if (requestCount >= requestLimit) {
+      MySwal.fire({
+        icon: 'warning',
+        title: 'Limite atteinte',
+        html: (
+          <div>
+            Vous avez atteint le nombre de requêtes maximum. Veuillez vous{' '}
+            <a href="/api/auth/login" style={{ color: 'blue' }}>
+              connecter
+            </a>
+            .
+          </div>
+        ),
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -330,6 +457,12 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
       setQuestion(''); // Clear the question input after submission
     }
   };
+  const sanitizedMarkdown = (text: string): string => {
+    return DOMPurify.sanitize(text, {
+      ALLOWED_TAGS: ['b', 'i', 'u', 'a', 'p', 'strong', 'em'],
+      ALLOWED_ATTR: ['href', 'title', 'rel'],
+    });
+  };
 
   return (
     <div className="bg-white flex flex-col h-full">
@@ -337,7 +470,7 @@ const AskQuestionComponent: FC<AskQuestionComponentProps> = ({ assistantId, requ
         {responses.map((qa, index) => (
           <div key={index} className="mb-4">
             <p className="font-bold">Question: {qa.question}</p>
-            <ReactMarkdown>{qa.response}</ReactMarkdown>
+            <ReactMarkdown className="markdown-content">{sanitizeHtml(qa.response)}</ReactMarkdown>
           </div>
         ))}
       </div>

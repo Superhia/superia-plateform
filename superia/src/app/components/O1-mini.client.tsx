@@ -28,6 +28,13 @@ const AgentO1mini: React.FC = () => {
 
   const requestInProgress = useRef(false);
 
+  // Predefined questions
+  const predefinedQuestions = [
+    "Explique moi la marque employeur",
+    "Quels sont les étapes de la marque employeur ?",
+    "Quel impacte la marque employeur sur le recrutement ?"
+  ];
+
   const inappropriateKeywords = ["carte bancaire", "numéro de sécurité sociale", "DROP TABLE", "script", "mot de passe"];
 
   const schema = Joi.object({
@@ -164,18 +171,42 @@ const AgentO1mini: React.FC = () => {
     }
   };
 
+  const handleTryQuestion = (predefinedQuestion: string) => {
+    setQuestion(predefinedQuestion); // Set the selected predefined question to the input field
+  };
+
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <div>
-        <div style={{ whiteSpace: 'break-spaces', wordBreak: 'break-word' }}>
-        {responses.map((res, index) => (
-          <div key={index}>
-            <strong>Q: {res.question}</strong>
-            <ReactMarkdown>{sanitizeHtml(res.response)}</ReactMarkdown>
+    <div className='mx-40'>
+      <div className="request-info">
+        <p>Nombre de requêtes: {requestCount} / {requestLimit}</p>
+      </div>
+
+      {/* Predefined Questions Section */}
+      <div className="predefined-questions">
+        <h3>Essayez une de ces questions :</h3>
+        {predefinedQuestions.map((predefQuestion, index) => (
+          <div key={index} className="flex justify-between items-center my-3">
+            <span>{predefQuestion}</span>
+            <button
+              className="p-2 px-4 ml-3 bg-blue-500 text-white rounded hover:bg-blue-700"
+              onClick={() => handleTryQuestion(predefQuestion)}
+            >
+              Essayer
+            </button>
           </div>
         ))}
       </div>
+
+      <form onSubmit={handleSubmit}>
+        <div>
+          <div>
+            {responses.map((res, index) => (
+              <div key={index}>
+                <strong>Q: {res.question}</strong>
+                <ReactMarkdown className="markdown-content">{sanitizeHtml(res.response)}</ReactMarkdown>
+              </div>
+            ))}
+          </div>
           <input 
             placeholder='Entrez votre question'
             className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6"
@@ -189,6 +220,7 @@ const AgentO1mini: React.FC = () => {
           {loading ? 'En cours...' : 'Posez votre question'}
         </button>
       </form>
+      
       {loading && !streaming && (
         <div className="flex flex-col items-center py-7">
           <ClipLoader color="#0000ff" loading={loading} size={50} />

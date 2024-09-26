@@ -199,7 +199,7 @@ const AgentComponent: React.FC = () => {
         {responses.map((res, index) => (
           <div key={index}>
             <strong>Q: {res.question}</strong>
-            <ReactMarkdown>{sanitizeHtml(res.response)}</ReactMarkdown>
+            <ReactMarkdown className="markdown-content">{sanitizeHtml(res.response)}</ReactMarkdown>
           </div>
         ))}
       </div>
