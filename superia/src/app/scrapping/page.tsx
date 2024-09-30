@@ -109,7 +109,7 @@ export default function Scrapping() {
           {user ? (
             <>
               <h1 className="text-4xl font-semibold text-center py-7">
-                Etudiez vos données marques employeurs grâce à SUPERIA
+                Etudiez vos données marque employeur grâce à SUPERIA
               </h1>
               <p className="text-center py-2.5 mx-40 px-64">
                 Notre outil ScanRH scrute votre site carrière pour en extraire des données précieuses,
@@ -120,12 +120,12 @@ export default function Scrapping() {
               <div className="mx-auto">
                 <ChatbotForm />
               </div>
-              <h4 className="text-center py-5">Testez notre outil avec un des sites déjà analysé</h4>
+              {/*<h4 className="text-center py-5">Testez notre outil avec un des sites déjà analysé</h4>
               <div className="mx-auto text-sm grid grid-cols-6 gap-4">
                 <div className="col-start-1 col-end-3"><BPIFranceForm /> <LaPosteForm /></div>
                 <div className="col-start-3 col-end-5"><AXAForm /> <DecathlonForm /></div>
                 <div className="col-start-5 col-end-7"><OrangeForm /> <GeneraliForm /></div>
-              </div>
+          </div>*/}
             </>
           ) : (
             <>

@@ -195,14 +195,6 @@ const AgentComponent: React.FC = () => {
     <div>
       <form onSubmit={handleSubmit}>
         <div>
-        <div style={{ whiteSpace: 'break-spaces', wordBreak: 'break-word' }}>
-        {responses.map((res, index) => (
-          <div key={index}>
-            <strong>Q: {res.question}</strong>
-            <ReactMarkdown className="markdown-content">{sanitizeHtml(res.response)}</ReactMarkdown>
-          </div>
-        ))}
-      </div>
           <input 
             placeholder="Entrez le poste et l'entreprise"
             className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6"
@@ -230,6 +222,14 @@ const AgentComponent: React.FC = () => {
           </div>
         </div>
       )}
+      <div>
+        {responses.map((res, index) => (
+          <div key={index} className="mx-40 mb-6 p-4 border rounded-md shadow-md">
+          <h3 className='font-bold text-xl mb-2'>Poste: {res.question}</h3>
+            <ReactMarkdown className="markdown-content">{sanitizeHtml(res.response)}</ReactMarkdown>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

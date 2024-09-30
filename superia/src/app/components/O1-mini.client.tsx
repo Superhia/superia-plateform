@@ -29,7 +29,7 @@ const AgentO1mini: React.FC = () => {
   const [currentUrl, setCurrentUrl] = useState<string>('');
   const [streaming, setStreaming] = useState<boolean>(false);
   const [requestCount, setRequestCount] = useState<number>(0);
-  const [requestLimit, setRequestLimit] = useState<number>(2);
+  const [requestLimit, setRequestLimit] = useState<number>(3);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const requestInProgress = useRef(false);
@@ -38,7 +38,7 @@ const AgentO1mini: React.FC = () => {
   const predefinedQuestions = [
     "Explique moi la marque employeur",
     "Quels sont les étapes de la marque employeur ?",
-    "Quel impacte la marque employeur sur le recrutement ?"
+    "Quel impact la marque employeur sur le recrutement ?"
   ];
 
   const inappropriateKeywords = ["carte bancaire", "numéro de sécurité sociale", "DROP TABLE", "script", "mot de passe"];
@@ -221,7 +221,7 @@ const AgentO1mini: React.FC = () => {
             ))}
           </div>
           <input 
-            placeholder='Entrez votre question'
+            placeholder='Entrer votre propre question sur la marque employeur'
             className="block w-full rounded-md border-0 py-2.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-xl 2xl:leading-6"
             type="text"
             id="question"

@@ -207,8 +207,8 @@ const SentimentAnalysisForm: React.FC = () => {
 
       {response && (
         <div className="mt-4">
-          <h2>Résultat d'analyse</h2>
-          <div>
+          <div className="mx-40 mb-6 p-4 border rounded-md shadow-md">
+            <h3 className='font-bold text-xl mb-2'>Entreprise: {entreprise}</h3>
             <ReactMarkdown className="markdown-content">{sanitizeHtml(response.response)}</ReactMarkdown>
           </div>
         </div>
